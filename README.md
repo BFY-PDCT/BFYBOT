@@ -1,7 +1,7 @@
 # BFYBOT
 간단하게 스스로 운영할 수 있는 디스코드 봇, BFYBOT입니다. 봇에 대한 소개는 [여기](https://www.bfy.kr/bluebot)를 참고해주세요.
 
-BFY에서 공식으로 운영하는 봇은 파랭이로, [여기](https://discord.com/api/oauth2/authorize?client_id=792029412425072650&permissions=8&scope=bot)를 눌러 초대하실 수 있습니다.
+BFY에서 공식으로 운영하는 봇은 파랭이로, [여기](https://discord.com/api/oauth2/authorize?client_id=738684108674433065&permissions=8&scope=bot)를 눌러 초대하실 수 있습니다.
 
 봇이 정상적으로 작동하려면 서버에서 봇에 필요한 권한이 모두 부여되어야 합니다. '관리자' 권한을 부여해도 BFYBOT은 명령한 대로만 행동하므로 문제가 생기지 않으므로, 편하게 '관리자' 권한을 봇에 부여하시는 것을 추천드립니다.
 
