@@ -74,7 +74,7 @@ class CommandErrorHandler(commands.Cog):
 
             def checkd(m):
                 return (
-                    (m.content.startswith("신고") or m.content == "바꿔")
+                    m.content == "바꿔"
                     and m.channel == ctx.message.channel
                     and ctx.message.author == m.author
                 )
@@ -210,32 +210,6 @@ class CommandErrorHandler(commands.Cog):
                             else:
                                 await mymsg.edit(content="500포인트 벌고와")
                                 return
-                        else:
-                            ver = discord.Embed(
-                                title="새 신고",
-                                description="by: "
-                                + str(msg.author)
-                                + "\nid: "
-                                + str(msg.author.id),
-                                color=botcolor,
-                            )
-                            ver.add_field(name="질문", value=ctx.message.content)
-                            ver.add_field(
-                                name="답변", value=new_dict.get(ctx.message.content)
-                            )
-                            ver.add_field(name="사유", value=msg.content)
-                            if "id" + ctx.message.content in new_dict:
-                                ver.add_field(
-                                    name="작성자",
-                                    value=new_dict["id" + ctx.message.content],
-                                    inline=False,
-                                )
-                            await bot.get_user(owner).send("새 신고", embed=ver)
-                            await mymsg.edit(
-                                content="해당 답변을 신고하였습니다. 신고된 답변은 관리자가 검토 후 조치할 예정입니다.",
-                                allowed_mentions=discord.AllowedMentions.all(),
-                            )
-                            return
 
             if isowner(ctx.message.author.id):
                 mymsg = await ctx.message.channel.send(
