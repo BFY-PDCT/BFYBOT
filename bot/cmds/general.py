@@ -1,8 +1,6 @@
 #######################################################
 #                                                     #
-#      Copyright (C) 2021 BFY Entertainment           #
-#      All Rights Reserved                            #
-#                                                     #
+#      BFY Entertainment                              #
 #      Written-by: J.H.Lee                            #
 #      (jhlee@bfy.kr)                                 #
 #                                                     #
