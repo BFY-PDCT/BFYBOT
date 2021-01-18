@@ -140,6 +140,9 @@ class CommandErrorHandler(commands.Cog):
                                         if ctx.message.content in pending:
                                             await mymsg.edit(content="누군가 수정중인것 같아요 ;)")
                                             return
+                                        if ctx.message.author.id in using:
+                                            await mymsg.edit(content="이미 사용중이에요 ;)")
+                                            return
                                         pending.append(ctx.message.content)
                                         using.append(ctx.message.author.id)
                                         await mymsg.edit(
@@ -148,7 +151,7 @@ class CommandErrorHandler(commands.Cog):
                                         )
                                         try:
                                             msg = await bot.wait_for(
-                                                "message", check=checkc
+                                                "message", check=checkc, timeout=30.0
                                             )
                                         except asyncio.TimeoutError:
                                             await mymsg.edit(content="...")
@@ -234,6 +237,9 @@ class CommandErrorHandler(commands.Cog):
                         if ctx.message.content in pending:
                             await mymsg.edit(content="누군가 수정중인것 같아요 ;)")
                             return
+                        if ctx.message.author.id in using:
+                            await mymsg.edit(content="이미 사용중이에요 ;)")
+                            return
                         pending.append(ctx.message.content)
                         using.append(ctx.message.author.id)
                         await mymsg.edit(
@@ -241,7 +247,9 @@ class CommandErrorHandler(commands.Cog):
                             allowed_mentions=discord.AllowedMentions.all(),
                         )
                         try:
-                            msg = await bot.wait_for("message", check=checkc)
+                            msg = await bot.wait_for(
+                                "message", check=checkc, timeout=30.0
+                            )
                         except asyncio.TimeoutError:
                             await mymsg.edit(content="...")
                             pending.remove(ctx.message.content)
@@ -273,6 +281,9 @@ class CommandErrorHandler(commands.Cog):
                     else:
                         if ctx.message.content in pending:
                             await mymsg.edit(content="누군가 수정중인것 같아요 ;)")
+                            return
+                        if ctx.message.author.id in using:
+                            await mymsg.edit(content="이미 사용중이에요 ;)")
                             return
                         pending.append(ctx.message.content)
                         using.append(ctx.message.author.id)
