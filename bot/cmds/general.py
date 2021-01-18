@@ -1,6 +1,8 @@
 #######################################################
 #                                                     #
-#      BFY Entertainment                              #
+#      Copyright (C) 2021 BFY Entertainment           #
+#      All Rights Reserved                            #
+#                                                     #
 #      Written-by: J.H.Lee                            #
 #      (jhlee@bfy.kr)                                 #
 #                                                     #
@@ -72,7 +74,7 @@ async def help(ctx: Context):
         ver.add_field(name="음악 도움말", value=helpmusicstr, inline=False)
     ver.add_field(
         name="문의",
-        value="봇에게 DM을 보내주시면 메시지가 운영자에게 전달됩니다.\n홈페이지: https://www.bfy.kr/ 개발자이메일: jhlee@bfy.kr",
+        value="봇에게 DM을 보내주시면 메시지가 운영자에게 전달됩니다.\n홈페이지: https://www.bfy.kr/ 개발자이메일: jhlee@bfy.kr\n개발자 디스코드: KRMSS#9279",
         inline=False,
     )
     ver.add_field(name="초대", value=invlink, inline=False)
