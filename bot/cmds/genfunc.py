@@ -88,7 +88,7 @@ def addadmin(id, guild):
 
 def deladmin(id, guild):
     owner_list = loadfile("owner", guild=guild)
-    if id == owner:
+    if id in owner:
         return 3
     if id == guild.owner_id:
         return 2
