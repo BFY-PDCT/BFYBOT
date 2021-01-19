@@ -15,7 +15,7 @@ if __name__ == "__main__":
 import pickle, os, datetime, http3, traceback
 from operator import pow, truediv, mul, add, sub
 from discord.ext import commands
-from .config import owner
+from .config import owner, eventlogger
 
 operators = {"+": add, "-": sub, "*": mul, "/": truediv, "^": pow}
 
@@ -39,57 +39,33 @@ def createFolder(directory):
         if not os.path.exists(directory):
             os.makedirs(directory)
     except OSError:
-        print("Error: Creating directory. " + directory)
+        eventlogger.error("Error: Creating directory. " + directory)
 
 
 def log(msg, *, guild=None):
     now = datetime.datetime.now()
     if guild is None:
-        print(now.strftime("[%Y-%m-%d %H:%M:%S]") + " [LOG] " + msg)
+        eventlogger.info(msg)
     else:
-        print(
-            now.strftime("[%Y-%m-%d %H:%M:%S]")
-            + " [LOG] "
-            + str(guild.id)
-            + " - "
-            + msg
-        )
+        eventlogger.info(str(guild.id) + " - " + msg)
 
 
 def msglog(msg, *, guild=None):
     now = datetime.datetime.now()
     if guild is None:
-        print(
-            now.strftime("[%Y-%m-%d %H:%M:%S]")
-            + " [LOG] "
-            + str(msg.author)
-            + ": "
-            + str(msg.content)
-        )
+        eventlogger.info(str(msg.author) + ": " + str(msg.content))
     else:
-        print(
-            now.strftime("[%Y-%m-%d %H:%M:%S]")
-            + " [LOG] "
-            + str(guild.id)
-            + " - "
-            + str(msg.author)
-            + ": "
-            + str(msg.content)
+        eventlogger.info(
+            str(guild.id) + " - " + str(msg.author) + ": " + str(msg.content)
         )
 
 
 def errlog(msg, *, guild=None):
     now = datetime.datetime.now()
     if guild is None:
-        print(now.strftime("[%Y-%m-%d %H:%M:%S]") + " [ERROR] " + msg)
+        eventlogger.warning(msg)
     else:
-        print(
-            now.strftime("[%Y-%m-%d %H:%M:%S]")
-            + " [ERROR] "
-            + str(guild.id)
-            + " - "
-            + msg
-        )
+        eventlogger.warning(str(guild.id) + " - " + msg)
 
 
 def tblog(msg, e, *, guild=None):

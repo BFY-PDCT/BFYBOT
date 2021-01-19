@@ -38,12 +38,14 @@ def initcmd():
     bot.add_command(docalculate)
 
 
-@commands.command(name="핑")  # prefix 핑
+@commands.command(name="핑", aliases=["ping"])  # prefix 핑 / prefix ping
 async def ping(ctx: Context):
     await ctx.send(f"퐁 ^^ {round(round(bot.latency, 4)*1000)}ms")
 
 
-@commands.command(name="버전")  # prefix 버전
+@commands.command(
+    name="버전", aliases=["version", "정보", "info"]
+)  # prefix 버전 / prefix version / prefix 정보 / prefix info
 async def version(ctx: Context):
     ver = discord.Embed(title=botname + " 버전", color=botcolor)
     ver.add_field(name="현재 버전", value=vernum, inline=False)
@@ -64,7 +66,9 @@ async def version(ctx: Context):
     return
 
 
-@commands.command(name="도움말")  # prefix 도움말
+@commands.command(
+    name="도움말", aliases=["도움", "help", "commands", "사용법"]
+)  # prefix 도움말 / prefix 도움 / prefix help / prefix commands / prefix 사용법
 async def help(ctx: Context):
     ver = discord.Embed(title=botname + " 사용 방법", color=botcolor)
     ver.add_field(name="도움말 (온라인)", value="https://www.bfy.kr/bluebot/", inline=False)
@@ -77,7 +81,7 @@ async def help(ctx: Context):
     )
     ver.add_field(name="초대", value=invlink, inline=False)
     await ctx.author.send(botname + "한테 명령하는 방법입니다", embed=ver)
-    await ctx.add_reaction("👍")
+    await ctx.message.add_reaction("👍")
     return
 
 

@@ -10,10 +10,11 @@
 
 from cmds import economy, general, manage, dictcmd, game, bot, token
 from events import (
+    on_guild_join,
+    on_guild_remove,
     on_member_join,
     on_member_remove,
     on_message,
-    on_private_channel_create,
     on_ready,
 )
 

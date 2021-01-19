@@ -12,7 +12,7 @@ if __name__ == "__main__":
     print("Please execute bot.py")
     sys.exit(0)
 
-import discord
+import discord, logging
 from discord.ext import commands
 
 # Owner Setting
@@ -32,4 +32,17 @@ pending, noticed, using, muted = [], [], [], []
 
 intents = discord.Intents.default()
 intents.members = True
-bot = commands.Bot(command_prefix=prefix + " ", intents=intents)
+intents.guilds = True
+bot = commands.Bot(command_prefix=prefix + " ", intents=intents, help_command=None)
+
+formatter = logging.Formatter("[%(asctime)s] [%(levelname)s]: %(message)s")
+eventlogger = logging.getLogger("event")
+eventlogger.setLevel(logging.DEBUG)
+console = logging.StreamHandler()
+console.setLevel(logging.WARNING)
+console.setFormatter(formatter)
+filehandler = logging.FileHandler(filename="./bbdata/log.txt", encoding="utf-8")
+filehandler.setLevel(logging.DEBUG)
+filehandler.setFormatter(formatter)
+eventlogger.addHandler(console)
+eventlogger.addHandler(filehandler)

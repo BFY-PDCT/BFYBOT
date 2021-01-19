@@ -47,11 +47,15 @@ def printstat(text):
 @bot.event
 async def on_ready():
     log("We have logged in as {0.user}".format(bot))
+    print("We have logged in as {0.user}".format(bot))
 
 
 @bot.event
 async def on_member_join(member):
-    log("member joined NAME: " + str(member) + ", ID:" + str(member.id))
+    log(
+        "member joined NAME: " + str(member) + ", ID:" + str(member.id),
+        guild=member.guild,
+    )
     setting_loaded = loadfile("setting", guild=member.guild)
     chnl = False
     if "chnl" in setting_loaded and "msgj" in setting_loaded:
@@ -62,9 +66,9 @@ async def on_member_join(member):
             )
             chnl = True
         except HTTPException:
-            errlog("Error Sending Notice to " + str(setting_loaded["chnl"]))
+            log("Error Sending Notice to " + str(setting_loaded["chnl"]))
         except Forbidden:
-            errlog("Error Sending Notice to " + str(setting_loaded["chnl"]))
+            log("Error Sending Notice to " + str(setting_loaded["chnl"]))
     if "joinrole" in setting_loaded:
         try:
             xrole: discord.Role = None
@@ -75,7 +79,7 @@ async def on_member_join(member):
                     find = True
                     break
             if not find:
-                errlog("role not found", guild=member.guild)
+                log("role not found", guild=member.guild)
                 if chnl:
                     await bot.get_channel(setting_loaded["chnl"]).send(
                         "새 멤버 역할이 잘못 지정되어 있습니다.",
@@ -85,7 +89,7 @@ async def on_member_join(member):
                 return
             await member.edit(roles=[xrole], reason="WELCOME!")
         except Forbidden:
-            errlog("NO PERMISSION", guild=member.guild)
+            log("NO PERMISSION", guild=member.guild)
             if chnl:
                 await bot.get_channel(setting_loaded["chnl"]).send(
                     "새 멤버 역할 변경 권한이 부족합니다.",
@@ -97,7 +101,10 @@ async def on_member_join(member):
 
 @bot.event
 async def on_member_remove(member):
-    log("member removed NAME: " + str(member) + ", ID:" + str(member.id))
+    log(
+        "member removed NAME: " + str(member) + ", ID:" + str(member.id),
+        guild=member.guild,
+    )
     setting_loaded = loadfile("setting", guild=member.guild)
     if "chnl" in setting_loaded and "msgl" in setting_loaded:
         try:
@@ -106,9 +113,19 @@ async def on_member_remove(member):
                 "{.mention}님이 떠났어요".format(member), embed=msgl
             )
         except HTTPException:
-            errlog("Error Sending Notice to " + str(setting_loaded["chnl"]))
+            log("Error Sending Notice to " + str(setting_loaded["chnl"]))
         except Forbidden:
-            errlog("Error Sending Notice to " + str(setting_loaded["chnl"]))
+            log("Error Sending Notice to " + str(setting_loaded["chnl"]))
+
+
+@bot.event
+async def on_guild_join(guild):
+    log("guild joined NAME: " + str(guild.name) + ", ID:" + str(guild.id), guild=guild)
+
+
+@bot.event
+async def on_guild_remove(guild):
+    log("guild removed NAME: " + str(guild.name) + ", ID:" + str(guild.id), guild=guild)
 
 
 @bot.event
