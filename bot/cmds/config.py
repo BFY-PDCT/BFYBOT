@@ -12,7 +12,7 @@ if __name__ == "__main__":
     print("Please execute bot.py")
     sys.exit(0)
 
-import discord, logging
+import discord, logging, os
 from discord.ext import commands
 
 # Owner Setting
@@ -34,6 +34,12 @@ intents = discord.Intents.default()
 intents.members = True
 intents.guilds = True
 bot = commands.Bot(command_prefix=prefix + " ", intents=intents, help_command=None)
+
+try:
+    if not os.path.exists("./bbdata"):
+        os.makedirs("./bbdata")
+except OSError:
+    print("EMERG - Error: Creating directory. " + "./bbdata")
 
 formatter = logging.Formatter("[%(asctime)s] [%(levelname)s]: %(message)s")
 eventlogger = logging.getLogger("event")
