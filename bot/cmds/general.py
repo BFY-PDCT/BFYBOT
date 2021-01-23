@@ -110,11 +110,17 @@ async def lolsearch(ctx: Context, *, arg):
         msgtos.add_field(name="최근 챔피언", value=reslist[3], inline=False)
         msgtos.set_footer(text="데이터 제공: op.gg")
     except IndexError:
-        if len(reslist) > 2 and reslist[1] == "" and reslist[2].startswith("Lv. "):
+        if len(reslist) > 2 and reslist[1] == "":
             msgtos.clear_fields()
             msgtos.set_author(name=reslist[0], icon_url=res3)
             msgtos.add_field(name="티어", value="Unranked", inline=False)
             msgtos.add_field(name="레벨", value=reslist[2], inline=False)
+            msgtos.set_footer(text="데이터 제공: op.gg")
+        elif len(reslist) > 1 and reslist[1].startswith("Lv. "):
+            msgtos.clear_fields()
+            msgtos.set_author(name=reslist[0], icon_url=res3)
+            msgtos.add_field(name="티어", value="Unranked", inline=False)
+            msgtos.add_field(name="레벨", value=reslist[1], inline=False)
             msgtos.set_footer(text="데이터 제공: op.gg")
         else:
             errlog("failed querying " + url)
