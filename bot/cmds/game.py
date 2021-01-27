@@ -154,18 +154,22 @@ async def gamble(ctx: Context, *args):
         )
         log("Giving " + str(num * 7) + " Points to " + str(ctx.author), guild=ctx.guild)
     elif i >= 255 and i <= 255:
-        await msg.edit(
-            content="15배라니 너 운 좀 좋다? `💰+" + str(num * 14) + "`", guild=ctx.guild
+        await msg.edit(content="15배라니 너 운 좀 좋다? `💰+" + str(num * 14) + "`")
+        setpoint(
+            ctx.author.id,
+            getpoint(ctx.author.id, guild=ctx.guild) + num * 14,
+            guild=ctx.guild,
         )
-        setpoint(ctx.author.id, getpoint(ctx.author.id, guild=ctx.guild) + num * 14)
         log(
             "Giving " + str(num * 14) + " Points to " + str(ctx.author), guild=ctx.guild
         )
     elif i >= 256 and i <= 256:
-        await msg.edit(
-            content="뭔 나 거지되겠네 30배는 너무한거아니냐 `💰+" + str(num * 29) + "`", guild=ctx.guild
+        await msg.edit(content="뭔 나 거지되겠네 30배는 너무한거아니냐 `💰+" + str(num * 29) + "`")
+        setpoint(
+            ctx.author.id,
+            getpoint(ctx.author.id, guild=ctx.guild) + num * 29,
+            guild=ctx.guild,
         )
-        setpoint(ctx.author.id, getpoint(ctx.author.id, guild=ctx.guild) + num * 29)
         log(
             "Giving " + str(num * 29) + " Points to " + str(ctx.author), guild=ctx.guild
         )
