@@ -40,7 +40,7 @@ helpmusicstr = "#help를 입력해주세요."  # help command of music function
 
 # Config Error Check
 _string: str = "str"
-_intlist: list[int] = [0, 0]
+_intlist = [0, 0]
 _bool: bool = True
 _int: int = 0
 if len(owner) == 0:

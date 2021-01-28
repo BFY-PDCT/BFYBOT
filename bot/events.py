@@ -129,7 +129,7 @@ async def on_message(message):
     if message.author == bot.user:  # Ignore My Message
         return
 
-    if on_message_pre(message):  # Custom Pre-processing
+    if await on_message_pre(message):  # Custom Pre-processing
         return
 
     if message.content.startswith(prefix):  # Block User Already Using
@@ -139,7 +139,7 @@ async def on_message(message):
 
     if isowner(message.author.id):
         using.append(message.author.id)
-        on_admin_message(message)  # Custom Admin Commands
+        await on_admin_message(message)  # Custom Admin Commands
         return
     else:
         await bot.process_commands(message)
