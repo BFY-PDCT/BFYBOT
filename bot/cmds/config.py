@@ -1,10 +1,20 @@
-#######################################################
-#                                                     #
-#      BFY Entertainment                              #
-#      Written-by: J.H.Lee                            #
-#      (jhlee@bfy.kr)                                 #
-#                                                     #
-#######################################################
+"""
+    Copyright (C) 2021 BFY Entertainment
+    All right reserved
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
 import sys
 
@@ -19,7 +29,7 @@ from discord.ext import commands
 owner = [0]  # owner IDs as list / 소유자(슈퍼오너)의 ID를 리스트로 모두 입력해주세요.
 token = ""  # bot token / 봇 토큰
 invlink = ""  # invite link / 초대 링크
-vernum = "v1.3.1"  # version info / 버전 정보
+vernum = "v1.4.0"  # version info / 버전 정보
 prefix = ""  # prefix / 프리픽스
 botname = ""  # bot's name / 봇 이름
 hasmusic = False  # whether there is a music function / 음악 기능을 추가로 제공하는지
@@ -28,18 +38,61 @@ musicstr = "음악 기능은 외부 프로그램을 통해 제공됩니다."  # 
 helpmusicstr = "#help를 입력해주세요."  # help command of music function
 # End
 
+# Config Error Check
+_string: str = "str"
+_intlist: list[int] = [0, 0]
+_bool: bool = True
+_int: int = 0
+if len(owner) == 0:
+    print("EMERG - Error: Owner can't be None")
+    sys.exit(0)
+if not type(owner) == type(_intlist):
+    print("EMERG - Error: TypeError")
+    sys.exit(0)
+if not type(token) == type(_string):
+    print("EMERG - Error: TypeError")
+    sys.exit(0)
+if not type(invlink) == type(_string):
+    print("EMERG - Error: TypeError")
+    sys.exit(0)
+if not type(vernum) == type(_string):
+    print("EMERG - Error: TypeError")
+    sys.exit(0)
+if not type(prefix) == type(_string):
+    print("EMERG - Error: TypeError")
+    sys.exit(0)
+if prefix in ["i", "e"]:
+    print("EMERG - Error: invalid prefix")
+    sys.exit(0)
+if not type(botname) == type(_string):
+    print("EMERG - Error: TypeError")
+    sys.exit(0)
+if not type(hasmusic) == type(_bool):
+    print("EMERG - Error: TypeError")
+    sys.exit(0)
+if not type(botcolor) == type(_int):
+    print("EMERG - Error: TypeError")
+    sys.exit(0)
+if not type(musicstr) == type(_string):
+    print("EMERG - Error: TypeError")
+    sys.exit(0)
+if not type(helpmusicstr) == type(_string):
+    print("EMERG - Error: TypeError")
+    sys.exit(0)
+
+try:
+    if not os.path.exists("./bbdata"):
+        os.makedirs("./bbdata")
+except OSError:
+    print("EMERG - Error: Creating directory ./bbdata")
+    sys.exit(0)
+
 pending, noticed, using, muted = [], [], [], []
 
 intents = discord.Intents.default()
 intents.members = True
 intents.guilds = True
 bot = commands.Bot(command_prefix=prefix + " ", intents=intents, help_command=None)
-
-try:
-    if not os.path.exists("./bbdata"):
-        os.makedirs("./bbdata")
-except OSError:
-    print("EMERG - Error: Creating directory. " + "./bbdata")
 
 formatter = logging.Formatter("[%(asctime)s] [%(levelname)s]: %(message)s")
 eventlogger = logging.getLogger("event")

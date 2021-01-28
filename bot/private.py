@@ -22,41 +22,37 @@ if __name__ == "__main__":
     print("Please execute bot.py")
     sys.exit(0)
 
-from .config import (
-    owner,
-    token,
-    invlink,
-    vernum,
-    prefix,
+import discord
+from cmds import (
     botname,
-    hasmusic,
     botcolor,
-    pending,
-    noticed,
-    using,
-    muted,
     bot,
-)
-from .genfunc import (
-    addadmin,
-    addban,
-    addowner,
-    admincheck,
-    calculate,
-    createFolder,
-    deladmin,
-    delban,
-    delowner,
-    download,
-    errlog,
-    getpoint,
-    is_non_zero_file,
-    isadmin,
-    isban,
-    isowner,
-    loadfile,
     log,
-    msglog,
-    savefile,
-    setpoint,
 )
+from discord.errors import Forbidden, HTTPException
+
+
+@bot.event
+async def on_private_channel_create(channel):
+    ver = discord.Embed(
+        title="안녕하세요! 저는 " + botname + "입니다.",
+        color=botcolor,
+    )
+    await channel.send("안녕하세요!", embed=ver)
+
+
+async def on_message_pre(
+    message,
+):  # if this function return true, on_message will return
+
+    # Custom Code Here
+
+    return False
+
+
+async def on_admin_message(message):
+    log("WELCOME ADMIN")
+
+    # Custom Code Here
+
+    return

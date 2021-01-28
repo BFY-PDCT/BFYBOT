@@ -1,14 +1,24 @@
-#######################################################
-#                                                     #
-#      BFY Entertainment                              #
-#      Written-by: J.H.Lee                            #
-#      (jhlee@bfy.kr)                                 #
-#                                                     #
-#######################################################
+"""
+    Copyright (C) 2021 BFY Entertainment
+    All right reserved
 
-import sys
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
 if __name__ == "__main__":
+    import sys
+
     print("Please execute bot.py")
     sys.exit(0)
 
@@ -106,8 +116,52 @@ def admincheck():
     return commands.check(adminchk)
 
 
+def isban(id):
+    owner_list = loadfile("ban")
+    return id in owner_list
+
+
+def addban(id):
+    owner_list = loadfile("ban")
+    if id in owner_list:
+        return False
+    owner_list.append(id)
+    savefile("ban", owner_list)
+    return True
+
+
+def delban(id):
+    owner_list = loadfile("ban")
+    if not id in owner_list:
+        return 1
+    owner_list.remove(id)
+    savefile("ban", owner_list)
+    return 0
+
+
 def isowner(id):
-    return id in owner
+    owner_list = loadfile("sowner")
+    return id in owner_list
+
+
+def addowner(id):
+    owner_list = loadfile("sowner")
+    if id in owner_list:
+        return False
+    owner_list.append(id)
+    savefile("sowner", owner_list)
+    return True
+
+
+def delowner(id):
+    owner_list = loadfile("sowner")
+    if id in owner:
+        return 3
+    if not id in owner_list:
+        return 1
+    owner_list.remove(id)
+    savefile("sowner", owner_list)
+    return 0
 
 
 def getpoint(id, guild):
@@ -168,14 +222,38 @@ def loadfile(type: str, *, guild=None):
         if not a:
             createFolder("./bbdata")
             createFolder("./bbdata/" + str(guild.id) + "/")
-            new_array = [owner, guild.owner_id]
+            new_array = [guild.owner_id]
             with open("./bbdata/" + str(guild.id) + "/owner.custom", "wb") as fw:
                 pickle.dump(new_array, fw)
-            return [owner, guild.owner_id]
+            return new_array
         else:
             with open("./bbdata/" + str(guild.id) + "/owner.custom", "rb") as fr:
                 owner_loaded = pickle.load(fr)
             return owner_loaded
+    elif type == "sowner":
+        a = is_non_zero_file("./bbdata/sowner.custom")
+        if not a:
+            createFolder("./bbdata")
+            new_array = owner
+            with open("./bbdata/sowner.custom", "wb") as fw:
+                pickle.dump(new_array, fw)
+            return new_array
+        else:
+            with open("./bbdata/sowner.custom", "rb") as fr:
+                array_loaded = pickle.load(fr)
+            return array_loaded
+    elif type == "ban":
+        a = is_non_zero_file("./bbdata/ban.custom")
+        if not a:
+            createFolder("./bbdata")
+            new_array = []
+            with open("./bbdata/ban.custom", "wb") as fw:
+                pickle.dump(new_array, fw)
+            return {}
+        else:
+            with open("./bbdata/ban.custom", "rb") as fr:
+                array_loaded = pickle.load(fr)
+            return array_loaded
     elif type == "settingall":
         setting_loaded = []
         files = os.listdir("./bbdata/")
@@ -209,6 +287,14 @@ def savefile(type: str, data, *, guild=None):
         return
     elif type == "owner":
         with open("./bbdata/" + str(guild.id) + "/owner.custom", "wb") as fw:
+            pickle.dump(data, fw)
+        return
+    elif type == "sowner":
+        with open("./bbdata/sowner.custom", "wb") as fw:
+            pickle.dump(data, fw)
+        return
+    elif type == "ban":
+        with open("./bbdata/ban.custom", "wb") as fw:
             pickle.dump(data, fw)
         return
 

@@ -1,19 +1,29 @@
-#######################################################
-#                                                     #
-#      BFY Entertainment                              #
-#      Written-by: J.H.Lee                            #
-#      (jhlee@bfy.kr)                                 #
-#                                                     #
-#######################################################
+"""
+    Copyright (C) 2021 BFY Entertainment
+    All right reserved
 
-import sys
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
 if __name__ == "__main__":
+    import sys
+
     print("Please execute bot.py")
     sys.exit(0)
 
 import discord, asyncio
-from .config import owner, prefix, botcolor, pending, using, bot
+from .config import prefix, pending, using, bot
 from .genfunc import errlog, getpoint, isowner, loadfile, log, savefile, setpoint
 from discord.ext import commands
 
@@ -104,8 +114,8 @@ class CommandErrorHandler(commands.Cog):
                         return
                     else:
                         del new_dict[ctx.message.content]
-                        if "id" + ctx.message.content in new_dict:
-                            del new_dict["id" + ctx.message.content]
+                        if "i" + ctx.message.content in new_dict:
+                            del new_dict["i" + ctx.message.content]
                         savefile("dict", new_dict, guild=ctx.message.guild)
                         await mymsg.edit(
                             content="주인님 지웠읍니다.",
@@ -119,8 +129,8 @@ class CommandErrorHandler(commands.Cog):
                         return
                     else:
                         if msg.content == "바꿔":
-                            if "editable" + ctx.message.content in new_dict:
-                                if not new_dict["editable" + ctx.message.content]:
+                            if "e" + ctx.message.content in new_dict:
+                                if not new_dict["e" + ctx.message.content]:
                                     await mymsg.edit(content="이건 못바꿔줘")
                                     return
                             if getpoint(ctx.message.author.id, guild=ctx.guild) >= 500:
@@ -176,10 +186,10 @@ class CommandErrorHandler(commands.Cog):
                                                     ctx.message.content
                                                 ] = msg.content
                                                 new_dict[
-                                                    "id" + ctx.message.content
+                                                    "i" + ctx.message.content
                                                 ] = msg.author.id
                                                 new_dict[
-                                                    "editable" + ctx.message.content
+                                                    "e" + ctx.message.content
                                                 ] = True
                                                 await mymsg.edit(
                                                     content="ㅇㅋ `💰-500`",
@@ -269,8 +279,8 @@ class CommandErrorHandler(commands.Cog):
                                 using.remove(ctx.message.author.id)
                             else:
                                 new_dict[ctx.message.content] = msg.content
-                                new_dict["id" + ctx.message.content] = msg.author.id
-                                new_dict["editable" + ctx.message.content] = True
+                                new_dict["i" + ctx.message.content] = msg.author.id
+                                new_dict["e" + ctx.message.content] = True
                                 await mymsg.edit(
                                     content="주인님 등록하였읍니다.",
                                     allowed_mentions=discord.AllowedMentions.all(),
@@ -314,8 +324,8 @@ class CommandErrorHandler(commands.Cog):
                                 using.remove(ctx.message.author.id)
                             else:
                                 new_dict[ctx.message.content] = msg.content
-                                new_dict["id" + ctx.message.content] = msg.author.id
-                                new_dict["editable" + ctx.message.content] = True
+                                new_dict["i" + ctx.message.content] = msg.author.id
+                                new_dict["e" + ctx.message.content] = True
                                 await mymsg.edit(
                                     content="ㅇㅋ `💰-200`",
                                     allowed_mentions=discord.AllowedMentions.all(),

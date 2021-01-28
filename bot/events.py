@@ -1,47 +1,40 @@
-#######################################################
-#                                                     #
-#      BFY Entertainment                              #
-#      Written-by: J.H.Lee                            #
-#      (jhlee@bfy.kr)                                 #
-#                                                     #
-#######################################################
+"""
+    Copyright (C) 2021 BFY Entertainment
+    All right reserved
 
-import sys
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
 if __name__ == "__main__":
+    import sys
+
     print("Please execute bot.py")
     sys.exit(0)
 
-import discord, asyncio
+import discord
+from private import on_admin_message, on_message_pre
 from cmds import (
-    owner,
     prefix,
-    botname,
     botcolor,
-    pending,
-    noticed,
     using,
     bot,
-    download,
-    errlog,
-    getpoint,
+    isowner,
     loadfile,
     log,
     msglog,
-    savefile,
-    setpoint,
 )
 from discord.errors import Forbidden, HTTPException
-
-
-def printstat(text):
-    tmp = text + "\npending:"
-    for i in pending:
-        tmp += str(i) + ","
-    tmp += "\nusing:"
-    for i in using:
-        tmp += str(i) + ","
-    log(tmp)
 
 
 @bot.event
@@ -136,10 +129,18 @@ async def on_message(message):
     if message.author == bot.user:  # Ignore My Message
         return
 
+    if on_message_pre(message):  # Custom Pre-processing
+        return
+
     if message.content.startswith(prefix):  # Block User Already Using
         if message.author.id in using:
+            log("User Already Using: " + str(message.author.id))
             return
 
-    log("PROCESS COMMAND")
-    await bot.process_commands(message)
-    return
+    if isowner(message.author.id):
+        using.append(message.author.id)
+        on_admin_message(message)  # Custom Admin Commands
+        return
+    else:
+        await bot.process_commands(message)
+        return
