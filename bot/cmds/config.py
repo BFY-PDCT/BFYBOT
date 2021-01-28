@@ -61,9 +61,6 @@ if not type(vernum) == type(_string):
 if not type(prefix) == type(_string):
     print("EMERG - Error: TypeError")
     sys.exit(0)
-if prefix in ["i", "e"]:
-    print("EMERG - Error: invalid prefix")
-    sys.exit(0)
 if not type(botname) == type(_string):
     print("EMERG - Error: TypeError")
     sys.exit(0)
