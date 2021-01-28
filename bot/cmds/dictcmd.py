@@ -100,8 +100,8 @@ class CommandErrorHandler(commands.Cog):
                         allowed_mentions=discord.AllowedMentions.all(),
                     )
                     del new_dict[ctx.message.content]
-                    if "id" + ctx.message.content in new_dict:
-                        del new_dict["id" + ctx.message.content]
+                    if "i" + ctx.message.content in new_dict:
+                        del new_dict["i" + ctx.message.content]
                     savefile("dict", new_dict, guild=ctx.message.guild)
                     return
                 mymsg = await ctx.message.channel.send(
