@@ -1,4 +1,6 @@
 # BFYBOT
+[![CodeFactor](https://www.codefactor.io/repository/github/bfy-pdct/bfybot/badge)](https://www.codefactor.io/repository/github/bfy-pdct/bfybot) ![Python Version](https://img.shields.io/badge/Python-3.8-yellowgreen.svg) [![Main Version](https://img.shields.io/badge/Version-v1.4.0-brightgreen.svg)](https://github.com/BFY-PDCT/BFYBOT/wiki/Patchnote) ![Python Package](https://github.com/BFY-PDCT/BFYBOT/workflows/Python%20package/badge.svg)
+
 간단하게 스스로 운영할 수 있는 디스코드 봇, BFYBOT입니다. 봇에 대한 소개는 [여기](https://www.bfy.kr/bluebot)를 참고해주세요.
 
 BFY에서 공식으로 운영하는 봇은 파랭이로, [여기](https://discord.com/api/oauth2/authorize?client_id=738684108674433065&permissions=8&scope=bot)를 눌러 초대하실 수 있습니다.
