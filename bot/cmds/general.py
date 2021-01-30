@@ -22,7 +22,9 @@ if __name__ == "__main__":
     print("Please execute bot.py")
     sys.exit(0)
 
-import discord, urllib.request, urllib.parse
+import discord
+import urllib.request
+import urllib.parse
 from urllib.parse import quote
 from .config import (
     invlink,
@@ -77,11 +79,15 @@ async def version(ctx: Context):
 
 
 @commands.command(
-    name="도움말", aliases=["도움", "help", "commands", "사용법"]
-)  # prefix 도움말 / prefix 도움 / prefix help / prefix commands / prefix 사용법
+    name="도움말", aliases=["도움", "commands", "help", "사용법"]
+)  # prefix 도움말 / prefix 도움 / prefix commands / prefix help / prefix 사용법
 async def help(ctx: Context):
     ver = discord.Embed(title=botname + " 사용 방법", color=botcolor)
-    ver.add_field(name="도움말 (온라인)", value="https://www.bfy.kr/bluebot/", inline=False)
+    ver.add_field(
+        name="도움말 (온라인)",
+        value="https://github.com/BFY-PDCT/BFYBOT/wiki/BFYBOT-command-guide",
+        inline=False,
+    )
     if hasmusic:
         ver.add_field(name="음악 도움말", value=helpmusicstr, inline=False)
     ver.add_field(

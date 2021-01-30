@@ -23,12 +23,16 @@ if __name__ == "__main__":
     sys.exit(0)
 
 import discord
+import pickle
 from private import on_admin_message, on_message_pre
 from cmds import (
     prefix,
     botcolor,
     using,
     bot,
+    muted,
+    is_non_zero_file,
+    createFolder,
     isowner,
     loadfile,
     log,
@@ -41,6 +45,28 @@ from discord.errors import Forbidden, HTTPException
 async def on_ready():
     log("We have logged in as {0.user}".format(bot))
     print("We have logged in as {0.user}".format(bot))
+    log("loading ongiong mute data")
+    print("loading ongiong mute data")
+    a = is_non_zero_file("./bbdata/muted.custom")
+    if not a:
+        createFolder("./bbdata")
+        new_array = []
+        with open("./bbdata/muted.custom", "wb") as fw:
+            pickle.dump(new_array, fw)
+    else:
+        with open("./bbdata/muted.custom", "rb") as fr:
+            mutedtmp = pickle.load(fr)
+        for mute in mutedtmp:
+            nrlist = []
+            for role in mute[3]:
+                try:
+                    nrlist.append(bot.get_guild(mute[1]).get_role(role))
+                except:
+                    print("not found")
+                    pass
+            mute[3] = nrlist
+            muted.append(mute)
+    await bot.change_presence(activity=discord.Game("열심히 일"))
 
 
 @bot.event

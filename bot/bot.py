@@ -18,7 +18,17 @@
 
 # Main Code
 
-from cmds import economy, general, manage, dictcmd, game, bot, token
+from cmds import (
+    economy,
+    general,
+    manage,
+    dictcmd,
+    game,
+    update,
+    privatecmd,
+    bot,
+    token,
+)
 from events import (
     on_guild_join,
     on_guild_remove,
@@ -27,6 +37,7 @@ from events import (
     on_message,
     on_ready,
 )
+from private import on_private_channel_create
 
 
 def main():
@@ -35,7 +46,14 @@ def main():
     manage.initcmd()
     dictcmd.initcmd()
     game.initcmd()
-    bot.run(token)
+    update.initcmd()
+    privatecmd.initcmd()
+    try:
+        bot.loop.run_until_complete(bot.start(token))
+    except KeyboardInterrupt:
+        bot.loop.run_until_complete(bot.logout())
+    finally:
+        bot.loop.close()
 
 
 if __name__ == "__main__":

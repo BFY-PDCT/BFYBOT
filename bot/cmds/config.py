@@ -22,7 +22,9 @@ if __name__ == "__main__":
     print("Please execute bot.py")
     sys.exit(0)
 
-import discord, logging, os
+import discord
+import logging
+import os
 from discord.ext import commands
 
 # Owner Setting

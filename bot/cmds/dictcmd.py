@@ -22,7 +22,8 @@ if __name__ == "__main__":
     print("Please execute bot.py")
     sys.exit(0)
 
-import discord, asyncio
+import discord
+import asyncio
 from .config import prefix, pending, using, bot
 from .genfunc import errlog, getpoint, isowner, loadfile, log, savefile, setpoint
 from discord.ext import commands
@@ -38,15 +39,6 @@ class CommandErrorHandler(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error):
-        """The event triggered when an error is raised while invoking a command.
-        Parameters
-        ------------
-        ctx: commands.Context
-            The context used for command invocation.
-        error: commands.CommandError
-            The Exception raised.
-        """
-
         # This prevents any commands with local handlers being handled here in on_command_error.
         if hasattr(ctx.command, "on_error"):
             return
@@ -58,6 +50,9 @@ class CommandErrorHandler(commands.Cog):
                 return
 
         log("PROCESS COMMAND ERROR : " + str(error))
+
+        if ctx.author.id in using:
+            using.remove(ctx.author.id)
 
         if ctx.message.content.startswith(prefix):  # prefix *
 
@@ -133,9 +128,12 @@ class CommandErrorHandler(commands.Cog):
                                 if not new_dict["e" + ctx.message.content]:
                                     await mymsg.edit(content="이건 못바꿔줘")
                                     return
-                            if getpoint(ctx.message.author.id, guild=ctx.guild) >= 500:
+                            if (
+                                getpoint(ctx.message.author.id, guild=ctx.guild)
+                                >= 100000
+                            ):
                                 await mymsg.edit(
-                                    content="500포인트를 사용해서 대답을 바꿔줄래?",
+                                    content="100000포인트를 사용해서 대답을 바꿔줄래?",
                                     allowed_mentions=discord.AllowedMentions.all(),
                                 )
                                 try:
@@ -192,7 +190,7 @@ class CommandErrorHandler(commands.Cog):
                                                     "e" + ctx.message.content
                                                 ] = True
                                                 await mymsg.edit(
-                                                    content="ㅇㅋ `💰-500`",
+                                                    content="ㅇㅋ `💰-100000`",
                                                     allowed_mentions=discord.AllowedMentions.all(),
                                                 )
                                                 setpoint(
@@ -201,11 +199,11 @@ class CommandErrorHandler(commands.Cog):
                                                         ctx.message.author.id,
                                                         guild=ctx.guild,
                                                     )
-                                                    - 500,
+                                                    - 50000,
                                                     guild=ctx.guild,
                                                 )
                                                 log(
-                                                    "Taking 500 Points from "
+                                                    "Taking 100000 Points from "
                                                     + str(ctx.message.author),
                                                     guild=ctx.message.guild,
                                                 )
@@ -221,15 +219,15 @@ class CommandErrorHandler(commands.Cog):
                                         await mymsg.edit(content="ㅇㅋ 싫음말고")
                                         return
                             else:
-                                await mymsg.edit(content="500포인트 벌고와")
+                                await mymsg.edit(content="100000포인트 벌고와")
                                 return
 
             if isowner(ctx.message.author.id):
                 mymsg = await ctx.message.channel.send(
                     "주인님 새 명령어가 필요하십니까", allowed_mentions=discord.AllowedMentions.all()
                 )
-            elif getpoint(ctx.message.author.id, guild=ctx.guild) >= 200:
-                mymsg = await ctx.message.channel.send("200포인트를 사용해서 대답을 알려줄래?")
+            elif getpoint(ctx.message.author.id, guild=ctx.guild) >= 50000:
+                mymsg = await ctx.message.channel.send("50000포인트를 사용해서 대답을 알려줄래?")
             else:
                 await ctx.message.channel.send(
                     "뭐래 ㅋ", allowed_mentions=discord.AllowedMentions.all()
@@ -327,17 +325,18 @@ class CommandErrorHandler(commands.Cog):
                                 new_dict["i" + ctx.message.content] = msg.author.id
                                 new_dict["e" + ctx.message.content] = True
                                 await mymsg.edit(
-                                    content="ㅇㅋ `💰-200`",
+                                    content="ㅇㅋ `💰-50000`",
                                     allowed_mentions=discord.AllowedMentions.all(),
                                 )
                                 setpoint(
                                     ctx.message.author.id,
                                     getpoint(ctx.message.author.id, guild=ctx.guild)
-                                    - 200,
+                                    - 50000,
                                     guild=ctx.guild,
                                 )
                                 log(
-                                    "Taking 200 Points from " + str(ctx.message.author),
+                                    "Taking 50000 Points from "
+                                    + str(ctx.message.author),
                                     guild=ctx.message.guild,
                                 )
                                 savefile("dict", new_dict, guild=ctx.message.guild)

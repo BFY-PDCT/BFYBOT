@@ -22,7 +22,11 @@ if __name__ == "__main__":
     print("Please execute bot.py")
     sys.exit(0)
 
-import pickle, os, datetime, http3, traceback
+import pickle
+import os
+import datetime
+import http3
+import traceback
 from operator import pow, truediv, mul, add, sub
 from discord.ext import commands
 from .config import owner, eventlogger
@@ -178,6 +182,20 @@ def setpoint(id, newpoint: int, guild):
     return
 
 
+def getstk(type, id, guild):  # type in ['stka', 'stkb']
+    point_list = loadfile(type, guild=guild)
+    if id not in point_list:
+        return -1
+    return point_list[id]
+
+
+def setstk(type, id, newpoint: int, guild):  # type in ['stka', 'stkb']
+    point_list = loadfile(type, guild=guild)
+    point_list[id] = newpoint
+    savefile(type, point_list, guild=guild)
+    return
+
+
 def loadfile(type: str, *, guild=None):
     if type == "dict":
         a = is_non_zero_file("./bbdata/dict.custom")
@@ -204,6 +222,32 @@ def loadfile(type: str, *, guild=None):
             with open("./bbdata/" + str(guild.id) + "/point.custom", "rb") as fr:
                 setting_loaded = pickle.load(fr)
             return setting_loaded
+    elif type == "stka":
+        a = is_non_zero_file("./bbdata/" + str(guild.id) + "/stka.custom")
+        if not a:
+            createFolder("./bbdata")
+            createFolder("./bbdata/" + str(guild.id) + "/")
+            new_dict = {}
+            with open("./bbdata/" + str(guild.id) + "/stka.custom", "wb") as fw:
+                pickle.dump(new_dict, fw)
+            return {}
+        else:
+            with open("./bbdata/" + str(guild.id) + "/stka.custom", "rb") as fr:
+                setting_loaded = pickle.load(fr)
+            return setting_loaded
+    elif type == "stkb":
+        a = is_non_zero_file("./bbdata/" + str(guild.id) + "/stkb.custom")
+        if not a:
+            createFolder("./bbdata")
+            createFolder("./bbdata/" + str(guild.id) + "/")
+            new_dict = {}
+            with open("./bbdata/" + str(guild.id) + "/stkb.custom", "wb") as fw:
+                pickle.dump(new_dict, fw)
+            return {}
+        else:
+            with open("./bbdata/" + str(guild.id) + "/stkb.custom", "rb") as fr:
+                setting_loaded = pickle.load(fr)
+            return setting_loaded
     elif type == "setting":
         a = is_non_zero_file("./bbdata/" + str(guild.id) + "/settings.custom")
         if not a:
@@ -222,7 +266,7 @@ def loadfile(type: str, *, guild=None):
         if not a:
             createFolder("./bbdata")
             createFolder("./bbdata/" + str(guild.id) + "/")
-            new_array = [guild.owner_id]
+            new_array = [guild.owner_id] + owner
             with open("./bbdata/" + str(guild.id) + "/owner.custom", "wb") as fw:
                 pickle.dump(new_array, fw)
             return new_array
@@ -279,6 +323,14 @@ def savefile(type: str, data, *, guild=None):
         return
     elif type == "point":
         with open("./bbdata/" + str(guild.id) + "/point.custom", "wb") as fw:
+            pickle.dump(data, fw)
+        return
+    elif type == "stka":
+        with open("./bbdata/" + str(guild.id) + "/stka.custom", "wb") as fw:
+            pickle.dump(data, fw)
+        return
+    elif type == "stkb":
+        with open("./bbdata/" + str(guild.id) + "/stkb.custom", "wb") as fw:
             pickle.dump(data, fw)
         return
     elif type == "setting":

@@ -59,4 +59,6 @@ from .genfunc import (
     msglog,
     savefile,
     setpoint,
+    getstk,
+    setstk,
 )

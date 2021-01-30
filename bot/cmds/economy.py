@@ -22,7 +22,8 @@ if __name__ == "__main__":
     print("Please execute bot.py")
     sys.exit(0)
 
-import asyncio, random
+import asyncio
+import random
 from .config import botname, bot
 from .genfunc import errlog, getpoint, log, setpoint
 from discord.ext import commands
@@ -65,11 +66,11 @@ async def getmoney(ctx: Context):
         else:
             setpoint(
                 ctx.author.id,
-                getpoint(ctx.author.id, guild=ctx.guild) + 10,
+                getpoint(ctx.author.id, guild=ctx.guild) + 1000,
                 guild=ctx.guild,
             )
-        await ctx.channel.send("어휴 불쌍한넘 내가 특별히 10포인트 준다 `💰+10`")
-        log("Giving 10 Points to " + str(ctx.author), guild=ctx.guild)
+        await ctx.channel.send("어휴 불쌍한넘 내가 특별히 1000포인트 준다 `💰+1000`")
+        log("Giving 1000 Points to " + str(ctx.author), guild=ctx.guild)
     elif i == 2:
         await ctx.channel.send("싫은뒈~~에베ㅔㅔ")
     elif i == 3:
@@ -80,11 +81,11 @@ async def getmoney(ctx: Context):
         else:
             setpoint(
                 ctx.author.id,
-                getpoint(ctx.author.id, guild=ctx.guild) + 1,
+                getpoint(ctx.author.id, guild=ctx.guild) + 100,
                 guild=ctx.guild,
             )
-        await ctx.channel.send("가져가서 어디 써보시던가 ㅋㅋ `💰+1`")
-        log("Giving 1 Points to " + str(ctx.author), guild=ctx.guild)
+        await ctx.channel.send("가져가서 어디 써보시던가 ㅋㅋ `💰+100`")
+        log("Giving 100 Points to " + str(ctx.author), guild=ctx.guild)
     elif i == 5:
         msg = await ctx.channel.send(botname + " 형님 해봐")
         try:
@@ -97,11 +98,11 @@ async def getmoney(ctx: Context):
             else:
                 setpoint(
                     ctx.author.id,
-                    getpoint(ctx.author.id, guild=ctx.guild) + 15,
+                    getpoint(ctx.author.id, guild=ctx.guild) + 2500,
                     guild=ctx.guild,
                 )
-            await msg.edit(content="옳지 잘한다 옛다 선물 `💰+15`")
-        log("Giving 15 Points to " + str(ctx.author), guild=ctx.guild)
+            await msg.edit(content="옳지 잘한다 옛다 선물 `💰+2500`")
+        log("Giving 2500 Points to " + str(ctx.author), guild=ctx.guild)
     elif i == 6:
         await ctx.channel.send("내가 니한테 돈을 왜주냐?")
     elif i == 7:

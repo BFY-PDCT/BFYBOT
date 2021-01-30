@@ -22,7 +22,8 @@ if __name__ == "__main__":
     print("Please execute bot.py")
     sys.exit(0)
 
-import discord, asyncio
+import discord
+import asyncio
 from .config import botcolor, using, muted, bot
 from .genfunc import (
     addadmin,
@@ -57,6 +58,7 @@ def initcmd():
     bot.add_command(delguildadmin)
     bot.add_command(addguildadmin)
     bot.add_command(execmute)
+    bot.add_command(donemute)
     bot.add_command(execkick)
     bot.add_command(execban)
     bot.add_command(addwarning)
@@ -71,10 +73,10 @@ async def delwelcome(ctx: Context):
     if "msgj" in setting_loaded:
         del setting_loaded["msgj"]
         savefile("setting", setting_loaded, guild=ctx.guild)
-        await ctx.channel.send("환영인사는 이제 없습니다.")
+        await ctx.send("환영인사는 이제 없습니다.")
         return
     else:
-        await ctx.channel.send("일단 설정하고 말씀하시죠?")
+        await ctx.send("일단 설정하고 말씀하시죠?")
         return
 
 
@@ -85,10 +87,10 @@ async def delbye(ctx: Context):
     if "msgl" in setting_loaded:
         del setting_loaded["msgl"]
         savefile("setting", setting_loaded, guild=ctx.guild)
-        await ctx.channel.send("작별인사는 이제 없습니다.")
+        await ctx.send("작별인사는 이제 없습니다.")
         return
     else:
-        await ctx.channel.send("일단 설정하고 말씀하시죠?")
+        await ctx.send("일단 설정하고 말씀하시죠?")
         return
 
 
@@ -99,10 +101,10 @@ async def unsubscribe(ctx: Context):
     if "chnl" in setting_loaded:
         del setting_loaded["chnl"]
         savefile("setting", setting_loaded, guild=ctx.guild)
-        await ctx.channel.send("구독해제되었어요 힝 ㅠㅠ")
+        await ctx.send("구독해제되었어요 힝 ㅠㅠ")
         return
     else:
-        await ctx.channel.send("구독하지도 않아놓고는 ㅋㅋ")
+        await ctx.send("구독하지도 않아놓고는 ㅋㅋ")
         return
 
 
@@ -111,11 +113,11 @@ async def unsubscribe(ctx: Context):
 async def deldefaultrole(ctx: Context):
     setting_loaded = loadfile("setting", guild=ctx.guild)
     if not "joinrole" in setting_loaded:
-        await ctx.channel.send("기본 역할이 설정되지 않았습니다.")
+        await ctx.send("기본 역할이 설정되지 않았습니다.")
         return
     del setting_loaded["joinrole"]
     savefile("setting", setting_loaded, guild=ctx.guild)
-    await ctx.channel.send("넵^^7")
+    await ctx.send("넵^^7")
     return
 
 
@@ -128,30 +130,30 @@ async def cleanchat(ctx: Context, *args):
 
     if not isadmin(ctx.author.id, ctx.guild):
         if not ctx.author.permissions_in(ctx.channel).manage_messages:
-            await ctx.channel.send("권한도 없으면서 나대긴 ㅋ")
+            await ctx.send("권한도 없으면서 나대긴 ㅋ")
             using.remove(ctx.author.id)
             return
     cnt = 0
     try:
         cnt = int(args[0])
     except IndexError:
-        await ctx.channel.send("얼마나 치울지를 알려줘야 치우던가하지")
+        await ctx.send("얼마나 치울지를 알려줘야 치우던가하지")
         using.remove(ctx.author.id)
         return
     except ValueError:
-        await ctx.channel.send("숫자가 아닌걸 주시면 어쩌자는겁니까?")
+        await ctx.send("숫자가 아닌걸 주시면 어쩌자는겁니까?")
         using.remove(ctx.author.id)
         return
     if cnt <= 0:
-        await ctx.channel.send("정상적인 숫자를 좀 주시죠?")
+        await ctx.send("정상적인 숫자를 좀 주시죠?")
         using.remove(ctx.author.id)
         return
     if cnt > 200:
-        await ctx.channel.send("너무 많어 200개이상은 안치움 ㅅㄱ")
+        await ctx.send("너무 많어 200개이상은 안치움 ㅅㄱ")
         using.remove(ctx.author.id)
         return
     deleted = await ctx.channel.purge(limit=cnt + 1, check=check)
-    mymsg = await ctx.channel.send("{}개 치웠어용 히히 칭찬해조".format(len(deleted) - 1))
+    mymsg = await ctx.send("{}개 치웠어용 히히 칭찬해조".format(len(deleted) - 1))
     log("Deleted Messages (Count: {})".format(len(deleted)), guild=ctx.guild)
     for submsg in deleted:
         msglog(submsg, guild=ctx.guild)
@@ -165,17 +167,17 @@ async def cleanchat(ctx: Context, *args):
 async def setmuterole(ctx: Context):
     if len(ctx.message.role_mentions) == 0:
         errlog("no mentions for role", guild=ctx.guild)
-        await ctx.channel.send("죄송합니다 역할을 멘션해주세요.")
+        await ctx.send("죄송합니다 역할을 멘션해주세요.")
         return
     elif len(ctx.message.role_mentions) > 1:
         errlog("so many mentions for role", guild=ctx.guild)
-        await ctx.channel.send("죄송합니다 1개의 역할만을 멘션해주세요.")
+        await ctx.send("죄송합니다 1개의 역할만을 멘션해주세요.")
         return
     else:
         setting_loaded = loadfile("setting", guild=ctx.guild)
         setting_loaded["role"] = ctx.message.role_mentions[0].id
         savefile("setting", setting_loaded, guild=ctx.guild)
-        await ctx.channel.send("넵^^7")
+        await ctx.send("넵^^7")
         return
 
 
@@ -189,11 +191,11 @@ async def setpunish(ctx: Context, cnt: int, punish: str, pcnt: int = None, *args
         if "punish" + str(cnt) in setting_loaded:
             del setting_loaded["punish" + str(cnt)]
             savefile("setting", setting_loaded, guild=ctx.guild)
-            await ctx.channel.send("넵^^7")
+            await ctx.send("넵^^7")
             using.remove(ctx.author.id)
             return
         else:
-            await ctx.channel.send("설정이 되어있지 않습니다.")
+            await ctx.send("설정이 되어있지 않습니다.")
             using.remove(ctx.author.id)
             return
     if punish == "뮤트":
@@ -203,7 +205,7 @@ async def setpunish(ctx: Context, cnt: int, punish: str, pcnt: int = None, *args
         setting_loaded["mpunish" + str(cnt)] = pcnt
     setting_loaded["punish" + str(cnt)] = punish
     savefile("setting", setting_loaded, guild=ctx.guild)
-    await ctx.channel.send("넵^^7")
+    await ctx.send("넵^^7")
     return
 
 
@@ -219,16 +221,16 @@ async def setpunish_error(ctx, error):
 async def setdefaultrole(ctx: Context):
     if len(ctx.message.role_mentions) == 0:
         errlog("no mentions for role", guild=ctx.guild)
-        await ctx.channel.send("죄송합니다 역할을 멘션해주세요.")
+        await ctx.send("죄송합니다 역할을 멘션해주세요.")
         return
     elif len(ctx.message.role_mentions) > 1:
         errlog("so many mentions for role", guild=ctx.guild)
-        await ctx.channel.send("죄송합니다 1개의 역할만을 멘션해주세요.")
+        await ctx.send("죄송합니다 1개의 역할만을 멘션해주세요.")
         return
     setting_loaded = loadfile("setting", guild=ctx.guild)
     setting_loaded["joinrole"] = ctx.message.role_mentions[0].id
     savefile("setting", setting_loaded, guild=ctx.guild)
-    await ctx.channel.send("넵^^7")
+    await ctx.send("넵^^7")
     return
 
 
@@ -237,17 +239,17 @@ async def setdefaultrole(ctx: Context):
 async def subscribe(ctx: Context):
     if len(ctx.message.channel_mentions) == 0:
         errlog("no mentions for channel", guild=ctx.guild)
-        await ctx.channel.send("죄송합니다 채널을 멘션해주세요.")
+        await ctx.send("죄송합니다 채널을 멘션해주세요.")
         return
     elif len(ctx.message.channel_mentions) > 1:
         errlog("so many mentions for channel", guild=ctx.guild)
-        await ctx.channel.send("죄송합니다 1개의 채널만을 멘션해주세요.")
+        await ctx.send("죄송합니다 1개의 채널만을 멘션해주세요.")
         return
     else:
         setting_loaded = loadfile("setting", guild=ctx.guild)
         setting_loaded["chnl"] = ctx.message.channel_mentions[0].id
         savefile("setting", setting_loaded, guild=ctx.guild)
-        await ctx.channel.send("넵^^7")
+        await ctx.send("넵^^7")
         return
 
 
@@ -257,7 +259,7 @@ async def setwelcome(ctx: Context, *, arg):
     setting_loaded = loadfile("setting", guild=ctx.guild)
     setting_loaded["msgj"] = arg
     savefile("setting", setting_loaded, guild=ctx.guild)
-    await ctx.channel.send("넵^^7")
+    await ctx.send("넵^^7")
     return
 
 
@@ -274,7 +276,7 @@ async def setbye(ctx: Context, *, arg):
     setting_loaded = loadfile("setting", guild=ctx.guild)
     setting_loaded["msgl"] = arg
     savefile("setting", setting_loaded, guild=ctx.guild)
-    await ctx.channel.send("넵^^7")
+    await ctx.send("넵^^7")
     return
 
 
@@ -290,25 +292,25 @@ async def setbye_error(ctx: Context, error):
 async def delguildadmin(ctx: Context):
     if len(ctx.message.mentions) == 0:
         errlog("no mentions for member", guild=ctx.guild)
-        await ctx.channel.send("죄송합니다 대상자를 멘션해주세요.")
+        await ctx.send("죄송합니다 대상자를 멘션해주세요.")
         return
     elif len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
-        await ctx.channel.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
+        await ctx.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
         return
     else:
         res = deladmin(ctx.message.mentions[0].id, ctx.guild)
         if res == 0:
-            await ctx.channel.send(
+            await ctx.send(
                 "{.mention} 넌이제 내 주인이 아니다 ㅋㅋㅋㅋㅋㅋㅋㅋ".format(ctx.message.mentions[0]),
                 allowed_mentions=discord.AllowedMentions.all(),
             )
         elif res == 1:
-            await ctx.channel.send("누구세요?")
+            await ctx.send("누구세요?")
         elif res == 2:
-            await ctx.channel.send("이게 서버주인을 건드리네?")
+            await ctx.send("이게 서버주인을 건드리네?")
         elif res == 3:
-            await ctx.channel.send("이게 아버지를 건드리네?")
+            await ctx.send("이게 아버지를 건드리네?")
         return
 
 
@@ -317,21 +319,21 @@ async def delguildadmin(ctx: Context):
 async def addguildadmin(ctx: Context):
     if len(ctx.message.mentions) == 0:
         errlog("no mentions for member", guild=ctx.guild)
-        await ctx.channel.send("죄송합니다 대상자를 멘션해주세요.")
+        await ctx.send("죄송합니다 대상자를 멘션해주세요.")
         return
     elif len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
-        await ctx.channel.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
+        await ctx.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
         return
     else:
         res = addadmin(ctx.message.mentions[0].id, ctx.guild)
         if res:
-            await ctx.channel.send(
+            await ctx.send(
                 "작업완료 ^^7 환영합니다 {.mention} 주인님!".format(ctx.message.mentions[0]),
                 allowed_mentions=discord.AllowedMentions.all(),
             )
         else:
-            await ctx.channel.send("이미 주인님이십니다.")
+            await ctx.send("이미 주인님이십니다.")
         return
 
 
@@ -339,34 +341,24 @@ async def addguildadmin(ctx: Context):
     name="조져", aliases=["뮤트"]
 )  # prefix 조져 (time: int) @유저 (rsn: str) / prefix 뮤트 (time: int) @유저 (rsn: str)
 async def execmute(ctx: Context, time: int, mention: str, *, arg):
-    def checkd(m):
-        if len(m.mentions) == 0:
-            return False
-        return (
-            m.content.startswith("이만하면 충분하다")
-            and m.channel == ctx.channel
-            and m.author == ctx.author
-            and m.mentions[0] == ctx.message.mentions[0]
-        )
-
     if not isadmin(ctx.author.id, ctx.guild):
         if not ctx.author.permissions_in(ctx.channel).manage_roles:
-            await ctx.channel.send("권한도 없으면서 나대긴 ㅋ")
+            await ctx.send("권한도 없으면서 나대긴 ㅋ")
             return
     if len(ctx.message.mentions) == 0:
         errlog("no mentions for member", guild=ctx.guild)
-        await ctx.channel.send("죄송합니다 대상자를 멘션해주세요.")
+        await ctx.send("죄송합니다 대상자를 멘션해주세요.")
         return
     elif len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
-        await ctx.channel.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
+        await ctx.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
         return
     mem = ctx.message.mentions[0]
     currole = mem.roles
     setting_loaded = loadfile("setting", guild=ctx.guild)
     if not "role" in setting_loaded:
-        errlog("no role setted", guild=ctx.guild)
-        await ctx.channel.send("죄송합니다 역할을 지정해주세요.")
+        log("no role setted", guild=ctx.guild)
+        await ctx.send("죄송합니다 역할을 지정해주세요.")
         return
     rsn = arg
     try:
@@ -379,18 +371,19 @@ async def execmute(ctx: Context, time: int, mention: str, *, arg):
                 break
         if not find:
             errlog("role not found", guild=ctx.guild)
-            await ctx.channel.send("죄송합니다 역할이 잘못 지정되어 있습니다.")
+            await ctx.send("죄송합니다 역할이 잘못 지정되어 있습니다.")
             return
         await mem.edit(roles=[xrole], reason="MUTE Command REASON: " + rsn)
     except Forbidden:
         errlog("NO PERMISSION", guild=ctx.guild)
-        await ctx.channel.send("죄송합니다 권한이 부족합니다.")
+        await ctx.send("죄송합니다 권한이 부족합니다.")
         return
     else:
-        if mem.id in muted:
-            await ctx.channel.send("이미 뮤트처리된 사용자입니다.".format(mem))
-            return
-        muted.append(mem.id)
+        for mute in muted:
+            if mem.id == mute[0] and ctx.guild.id == mute[1]:
+                await ctx.send("이미 뮤트처리된 사용자입니다.".format(mem))
+                return
+        muted.append([mem.id, mem.guild.id, time, currole, ctx.channel.id])
         log("Muted " + mem.name, guild=ctx.guild)
         setting_loaded = loadfile("setting", guild=ctx.guild)
         if "chnl" in setting_loaded:
@@ -401,62 +394,25 @@ async def execmute(ctx: Context, time: int, mention: str, *, arg):
                     )
                 )
             except HTTPException:
-                await ctx.channel.send(
+                await ctx.send(
                     "처리 완료되었습니다 - 뮤트 {.mention} / 이유: {} / 처리자: {.mention}".format(
                         mem, rsn, ctx.author
                     )
                 )
-                await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
             except Forbidden:
-                await ctx.channel.send(
+                await ctx.send(
                     "처리 완료되었습니다 - 뮤트 {.mention} / 이유: {} / 처리자: {.mention}".format(
                         mem, rsn, ctx.author
                     )
                 )
-                await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
         else:
-            await ctx.channel.send(
+            await ctx.send(
                 "처리 완료되었습니다 - 뮤트 {.mention} / 이유: {} / 처리자: {.mention}".format(
                     mem, rsn, ctx.author
                 )
             )
-        try:
-            await bot.wait_for("message", timeout=time, check=checkd)
-        except asyncio.TimeoutError:
-            await mem.edit(roles=currole, reason="MUTE Command Timeout")
-            log("Unmuted " + mem.name, guild=ctx.guild)
-            if "chnl" in setting_loaded:
-                try:
-                    await bot.get_channel(setting_loaded["chnl"]).send(
-                        "처리 종료되었습니다 - 뮤트 {.mention}".format(mem)
-                    )
-                except HTTPException:
-                    await ctx.channel.send("처리 종료되었습니다 - 뮤트 {.mention}".format(mem))
-                    await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
-                except Forbidden:
-                    await ctx.channel.send("처리 종료되었습니다 - 뮤트 {.mention}".format(mem))
-                    await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
-            else:
-                await ctx.channel.send("처리 종료되었습니다 - 뮤트 {.mention}".format(mem))
-            muted.remove(mem.id)
-        else:
-            await mem.edit(roles=currole, reason="MUTE Command Cancel")
-            log("Unmuted " + mem.name, guild=ctx.guild)
-            if "chnl" in setting_loaded:
-                try:
-                    await ctx.channel.send("예 형님 종료하겠습니다 - 뮤트 {.mention}".format(mem))
-                    await bot.get_channel(setting_loaded["chnl"]).send(
-                        "처리 종료되었습니다 - 뮤트 {.mention}".format(mem)
-                    )
-                except HTTPException:
-                    await ctx.channel.send("예 형님 종료하겠습니다 - 뮤트 {.mention}".format(mem))
-                    await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
-                except Forbidden:
-                    await ctx.channel.send("예 형님 종료하겠습니다 - 뮤트 {.mention}".format(mem))
-                    await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
-            else:
-                await ctx.channel.send("예 형님 종료하겠습니다 - 뮤트 {.mention}".format(mem))
-            muted.remove(mem.id)
         return
 
 
@@ -467,20 +423,52 @@ async def execmute_error(ctx: Context, error):
         return
 
 
+@commands.command(name="충분하다", aliases=["뮤트해제"])  # prefix 충분하다 @유저 / prefix 뮤트해제 @유저
+async def donemute(ctx: Context):
+    if not isadmin(ctx.author.id, ctx.guild):
+        if not ctx.author.permissions_in(ctx.channel).manage_roles:
+            await ctx.send("권한도 없으면서 나대긴 ㅋ")
+            return
+    if len(ctx.message.mentions) == 0:
+        errlog("no mentions for member", guild=ctx.guild)
+        await ctx.send("죄송합니다 대상자를 멘션해주세요.")
+        return
+    elif len(ctx.message.mentions) > 1:
+        errlog("so many mentions for member", guild=ctx.guild)
+        await ctx.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
+        return
+    udmute = bot.get_cog("updatemute")
+    if udmute is not None:
+        res = await udmute.unmutenow(ctx)
+    else:
+        await ctx.send("문제가 있었어요,, 관리자한테 문의해주세요 ㅠㅠ")
+        return
+    if not res:
+        await ctx.send("문제가 있었어요,, 아마 뮤트를 한적이 없는거 아닐까요..?")
+        return
+
+
+@donemute.error
+async def donemute_error(ctx: Context, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("모든 항목을 입력해주세요.")
+        return
+
+
 @commands.command(name="킥")  # prefix 킥 @유저 (rsn: str)
 async def execkick(ctx: Context, mention: str, *, arg):
     setting_loaded = loadfile("setting", guild=ctx.guild)
     if not isadmin(ctx.author.id, ctx.guild):
         if not ctx.author.permissions_in(ctx.channel).kick_members:
-            await ctx.channel.send("권한도 없으면서 나대긴 ㅋ")
+            await ctx.send("권한도 없으면서 나대긴 ㅋ")
             return
     if len(ctx.message.mentions) == 0:
         errlog("no mentions for member", guild=ctx.guild)
-        await ctx.channel.send("대상자를 멘션해주세요.")
+        await ctx.send("대상자를 멘션해주세요.")
         return
     elif len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
-        await ctx.channel.send("1명의 대상자만을 멘션해주세요.")
+        await ctx.send("1명의 대상자만을 멘션해주세요.")
         return
     mem = ctx.message.mentions[0]
     rsn = arg
@@ -488,7 +476,7 @@ async def execkick(ctx: Context, mention: str, *, arg):
         await ctx.guild.kick(mem, reason="KICK Command REASON: " + rsn)
     except Forbidden:
         errlog("NO PERMISSION", guild=ctx.guild)
-        await ctx.channel.send("권한이 부족합니다.")
+        await ctx.send("권한이 부족합니다.")
         return
     if "chnl" in setting_loaded:
         try:
@@ -498,21 +486,21 @@ async def execkick(ctx: Context, mention: str, *, arg):
                 )
             )
         except HTTPException:
-            await ctx.channel.send(
+            await ctx.send(
                 "처리 완료되었습니다 - 킥 {.mention} / 이유: {} / 처리자: {.mention}".format(
                     mem, rsn, ctx.author
                 )
             )
-            await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+            await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
         except Forbidden:
-            await ctx.channel.send(
+            await ctx.send(
                 "처리 완료되었습니다 - 킥 {.mention} / 이유: {} / 처리자: {.mention}".format(
                     mem, rsn, ctx.author
                 )
             )
-            await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+            await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
     else:
-        await ctx.channel.send(
+        await ctx.send(
             "처리 완료되었습니다 - 킥 {.mention} / 이유: {} / 처리자: {.mention}".format(
                 mem, rsn, ctx.author
             )
@@ -532,15 +520,15 @@ async def execban(ctx, mention: str, *, arg):  # prefix 밴 @유저 (rsn: str)
     setting_loaded = loadfile("setting", guild=ctx.guild)
     if not isadmin(ctx.author.id, ctx.guild):
         if not ctx.author.permissions_in(ctx.channel).ban_members:
-            await ctx.channel.send("권한도 없으면서 나대긴 ㅋ")
+            await ctx.send("권한도 없으면서 나대긴 ㅋ")
             return
     if len(ctx.message.mentions) == 0:
         errlog("no mentions for member", guild=ctx.guild)
-        await ctx.channel.send("대상자를 멘션해주세요.")
+        await ctx.send("대상자를 멘션해주세요.")
         return
     elif len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
-        await ctx.channel.send("1명의 대상자만을 멘션해주세요.")
+        await ctx.send("1명의 대상자만을 멘션해주세요.")
         return
     mem = ctx.message.mentions[0]
     rsn = arg
@@ -548,7 +536,7 @@ async def execban(ctx, mention: str, *, arg):  # prefix 밴 @유저 (rsn: str)
         await ctx.guild.ban(mem, reason="BAN Command REASON: " + rsn)
     except Forbidden:
         errlog("NO PERMISSION", guild=ctx.guild)
-        await ctx.channel.send("권한이 부족합니다.")
+        await ctx.send("권한이 부족합니다.")
         return
     if "chnl" in setting_loaded:
         try:
@@ -558,21 +546,21 @@ async def execban(ctx, mention: str, *, arg):  # prefix 밴 @유저 (rsn: str)
                 )
             )
         except HTTPException:
-            await ctx.channel.send(
+            await ctx.send(
                 "처리 완료되었습니다 - 밴 {.mention}, 최근 1일 메시지 삭제 / 이유: {} / 처리자: {.mention}".format(
                     mem, rsn, ctx.author
                 )
             )
-            await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+            await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
         except Forbidden:
-            await ctx.channel.send(
+            await ctx.send(
                 "처리 완료되었습니다 - 밴 {.mention}, 최근 1일 메시지 삭제 / 이유: {} / 처리자: {.mention}".format(
                     mem, rsn, ctx.author
                 )
             )
-            await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+            await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
     else:
-        await ctx.channel.send(
+        await ctx.send(
             "처리 완료되었습니다 - 밴 {.mention}, 최근 1일 메시지 삭제 / 이유: {} / 처리자: {.mention}".format(
                 mem, rsn, ctx.author
             )
@@ -604,11 +592,11 @@ async def addwarning(ctx: Context, mention: str, *, arg):
     time = 0
     if len(ctx.message.mentions) == 0:
         errlog("no mentions for member", guild=ctx.guild)
-        await ctx.channel.send("대상자를 멘션해주세요.")
+        await ctx.send("대상자를 멘션해주세요.")
         return
     elif len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
-        await ctx.channel.send("1명의 대상자만을 멘션해주세요.")
+        await ctx.send("1명의 대상자만을 멘션해주세요.")
         return
     mem = ctx.message.mentions[0]
     rsn = arg
@@ -626,7 +614,7 @@ async def addwarning(ctx: Context, mention: str, *, arg):
             await ctx.guild.kick(mem, reason="KICK Command REASON: " + rsn)
         except Forbidden:
             errlog("NO PERMISSION", guild=ctx.guild)
-            await ctx.channel.send("권한이 부족합니다.")
+            await ctx.send("권한이 부족합니다.")
             return
         if "chnl" in setting_loaded:
             try:
@@ -636,21 +624,21 @@ async def addwarning(ctx: Context, mention: str, *, arg):
                     )
                 )
             except HTTPException:
-                await ctx.channel.send(
+                await ctx.send(
                     "처리 완료되었습니다 - 킥 {.mention} / 이유: {} / 처리자: {.mention}".format(
                         mem, rsn, ctx.author
                     )
                 )
-                await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
             except Forbidden:
-                await ctx.channel.send(
+                await ctx.send(
                     "처리 완료되었습니다 - 킥 {.mention} / 이유: {} / 처리자: {.mention}".format(
                         mem, rsn, ctx.author
                     )
                 )
-                await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
         else:
-            await ctx.channel.send(
+            await ctx.send(
                 "처리 완료되었습니다 - 킥 {.mention} / 이유: {} / 처리자: {.mention}".format(
                     mem, rsn, ctx.author
                 )
@@ -660,7 +648,7 @@ async def addwarning(ctx: Context, mention: str, *, arg):
             await ctx.guild.ban(mem, reason="BAN Command REASON: " + rsn)
         except Forbidden:
             errlog("NO PERMISSION", guild=ctx.guild)
-            await ctx.channel.send("권한이 부족합니다.")
+            await ctx.send("권한이 부족합니다.")
             return
         if "chnl" in setting_loaded:
             try:
@@ -670,21 +658,21 @@ async def addwarning(ctx: Context, mention: str, *, arg):
                     )
                 )
             except HTTPException:
-                await ctx.channel.send(
+                await ctx.send(
                     "처리 완료되었습니다 - 밴 {.mention}, 최근 1일 메시지 삭제 / 이유: {} / 처리자: {.mention}".format(
                         mem, rsn, ctx.author
                     )
                 )
-                await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
             except Forbidden:
-                await ctx.channel.send(
+                await ctx.send(
                     "처리 완료되었습니다 - 밴 {.mention}, 최근 1일 메시지 삭제 / 이유: {} / 처리자: {.mention}".format(
                         mem, rsn, ctx.author
                     )
                 )
-                await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
         else:
-            await ctx.channel.send(
+            await ctx.send(
                 "처리 완료되었습니다 - 밴 {.mention}, 최근 1일 메시지 삭제 / 이유: {} / 처리자: {.mention}".format(
                     mem, rsn, ctx.author
                 )
@@ -701,16 +689,16 @@ async def addwarning(ctx: Context, mention: str, *, arg):
                     break
             if not find:
                 errlog("role not found", guild=ctx.guild)
-                await ctx.channel.send("죄송합니다 역할이 잘못 지정되어 있습니다.")
+                await ctx.send("죄송합니다 역할이 잘못 지정되어 있습니다.")
                 return
             await mem.edit(roles=[xrole], reason="MUTE Command REASON: " + rsn)
         except Forbidden:
             errlog("NO PERMISSION", guild=ctx.guild)
-            await ctx.channel.send("죄송합니다 권한이 부족합니다.")
+            await ctx.send("죄송합니다 권한이 부족합니다.")
             return
         else:
             if mem.id in muted:
-                await ctx.channel.send("이미 뮤트처리된 사용자입니다.".format(mem))
+                await ctx.send("이미 뮤트처리된 사용자입니다.".format(mem))
                 return
             muted.append(mem.id)
             log("Muted " + mem.name, guild=ctx.guild)
@@ -723,21 +711,21 @@ async def addwarning(ctx: Context, mention: str, *, arg):
                         )
                     )
                 except HTTPException:
-                    await ctx.channel.send(
+                    await ctx.send(
                         "처리 완료되었습니다 - 뮤트 {.mention} / 이유: {} / 처리자: {.mention}".format(
                             mem, rsn, ctx.author
                         )
                     )
-                    await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                    await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
                 except Forbidden:
-                    await ctx.channel.send(
+                    await ctx.send(
                         "처리 완료되었습니다 - 뮤트 {.mention} / 이유: {} / 처리자: {.mention}".format(
                             mem, rsn, ctx.author
                         )
                     )
-                    await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                    await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
             else:
-                await ctx.channel.send(
+                await ctx.send(
                     "처리 완료되었습니다 - 뮤트 {.mention} / 이유: {} / 처리자: {.mention}".format(
                         mem, rsn, ctx.author
                     )
@@ -750,21 +738,21 @@ async def addwarning(ctx: Context, mention: str, *, arg):
                 )
             )
         except HTTPException:
-            await ctx.channel.send(
+            await ctx.send(
                 "처리 완료되었습니다 - 경고 {.mention} 누적경고수 {} / 이유: {} / 처리자: {.mention}".format(
                     mem, warns, rsn, ctx.author
                 )
             )
-            await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+            await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
         except Forbidden:
-            await ctx.channel.send(
+            await ctx.send(
                 "처리 완료되었습니다 - 경고 {.mention} 누적경고수 {} / 이유: {} / 처리자: {.mention}".format(
                     mem, warns, rsn, ctx.author
                 )
             )
-            await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+            await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
     else:
-        await ctx.channel.send(
+        await ctx.send(
             "처리 완료되었습니다 - 경고 {.mention} 누적경고수 {} / 이유: {} / 처리자: {.mention}".format(
                 mem, warns, rsn, ctx.author
             )
@@ -781,31 +769,31 @@ async def addwarning(ctx: Context, mention: str, *, arg):
                         "처리 종료되었습니다 - 뮤트 {.mention}".format(mem)
                     )
                 except HTTPException:
-                    await ctx.channel.send("처리 종료되었습니다 - 뮤트 {.mention}".format(mem))
-                    await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                    await ctx.send("처리 종료되었습니다 - 뮤트 {.mention}".format(mem))
+                    await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
                 except Forbidden:
-                    await ctx.channel.send("처리 종료되었습니다 - 뮤트 {.mention}".format(mem))
-                    await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                    await ctx.send("처리 종료되었습니다 - 뮤트 {.mention}".format(mem))
+                    await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
             else:
-                await ctx.channel.send("처리 종료되었습니다 - 뮤트 {.mention}".format(mem))
+                await ctx.send("처리 종료되었습니다 - 뮤트 {.mention}".format(mem))
             muted.remove(mem.id)
         else:
             await mem.edit(roles=currole, reason="MUTE Command Cancel")
             log("Unmuted " + mem.name, guild=ctx.guild)
             if "chnl" in setting_loaded:
                 try:
-                    await ctx.channel.send("예 형님 종료하겠습니다 - 뮤트 {.mention}".format(mem))
+                    await ctx.send("예 형님 종료하겠습니다 - 뮤트 {.mention}".format(mem))
                     await bot.get_channel(setting_loaded["chnl"]).send(
                         "처리 종료되었습니다 - 뮤트 {.mention}".format(mem)
                     )
                 except HTTPException:
-                    await ctx.channel.send("예 형님 종료하겠습니다 - 뮤트 {.mention}".format(mem))
-                    await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                    await ctx.send("예 형님 종료하겠습니다 - 뮤트 {.mention}".format(mem))
+                    await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
                 except Forbidden:
-                    await ctx.channel.send("예 형님 종료하겠습니다 - 뮤트 {.mention}".format(mem))
-                    await ctx.channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                    await ctx.send("예 형님 종료하겠습니다 - 뮤트 {.mention}".format(mem))
+                    await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
             else:
-                await ctx.channel.send("예 형님 종료하겠습니다 - 뮤트 {.mention}".format(mem))
+                await ctx.send("예 형님 종료하겠습니다 - 뮤트 {.mention}".format(mem))
             muted.remove(mem.id)
     else:
         return
@@ -823,29 +811,29 @@ async def addwarning_error(ctx: Context, error):
 async def delwarning(ctx: Context):
     setting_loaded = loadfile("setting", guild=ctx.guild)
     if not isadmin(ctx.author.id, ctx.guild):
-        await ctx.channel.send("권한도 없으면서 나대긴 ㅋ")
+        await ctx.send("권한도 없으면서 나대긴 ㅋ")
         return
     if len(ctx.message.mentions) == 0:
         errlog("no mentions for member", guild=ctx.guild)
-        await ctx.channel.send("대상자를 멘션해주세요.")
+        await ctx.send("대상자를 멘션해주세요.")
         return
     elif len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
-        await ctx.channel.send("1명의 대상자만을 멘션해주세요.")
+        await ctx.send("1명의 대상자만을 멘션해주세요.")
         return
     mem = ctx.message.mentions[0]
     if (
         "warn" + str(mem.id) in setting_loaded
         and setting_loaded["warn" + str(mem.id)] == 0
     ):
-        await ctx.channel.send("경고가 없습니다.")
+        await ctx.send("경고가 없습니다.")
     elif "warn" + str(mem.id) in setting_loaded:
         setting_loaded["warn" + str(mem.id)] -= 1
         warns = setting_loaded["warn" + str(mem.id)]
         savefile("setting", setting_loaded, guild=ctx.guild)
-        await ctx.channel.send("넵^^7 (누적 경고수: " + str(warns) + ")")
+        await ctx.send("넵^^7 (누적 경고수: " + str(warns) + ")")
     else:
-        await ctx.channel.send("경고가 없습니다.")
+        await ctx.send("경고가 없습니다.")
     return
 
 
@@ -873,7 +861,7 @@ async def getpunishlist(ctx: Context):
             tmp += strs[i] + "\n"
         tmp += strs[len(strs) - 1]
     embed.description = tmp
-    await ctx.channel.send("서버의 처벌 정책입니다.", embed=embed)
+    await ctx.send("서버의 처벌 정책입니다.", embed=embed)
     return
 
 
@@ -882,11 +870,11 @@ async def seewarning(ctx: Context):
     setting_loaded = loadfile("setting", guild=ctx.guild)
     if len(ctx.message.mentions) == 0:
         errlog("no mentions for member", guild=ctx.guild)
-        await ctx.channel.send("대상자를 멘션해주세요.")
+        await ctx.send("대상자를 멘션해주세요.")
         return
     elif len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
-        await ctx.channel.send("1명의 대상자만을 멘션해주세요.")
+        await ctx.send("1명의 대상자만을 멘션해주세요.")
         return
     mem = ctx.message.mentions[0]
     warns = 0
@@ -896,7 +884,5 @@ async def seewarning(ctx: Context):
         setting_loaded["warn" + str(mem.id)] = 0
         savefile("setting", setting_loaded, guild=ctx.guild)
         warns = 0
-    await ctx.channel.send(
-        "{0} 님의 현재 누적 경고 수는 ".format(str(mem)) + str(warns) + "회 입니다."
-    )
+    await ctx.send("{0} 님의 현재 누적 경고 수는 ".format(str(mem)) + str(warns) + "회 입니다.")
     return
