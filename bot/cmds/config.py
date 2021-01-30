@@ -41,41 +41,37 @@ helpmusicstr = "#help를 입력해주세요."  # help command of music function
 # End
 
 # Config Error Check
-_string: str = "str"
-_intlist = [0, 0]
-_bool: bool = True
-_int: int = 0
 if len(owner) == 0:
     print("EMERG - Error: Owner can't be None")
     sys.exit(0)
-if not type(owner) == type(_intlist):
+if not isinstance(owner, list[int]):
     print("EMERG - Error: TypeError")
     sys.exit(0)
-if not type(token) == type(_string):
+if not isinstance(token, str):
     print("EMERG - Error: TypeError")
     sys.exit(0)
-if not type(invlink) == type(_string):
+if not isinstance(invlink, str):
     print("EMERG - Error: TypeError")
     sys.exit(0)
-if not type(vernum) == type(_string):
+if not isinstance(vernum, str):
     print("EMERG - Error: TypeError")
     sys.exit(0)
-if not type(prefix) == type(_string):
+if not isinstance(prefix, str):
     print("EMERG - Error: TypeError")
     sys.exit(0)
-if not type(botname) == type(_string):
+if not isinstance(botname, str):
     print("EMERG - Error: TypeError")
     sys.exit(0)
-if not type(hasmusic) == type(_bool):
+if not isinstance(hasmusic, bool):
     print("EMERG - Error: TypeError")
     sys.exit(0)
-if not type(botcolor) == type(_int):
+if not isinstance(botcolor, int):
     print("EMERG - Error: TypeError")
     sys.exit(0)
-if not type(musicstr) == type(_string):
+if not isinstance(musicstr, str):
     print("EMERG - Error: TypeError")
     sys.exit(0)
-if not type(helpmusicstr) == type(_string):
+if not isinstance(helpmusicstr, str):
     print("EMERG - Error: TypeError")
     sys.exit(0)
 

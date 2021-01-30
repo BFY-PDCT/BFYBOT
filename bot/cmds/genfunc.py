@@ -120,79 +120,78 @@ def admincheck():
     return commands.check(adminchk)
 
 
-def isban(id):
+def isban(uid):
     owner_list = loadfile("ban")
-    return id in owner_list
+    return uid in owner_list
 
 
-def addban(id):
+def addban(uid):
     owner_list = loadfile("ban")
-    if id in owner_list:
+    if uid in owner_list:
         return False
-    owner_list.append(id)
+    owner_list.append(uid)
     savefile("ban", owner_list)
     return True
 
 
-def delban(id):
+def delban(uid):
     owner_list = loadfile("ban")
-    if not id in owner_list:
+    if not uid in owner_list:
         return 1
-    owner_list.remove(id)
+    owner_list.remove(uid)
     savefile("ban", owner_list)
     return 0
 
 
-def isowner(id):
+def isowner(uid):
     owner_list = loadfile("sowner")
-    return id in owner_list
+    return uid in owner_list
 
 
-def addowner(id):
+def addowner(uid):
     owner_list = loadfile("sowner")
-    if id in owner_list:
+    if uid in owner_list:
         return False
-    owner_list.append(id)
+    owner_list.append(uid)
     savefile("sowner", owner_list)
     return True
 
 
-def delowner(id):
+def delowner(uid):
     owner_list = loadfile("sowner")
-    if id in owner:
+    if uid in owner:
         return 3
-    if not id in owner_list:
+    if not uid in owner_list:
         return 1
-    owner_list.remove(id)
+    owner_list.remove(uid)
     savefile("sowner", owner_list)
     return 0
 
 
-def getpoint(id, guild):
+def getpoint(uid, guild):
     point_list = loadfile("point", guild=guild)
     if id not in point_list:
         return -1
-    return point_list[id]
+    return point_list[uid]
 
 
-def setpoint(id, newpoint: int, guild):
+def setpoint(uid, newpoint: int, guild):
     point_list = loadfile("point", guild=guild)
-    point_list[id] = newpoint
+    point_list[uid] = newpoint
     savefile("point", point_list, guild=guild)
-    return
 
 
-def getstk(type, id, guild):  # type in ['stka', 'stkb']
-    point_list = loadfile(type, guild=guild)
+def getstk(stype, id, guild):  # type in ['stka', 'stkb']
+    point_list = loadfile(stype, guild=guild)
     if id not in point_list:
         return -1
     return point_list[id]
 
 
-def setstk(type, id, newpoint: int, guild):  # type in ['stka', 'stkb']
-    point_list = loadfile(type, guild=guild)
+def setstk(stype, id, newpoint: int, guild):  # type in ['stka', 'stkb']
+    point_list = loadfile(stype, guild=guild)
     point_list[id] = newpoint
-    savefile(type, point_list, guild=guild)
+    savefile(stype, point_list, guild=guild)
     return
 
 
@@ -205,10 +204,9 @@ def loadfile(type: str, *, guild=None):
             with open("./bbdata/dict.custom", "wb") as fw:
                 pickle.dump(new_dict, fw)
             return {}
-        else:
-            with open("./bbdata/dict.custom", "rb") as fr:
-                dict_loaded = pickle.load(fr)
-            return dict_loaded
+        with open("./bbdata/dict.custom", "rb") as fr:
+            dict_loaded = pickle.load(fr)
+        return dict_loaded
     elif type == "point":
         a = is_non_zero_file("./bbdata/" + str(guild.id) + "/point.custom")
         if not a:
@@ -218,10 +216,9 @@ def loadfile(type: str, *, guild=None):
             with open("./bbdata/" + str(guild.id) + "/point.custom", "wb") as fw:
                 pickle.dump(new_dict, fw)
             return {}
-        else:
-            with open("./bbdata/" + str(guild.id) + "/point.custom", "rb") as fr:
-                setting_loaded = pickle.load(fr)
-            return setting_loaded
+        with open("./bbdata/" + str(guild.id) + "/point.custom", "rb") as fr:
+            setting_loaded = pickle.load(fr)
+        return setting_loaded
     elif type == "stka":
         a = is_non_zero_file("./bbdata/" + str(guild.id) + "/stka.custom")
         if not a:
@@ -231,10 +228,9 @@ def loadfile(type: str, *, guild=None):
             with open("./bbdata/" + str(guild.id) + "/stka.custom", "wb") as fw:
                 pickle.dump(new_dict, fw)
             return {}
-        else:
-            with open("./bbdata/" + str(guild.id) + "/stka.custom", "rb") as fr:
-                setting_loaded = pickle.load(fr)
-            return setting_loaded
+        with open("./bbdata/" + str(guild.id) + "/stka.custom", "rb") as fr:
+            setting_loaded = pickle.load(fr)
+        return setting_loaded
     elif type == "stkb":
         a = is_non_zero_file("./bbdata/" + str(guild.id) + "/stkb.custom")
         if not a:
@@ -244,10 +240,9 @@ def loadfile(type: str, *, guild=None):
             with open("./bbdata/" + str(guild.id) + "/stkb.custom", "wb") as fw:
                 pickle.dump(new_dict, fw)
             return {}
-        else:
-            with open("./bbdata/" + str(guild.id) + "/stkb.custom", "rb") as fr:
-                setting_loaded = pickle.load(fr)
-            return setting_loaded
+        with open("./bbdata/" + str(guild.id) + "/stkb.custom", "rb") as fr:
+            setting_loaded = pickle.load(fr)
+        return setting_loaded
     elif type == "setting":
         a = is_non_zero_file("./bbdata/" + str(guild.id) + "/settings.custom")
         if not a:
@@ -257,10 +252,9 @@ def loadfile(type: str, *, guild=None):
             with open("./bbdata/" + str(guild.id) + "/settings.custom", "wb") as fw:
                 pickle.dump(new_dict, fw)
             return {}
-        else:
-            with open("./bbdata/" + str(guild.id) + "/settings.custom", "rb") as fr:
-                setting_loaded = pickle.load(fr)
-            return setting_loaded
+        with open("./bbdata/" + str(guild.id) + "/settings.custom", "rb") as fr:
+            setting_loaded = pickle.load(fr)
+        return setting_loaded
     elif type == "owner":
         a = is_non_zero_file("./bbdata/" + str(guild.id) + "/owner.custom")
         if not a:
@@ -270,10 +264,9 @@ def loadfile(type: str, *, guild=None):
             with open("./bbdata/" + str(guild.id) + "/owner.custom", "wb") as fw:
                 pickle.dump(new_array, fw)
             return new_array
-        else:
-            with open("./bbdata/" + str(guild.id) + "/owner.custom", "rb") as fr:
-                owner_loaded = pickle.load(fr)
-            return owner_loaded
+        with open("./bbdata/" + str(guild.id) + "/owner.custom", "rb") as fr:
+            owner_loaded = pickle.load(fr)
+        return owner_loaded
     elif type == "sowner":
         a = is_non_zero_file("./bbdata/sowner.custom")
         if not a:
@@ -282,10 +275,9 @@ def loadfile(type: str, *, guild=None):
             with open("./bbdata/sowner.custom", "wb") as fw:
                 pickle.dump(new_array, fw)
             return new_array
-        else:
-            with open("./bbdata/sowner.custom", "rb") as fr:
-                array_loaded = pickle.load(fr)
-            return array_loaded
+        with open("./bbdata/sowner.custom", "rb") as fr:
+            array_loaded = pickle.load(fr)
+        return array_loaded
     elif type == "ban":
         a = is_non_zero_file("./bbdata/ban.custom")
         if not a:
@@ -294,10 +286,9 @@ def loadfile(type: str, *, guild=None):
             with open("./bbdata/ban.custom", "wb") as fw:
                 pickle.dump(new_array, fw)
             return {}
-        else:
-            with open("./bbdata/ban.custom", "rb") as fr:
-                array_loaded = pickle.load(fr)
-            return array_loaded
+        with open("./bbdata/ban.custom", "rb") as fr:
+            array_loaded = pickle.load(fr)
+        return array_loaded
     elif type == "settingall":
         setting_loaded = []
         files = os.listdir("./bbdata/")

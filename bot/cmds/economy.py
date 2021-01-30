@@ -117,19 +117,18 @@ async def seeothermoney(ctx: Context):
         errlog("no mentions for member", guild=ctx.guild)
         await ctx.channel.send("죄송합니다 대상자를 멘션해주세요.")
         return
-    elif len(ctx.message.mentions) > 1:
+    if len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
         await ctx.channel.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
         return
-    else:
-        mem = ctx.message.mentions[0]
-        if getpoint(mem.id, guild=ctx.guild) == -1:
-            setpoint(mem.id, 0, guild=ctx.guild)
-        pnt = getpoint(mem.id, guild=ctx.guild)
-        await ctx.channel.send(
-            "{0} 이 친구가 가진 돈은 이만큼이다 알았나 `💰 ".format(str(mem)) + str(pnt) + "`"
-        )
-        return
+    mem = ctx.message.mentions[0]
+    if getpoint(mem.id, guild=ctx.guild) == -1:
+        setpoint(mem.id, 0, guild=ctx.guild)
+    pnt = getpoint(mem.id, guild=ctx.guild)
+    await ctx.channel.send(
+        "{0} 이 친구가 가진 돈은 이만큼이다 알았나 `💰 ".format(str(mem)) + str(pnt) + "`"
+    )
+    return
 
 
 @commands.command(name="선물")  # prefix 선물 (money: int) @유저
@@ -142,7 +141,7 @@ async def sendmoney(ctx: Context, money: int, *args):
     if len(ctx.message.mentions) == 0:
         await ctx.channel.send("대상자를 멘션해주세요.")
         return
-    elif len(ctx.message.mentions) > 1:
+    if len(ctx.message.mentions) > 1:
         await ctx.channel.send("1명의 대상자만을 멘션해주세요.")
         return
     mem = ctx.message.mentions[0]

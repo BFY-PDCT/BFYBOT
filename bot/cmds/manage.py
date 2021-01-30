@@ -75,9 +75,8 @@ async def delwelcome(ctx: Context):
         savefile("setting", setting_loaded, guild=ctx.guild)
         await ctx.send("환영인사는 이제 없습니다.")
         return
-    else:
-        await ctx.send("일단 설정하고 말씀하시죠?")
-        return
+    await ctx.send("일단 설정하고 말씀하시죠?")
+    return
 
 
 @commands.command(name="작별인사삭제")  # prefix 작별인사삭제
@@ -89,9 +88,8 @@ async def delbye(ctx: Context):
         savefile("setting", setting_loaded, guild=ctx.guild)
         await ctx.send("작별인사는 이제 없습니다.")
         return
-    else:
-        await ctx.send("일단 설정하고 말씀하시죠?")
-        return
+    await ctx.send("일단 설정하고 말씀하시죠?")
+    return
 
 
 @commands.command(name="구독해제", aliases=["구독취소"])  # prefix 구독해제 / prefix 구독취소
@@ -103,9 +101,8 @@ async def unsubscribe(ctx: Context):
         savefile("setting", setting_loaded, guild=ctx.guild)
         await ctx.send("구독해제되었어요 힝 ㅠㅠ")
         return
-    else:
-        await ctx.send("구독하지도 않아놓고는 ㅋㅋ")
-        return
+    await ctx.send("구독하지도 않아놓고는 ㅋㅋ")
+    return
 
 
 @commands.command(name="기본역할삭제")  # prefix 기본역할삭제
@@ -169,16 +166,15 @@ async def setmuterole(ctx: Context):
         errlog("no mentions for role", guild=ctx.guild)
         await ctx.send("죄송합니다 역할을 멘션해주세요.")
         return
-    elif len(ctx.message.role_mentions) > 1:
+    if len(ctx.message.role_mentions) > 1:
         errlog("so many mentions for role", guild=ctx.guild)
         await ctx.send("죄송합니다 1개의 역할만을 멘션해주세요.")
         return
-    else:
-        setting_loaded = loadfile("setting", guild=ctx.guild)
-        setting_loaded["role"] = ctx.message.role_mentions[0].id
-        savefile("setting", setting_loaded, guild=ctx.guild)
-        await ctx.send("넵^^7")
-        return
+    setting_loaded = loadfile("setting", guild=ctx.guild)
+    setting_loaded["role"] = ctx.message.role_mentions[0].id
+    savefile("setting", setting_loaded, guild=ctx.guild)
+    await ctx.send("넵^^7")
+    return
 
 
 @commands.command(
@@ -194,10 +190,9 @@ async def setpunish(ctx: Context, cnt: int, punish: str, pcnt: int = None, *args
             await ctx.send("넵^^7")
             using.remove(ctx.author.id)
             return
-        else:
-            await ctx.send("설정이 되어있지 않습니다.")
-            using.remove(ctx.author.id)
-            return
+        await ctx.send("설정이 되어있지 않습니다.")
+        using.remove(ctx.author.id)
+        return
     if punish == "뮤트":
         if pcnt is None:
             await ctx.send("모든 항목을 입력해주세요.")
@@ -223,7 +218,7 @@ async def setdefaultrole(ctx: Context):
         errlog("no mentions for role", guild=ctx.guild)
         await ctx.send("죄송합니다 역할을 멘션해주세요.")
         return
-    elif len(ctx.message.role_mentions) > 1:
+    if len(ctx.message.role_mentions) > 1:
         errlog("so many mentions for role", guild=ctx.guild)
         await ctx.send("죄송합니다 1개의 역할만을 멘션해주세요.")
         return
@@ -241,16 +236,15 @@ async def subscribe(ctx: Context):
         errlog("no mentions for channel", guild=ctx.guild)
         await ctx.send("죄송합니다 채널을 멘션해주세요.")
         return
-    elif len(ctx.message.channel_mentions) > 1:
+    if len(ctx.message.channel_mentions) > 1:
         errlog("so many mentions for channel", guild=ctx.guild)
         await ctx.send("죄송합니다 1개의 채널만을 멘션해주세요.")
         return
-    else:
-        setting_loaded = loadfile("setting", guild=ctx.guild)
-        setting_loaded["chnl"] = ctx.message.channel_mentions[0].id
-        savefile("setting", setting_loaded, guild=ctx.guild)
-        await ctx.send("넵^^7")
-        return
+    setting_loaded = loadfile("setting", guild=ctx.guild)
+    setting_loaded["chnl"] = ctx.message.channel_mentions[0].id
+    savefile("setting", setting_loaded, guild=ctx.guild)
+    await ctx.send("넵^^7")
+    return
 
 
 @commands.command(name="환영인사")  # prefix 환영인사 (msgj: str)
@@ -294,24 +288,23 @@ async def delguildadmin(ctx: Context):
         errlog("no mentions for member", guild=ctx.guild)
         await ctx.send("죄송합니다 대상자를 멘션해주세요.")
         return
-    elif len(ctx.message.mentions) > 1:
+    if len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
         await ctx.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
         return
-    else:
-        res = deladmin(ctx.message.mentions[0].id, ctx.guild)
-        if res == 0:
-            await ctx.send(
-                "{.mention} 넌이제 내 주인이 아니다 ㅋㅋㅋㅋㅋㅋㅋㅋ".format(ctx.message.mentions[0]),
-                allowed_mentions=discord.AllowedMentions.all(),
-            )
-        elif res == 1:
-            await ctx.send("누구세요?")
-        elif res == 2:
-            await ctx.send("이게 서버주인을 건드리네?")
-        elif res == 3:
-            await ctx.send("이게 아버지를 건드리네?")
-        return
+    res = deladmin(ctx.message.mentions[0].id, ctx.guild)
+    if res == 0:
+        await ctx.send(
+            "{.mention} 넌이제 내 주인이 아니다 ㅋㅋㅋㅋㅋㅋㅋㅋ".format(ctx.message.mentions[0]),
+            allowed_mentions=discord.AllowedMentions.all(),
+        )
+    elif res == 1:
+        await ctx.send("누구세요?")
+    elif res == 2:
+        await ctx.send("이게 서버주인을 건드리네?")
+    elif res == 3:
+        await ctx.send("이게 아버지를 건드리네?")
+    return
 
 
 @commands.command(name="새주인")  # prefix 새주인 @유저
@@ -321,20 +314,19 @@ async def addguildadmin(ctx: Context):
         errlog("no mentions for member", guild=ctx.guild)
         await ctx.send("죄송합니다 대상자를 멘션해주세요.")
         return
-    elif len(ctx.message.mentions) > 1:
+    if len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
         await ctx.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
         return
+    res = addadmin(ctx.message.mentions[0].id, ctx.guild)
+    if res:
+        await ctx.send(
+            "작업완료 ^^7 환영합니다 {.mention} 주인님!".format(ctx.message.mentions[0]),
+            allowed_mentions=discord.AllowedMentions.all(),
+        )
     else:
-        res = addadmin(ctx.message.mentions[0].id, ctx.guild)
-        if res:
-            await ctx.send(
-                "작업완료 ^^7 환영합니다 {.mention} 주인님!".format(ctx.message.mentions[0]),
-                allowed_mentions=discord.AllowedMentions.all(),
-            )
-        else:
-            await ctx.send("이미 주인님이십니다.")
-        return
+        await ctx.send("이미 주인님이십니다.")
+    return
 
 
 @commands.command(
@@ -349,7 +341,7 @@ async def execmute(ctx: Context, time: int, mention: str, *, arg):
         errlog("no mentions for member", guild=ctx.guild)
         await ctx.send("죄송합니다 대상자를 멘션해주세요.")
         return
-    elif len(ctx.message.mentions) > 1:
+    if len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
         await ctx.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
         return
@@ -413,7 +405,7 @@ async def execmute(ctx: Context, time: int, mention: str, *, arg):
                     mem, rsn, ctx.author
                 )
             )
-        return
+    return
 
 
 @execmute.error
@@ -433,7 +425,7 @@ async def donemute(ctx: Context):
         errlog("no mentions for member", guild=ctx.guild)
         await ctx.send("죄송합니다 대상자를 멘션해주세요.")
         return
-    elif len(ctx.message.mentions) > 1:
+    if len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
         await ctx.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
         return
@@ -446,6 +438,7 @@ async def donemute(ctx: Context):
     if not res:
         await ctx.send("문제가 있었어요,, 아마 뮤트를 한적이 없는거 아닐까요..?")
         return
+    return
 
 
 @donemute.error
@@ -466,7 +459,7 @@ async def execkick(ctx: Context, mention: str, *, arg):
         errlog("no mentions for member", guild=ctx.guild)
         await ctx.send("대상자를 멘션해주세요.")
         return
-    elif len(ctx.message.mentions) > 1:
+    if len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
         await ctx.send("1명의 대상자만을 멘션해주세요.")
         return
@@ -526,7 +519,7 @@ async def execban(ctx, mention: str, *, arg):  # prefix 밴 @유저 (rsn: str)
         errlog("no mentions for member", guild=ctx.guild)
         await ctx.send("대상자를 멘션해주세요.")
         return
-    elif len(ctx.message.mentions) > 1:
+    if len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
         await ctx.send("1명의 대상자만을 멘션해주세요.")
         return
@@ -594,7 +587,7 @@ async def addwarning(ctx: Context, mention: str, *, arg):
         errlog("no mentions for member", guild=ctx.guild)
         await ctx.send("대상자를 멘션해주세요.")
         return
-    elif len(ctx.message.mentions) > 1:
+    if len(ctx.message.mentions) > 1:
         errlog("so many mentions for member", guild=ctx.guild)
         await ctx.send("1명의 대상자만을 멘션해주세요.")
         return

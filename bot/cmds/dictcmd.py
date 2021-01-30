@@ -117,198 +117,49 @@ class CommandErrorHandler(commands.Cog):
                             allowed_mentions=discord.AllowedMentions.all(),
                         )
                         return
-                else:
-                    try:
-                        msg = await bot.wait_for("message", check=checkd, timeout=10.0)
-                    except asyncio.TimeoutError:
-                        return
-                    else:
-                        if msg.content == "바꿔":
-                            if "e" + ctx.message.content in new_dict:
-                                if not new_dict["e" + ctx.message.content]:
-                                    await mymsg.edit(content="이건 못바꿔줘")
-                                    return
-                            if (
-                                getpoint(ctx.message.author.id, guild=ctx.guild)
-                                >= 100000
-                            ):
-                                await mymsg.edit(
-                                    content="100000포인트를 사용해서 대답을 바꿔줄래?",
-                                    allowed_mentions=discord.AllowedMentions.all(),
-                                )
-                                try:
-                                    msg = await bot.wait_for(
-                                        "message", check=checkb, timeout=10.0
-                                    )
-                                except asyncio.TimeoutError:
-                                    await mymsg.edit(content="...")
-                                    return
-                                else:
-                                    if msg.content == "어":
-                                        if ctx.message.content in pending:
-                                            await mymsg.edit(content="누군가 수정중인것 같아요 ;)")
-                                            return
-                                        if ctx.message.author.id in using:
-                                            await mymsg.edit(content="이미 사용중이에요 ;)")
-                                            return
-                                        pending.append(ctx.message.content)
-                                        using.append(ctx.message.author.id)
-                                        await mymsg.edit(
-                                            content="머라고할건데",
-                                            allowed_mentions=discord.AllowedMentions.all(),
-                                        )
-                                        try:
-                                            msg = await bot.wait_for(
-                                                "message", check=checkc, timeout=30.0
-                                            )
-                                        except asyncio.TimeoutError:
-                                            await mymsg.edit(content="...")
-                                            pending.remove(ctx.message.content)
-                                            using.remove(ctx.message.author.id)
-                                            return
-                                        else:
-                                            if msg.content == "":
-                                                errlog(
-                                                    "Cannot store empty message",
-                                                    guild=ctx.message.guild,
-                                                )
-                                                await mymsg.edit(
-                                                    content="이걸 어케등록하란겨",
-                                                    allowed_mentions=discord.AllowedMentions.all(),
-                                                )
-                                                pending.remove(ctx.message.content)
-                                                using.remove(ctx.message.author.id)
-                                                return
-                                            else:
-                                                new_dict[
-                                                    ctx.message.content
-                                                ] = msg.content
-                                                new_dict[
-                                                    "i" + ctx.message.content
-                                                ] = msg.author.id
-                                                new_dict[
-                                                    "e" + ctx.message.content
-                                                ] = True
-                                                await mymsg.edit(
-                                                    content="ㅇㅋ `💰-100000`",
-                                                    allowed_mentions=discord.AllowedMentions.all(),
-                                                )
-                                                setpoint(
-                                                    ctx.message.author.id,
-                                                    getpoint(
-                                                        ctx.message.author.id,
-                                                        guild=ctx.guild,
-                                                    )
-                                                    - 50000,
-                                                    guild=ctx.guild,
-                                                )
-                                                log(
-                                                    "Taking 100000 Points from "
-                                                    + str(ctx.message.author),
-                                                    guild=ctx.message.guild,
-                                                )
-                                                savefile(
-                                                    "dict",
-                                                    new_dict,
-                                                    guild=ctx.message.guild,
-                                                )
-                                                pending.remove(ctx.message.content)
-                                                using.remove(ctx.message.author.id)
-                                                return
-                                    elif msg.content == "아니":
-                                        await mymsg.edit(content="ㅇㅋ 싫음말고")
-                                        return
-                            else:
-                                await mymsg.edit(content="100000포인트 벌고와")
+                try:
+                    msg = await bot.wait_for("message", check=checkd, timeout=10.0)
+                except asyncio.TimeoutError:
+                    return
+                if msg.content == "바꿔":
+                    if "e" + ctx.message.content in new_dict:
+                        if not new_dict["e" + ctx.message.content]:
+                            await mymsg.edit(content="이건 못바꿔줘")
+                            return
+                    if getpoint(ctx.message.author.id, guild=ctx.guild) >= 100000:
+                        await mymsg.edit(
+                            content="100000포인트를 사용해서 대답을 바꿔줄래?",
+                            allowed_mentions=discord.AllowedMentions.all(),
+                        )
+                        try:
+                            msg = await bot.wait_for(
+                                "message", check=checkb, timeout=10.0
+                            )
+                        except asyncio.TimeoutError:
+                            await mymsg.edit(content="...")
+                            return
+                        if msg.content == "어":
+                            if ctx.message.content in pending:
+                                await mymsg.edit(content="누군가 수정중인것 같아요 ;)")
                                 return
-
-            if isowner(ctx.message.author.id):
-                mymsg = await ctx.message.channel.send(
-                    "주인님 새 명령어가 필요하십니까", allowed_mentions=discord.AllowedMentions.all()
-                )
-            elif getpoint(ctx.message.author.id, guild=ctx.guild) >= 50000:
-                mymsg = await ctx.message.channel.send("50000포인트를 사용해서 대답을 알려줄래?")
-            else:
-                await ctx.message.channel.send(
-                    "뭐래 ㅋ", allowed_mentions=discord.AllowedMentions.all()
-                )
-                return
-
-            try:
-                msg = await bot.wait_for("message", check=checkb, timeout=10.0)
-            except asyncio.TimeoutError:
-                await mymsg.edit(content="...")
-                return
-            else:
-                if msg.content == "어":
-                    if isowner(ctx.message.author.id):
-                        if ctx.message.content in pending:
-                            await mymsg.edit(content="누군가 수정중인것 같아요 ;)")
-                            return
-                        if ctx.message.author.id in using:
-                            await mymsg.edit(content="이미 사용중이에요 ;)")
-                            return
-                        pending.append(ctx.message.content)
-                        using.append(ctx.message.author.id)
-                        await mymsg.edit(
-                            content="주인님 무엇을 원하십니까.",
-                            allowed_mentions=discord.AllowedMentions.all(),
-                        )
-                        try:
-                            msg = await bot.wait_for(
-                                "message", check=checkc, timeout=30.0
+                            if ctx.message.author.id in using:
+                                await mymsg.edit(content="이미 사용중이에요 ;)")
+                                return
+                            pending.append(ctx.message.content)
+                            using.append(ctx.message.author.id)
+                            await mymsg.edit(
+                                content="머라고할건데",
+                                allowed_mentions=discord.AllowedMentions.all(),
                             )
-                        except asyncio.TimeoutError:
-                            await mymsg.edit(content="...")
-                            pending.remove(ctx.message.content)
-                            using.remove(ctx.message.author.id)
-                            return
-                        else:
-                            if msg.content == "":
-                                errlog(
-                                    "Cannot store empty message",
-                                    guild=ctx.message.guild,
+                            try:
+                                msg = await bot.wait_for(
+                                    "message", check=checkc, timeout=30.0
                                 )
-                                await mymsg.edit(
-                                    content="주인님 이건좀...",
-                                    allowed_mentions=discord.AllowedMentions.all(),
-                                )
+                            except asyncio.TimeoutError:
+                                await mymsg.edit(content="...")
                                 pending.remove(ctx.message.content)
                                 using.remove(ctx.message.author.id)
-                            else:
-                                new_dict[ctx.message.content] = msg.content
-                                new_dict["i" + ctx.message.content] = msg.author.id
-                                new_dict["e" + ctx.message.content] = True
-                                await mymsg.edit(
-                                    content="주인님 등록하였읍니다.",
-                                    allowed_mentions=discord.AllowedMentions.all(),
-                                )
-                                savefile("dict", new_dict, guild=ctx.message.guild)
-                                pending.remove(ctx.message.content)
-                                using.remove(ctx.message.author.id)
-                    else:
-                        if ctx.message.content in pending:
-                            await mymsg.edit(content="누군가 수정중인것 같아요 ;)")
-                            return
-                        if ctx.message.author.id in using:
-                            await mymsg.edit(content="이미 사용중이에요 ;)")
-                            return
-                        pending.append(ctx.message.content)
-                        using.append(ctx.message.author.id)
-                        await mymsg.edit(
-                            content="머라고할건데",
-                            allowed_mentions=discord.AllowedMentions.all(),
-                        )
-                        try:
-                            msg = await bot.wait_for(
-                                "message", check=checkc, timeout=30.0
-                            )
-                        except asyncio.TimeoutError:
-                            await mymsg.edit(content="...")
-                            pending.remove(ctx.message.content)
-                            using.remove(ctx.message.author.id)
-                            return
-                        else:
+                                return
                             if msg.content == "":
                                 errlog(
                                     "Cannot store empty message",
@@ -320,31 +171,156 @@ class CommandErrorHandler(commands.Cog):
                                 )
                                 pending.remove(ctx.message.content)
                                 using.remove(ctx.message.author.id)
+                                return
                             else:
                                 new_dict[ctx.message.content] = msg.content
                                 new_dict["i" + ctx.message.content] = msg.author.id
                                 new_dict["e" + ctx.message.content] = True
                                 await mymsg.edit(
-                                    content="ㅇㅋ `💰-50000`",
+                                    content="ㅇㅋ `💰-100000`",
                                     allowed_mentions=discord.AllowedMentions.all(),
                                 )
                                 setpoint(
                                     ctx.message.author.id,
-                                    getpoint(ctx.message.author.id, guild=ctx.guild)
+                                    getpoint(
+                                        ctx.message.author.id,
+                                        guild=ctx.guild,
+                                    )
                                     - 50000,
                                     guild=ctx.guild,
                                 )
                                 log(
-                                    "Taking 50000 Points from "
+                                    "Taking 100000 Points from "
                                     + str(ctx.message.author),
                                     guild=ctx.message.guild,
                                 )
-                                savefile("dict", new_dict, guild=ctx.message.guild)
+                                savefile(
+                                    "dict",
+                                    new_dict,
+                                    guild=ctx.message.guild,
+                                )
                                 pending.remove(ctx.message.content)
                                 using.remove(ctx.message.author.id)
-                elif msg.content == "아니":
-                    if isowner(ctx.message.author.id):
-                        await mymsg.edit(content="알겠습니다 주인님")
+                                return
+                        elif msg.content == "아니":
+                            await mymsg.edit(content="ㅇㅋ 싫음말고")
+                            return
                     else:
-                        await mymsg.edit(content="ㅇㅋ 싫음말고")
+                        await mymsg.edit(content="100000포인트 벌고와")
+                        return
+            if isowner(ctx.message.author.id):
+                mymsg = await ctx.message.channel.send(
+                    "주인님 새 명령어가 필요하십니까", allowed_mentions=discord.AllowedMentions.all()
+                )
+            elif getpoint(ctx.message.author.id, guild=ctx.guild) >= 50000:
+                mymsg = await ctx.message.channel.send("50000포인트를 사용해서 대답을 알려줄래?")
+            else:
+                await ctx.message.channel.send(
+                    "뭐래 ㅋ", allowed_mentions=discord.AllowedMentions.all()
+                )
+                return
+            try:
+                msg = await bot.wait_for("message", check=checkb, timeout=10.0)
+            except asyncio.TimeoutError:
+                await mymsg.edit(content="...")
+                return
+            if msg.content == "어":
+                if isowner(ctx.message.author.id):
+                    if ctx.message.content in pending:
+                        await mymsg.edit(content="누군가 수정중인것 같아요 ;)")
+                        return
+                    if ctx.message.author.id in using:
+                        await mymsg.edit(content="이미 사용중이에요 ;)")
+                        return
+                    pending.append(ctx.message.content)
+                    using.append(ctx.message.author.id)
+                    await mymsg.edit(
+                        content="주인님 무엇을 원하십니까.",
+                        allowed_mentions=discord.AllowedMentions.all(),
+                    )
+                    try:
+                        msg = await bot.wait_for("message", check=checkc, timeout=30.0)
+                    except asyncio.TimeoutError:
+                        await mymsg.edit(content="...")
+                        pending.remove(ctx.message.content)
+                        using.remove(ctx.message.author.id)
+                        return
+                    if msg.content == "":
+                        errlog(
+                            "Cannot store empty message",
+                            guild=ctx.message.guild,
+                        )
+                        await mymsg.edit(
+                            content="주인님 이건좀...",
+                            allowed_mentions=discord.AllowedMentions.all(),
+                        )
+                        pending.remove(ctx.message.content)
+                        using.remove(ctx.message.author.id)
+                    else:
+                        new_dict[ctx.message.content] = msg.content
+                        new_dict["i" + ctx.message.content] = msg.author.id
+                        new_dict["e" + ctx.message.content] = True
+                        await mymsg.edit(
+                            content="주인님 등록하였읍니다.",
+                            allowed_mentions=discord.AllowedMentions.all(),
+                        )
+                        savefile("dict", new_dict, guild=ctx.message.guild)
+                        pending.remove(ctx.message.content)
+                        using.remove(ctx.message.author.id)
+                else:
+                    if ctx.message.content in pending:
+                        await mymsg.edit(content="누군가 수정중인것 같아요 ;)")
+                        return
+                    if ctx.message.author.id in using:
+                        await mymsg.edit(content="이미 사용중이에요 ;)")
+                        return
+                    pending.append(ctx.message.content)
+                    using.append(ctx.message.author.id)
+                    await mymsg.edit(
+                        content="머라고할건데",
+                        allowed_mentions=discord.AllowedMentions.all(),
+                    )
+                    try:
+                        msg = await bot.wait_for("message", check=checkc, timeout=30.0)
+                    except asyncio.TimeoutError:
+                        await mymsg.edit(content="...")
+                        pending.remove(ctx.message.content)
+                        using.remove(ctx.message.author.id)
+                        return
+                    if msg.content == "":
+                        errlog(
+                            "Cannot store empty message",
+                            guild=ctx.message.guild,
+                        )
+                        await mymsg.edit(
+                            content="이걸 어케등록하란겨",
+                            allowed_mentions=discord.AllowedMentions.all(),
+                        )
+                        pending.remove(ctx.message.content)
+                        using.remove(ctx.message.author.id)
+                    else:
+                        new_dict[ctx.message.content] = msg.content
+                        new_dict["i" + ctx.message.content] = msg.author.id
+                        new_dict["e" + ctx.message.content] = True
+                        await mymsg.edit(
+                            content="ㅇㅋ `💰-50000`",
+                            allowed_mentions=discord.AllowedMentions.all(),
+                        )
+                        setpoint(
+                            ctx.message.author.id,
+                            getpoint(ctx.message.author.id, guild=ctx.guild) - 50000,
+                            guild=ctx.guild,
+                        )
+                        log(
+                            "Taking 50000 Points from " + str(ctx.message.author),
+                            guild=ctx.message.guild,
+                        )
+                        savefile("dict", new_dict, guild=ctx.message.guild)
+                        pending.remove(ctx.message.content)
+                        using.remove(ctx.message.author.id)
+            elif msg.content == "아니":
+                if isowner(ctx.message.author.id):
+                    await mymsg.edit(content="알겠습니다 주인님")
+                else:
+                    await mymsg.edit(content="ㅇㅋ 싫음말고")
             return
