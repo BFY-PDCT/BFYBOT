@@ -25,7 +25,7 @@ if __name__ == "__main__":
 import asyncio
 import random
 from .config import botname, bot
-from .genfunc import errlog, getpoint, log, setpoint
+from .genfunc import errlog, getpoint, log, setpoint, getstk, setstk, getrecstk
 from discord.ext import commands
 from discord.ext.commands import Context
 
@@ -35,6 +35,8 @@ def initcmd():
     bot.add_command(seemoney)
     bot.add_command(getmoney)
     bot.add_command(seeothermoney)
+    bot.add_command(seestk)
+    bot.add_command(seeotherstk)
     bot.add_command(sendmoney)
 
 
@@ -112,13 +114,12 @@ async def getmoney(ctx: Context):
 
 @commands.command(name="남의돈")  # prefix 남의돈 @유저
 async def seeothermoney(ctx: Context):
-    money = 0
     if len(ctx.message.mentions) == 0:
-        errlog("no mentions for member", guild=ctx.guild)
+        log("no mentions for member", guild=ctx.guild)
         await ctx.channel.send("죄송합니다 대상자를 멘션해주세요.")
         return
     if len(ctx.message.mentions) > 1:
-        errlog("so many mentions for member", guild=ctx.guild)
+        log("so many mentions for member", guild=ctx.guild)
         await ctx.channel.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
         return
     mem = ctx.message.mentions[0]
@@ -126,7 +127,48 @@ async def seeothermoney(ctx: Context):
         setpoint(mem.id, 0, guild=ctx.guild)
     pnt = getpoint(mem.id, guild=ctx.guild)
     await ctx.channel.send(
-        "{0} 이 친구가 가진 돈은 이만큼이다 알았나 `💰 ".format(str(mem)) + str(pnt) + "`"
+        "{} 이 친구가 가진 돈은 이만큼이다 알았나 `💰 ".format(str(mem)) + str(pnt) + "`"
+    )
+    return
+
+
+@commands.command(name="내주식")  # prefix 돈 / prefix 내돈
+async def seestk(ctx: Context):
+    pnt = {}
+    for s in ["a", "b", "c"]:
+        pnt[s] = getstk(s, ctx.author.id, guild=ctx.guild)
+        if pnt[s] == -1:
+            setstk(s, ctx.author.id, 0, guild=ctx.guild)
+            pnt[s] = 0
+    await ctx.channel.send(
+        "{.author.mention} 니가 가진 주식은 이만큼이다 A: {}주 / B: {}주 / C: {}주".format(
+            ctx, str(pnt["a"]), str(pnt["b"]), str(pnt["c"])
+        )
+    )
+    return
+
+
+@commands.command(name="남의주식")  # prefix 남의돈 @유저
+async def seeotherstk(ctx: Context):
+    if len(ctx.message.mentions) == 0:
+        log("no mentions for member", guild=ctx.guild)
+        await ctx.channel.send("죄송합니다 대상자를 멘션해주세요.")
+        return
+    if len(ctx.message.mentions) > 1:
+        log("so many mentions for member", guild=ctx.guild)
+        await ctx.channel.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
+        return
+    mem = ctx.message.mentions[0]
+    pnt = {}
+    for s in ["a", "b", "c"]:
+        pnt[s] = getstk(s, mem.id, guild=ctx.guild)
+        if pnt[s] == -1:
+            setstk(s, mem.id, 0, guild=ctx.guild)
+            pnt[s] = 0
+    await ctx.channel.send(
+        "{} 니가 가진 주식은 이만큼이다 A: {}주 / B: {}주 / C: {}주".format(
+            str(mem), str(pnt["a"]), str(pnt["b"]), str(pnt["c"])
+        )
     )
     return
 

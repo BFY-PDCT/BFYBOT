@@ -26,7 +26,7 @@ import asyncio
 import random
 import discord
 from .config import using, bot, prefix, botcolor
-from .genfunc import getpoint, log, setpoint, getstk, setstk
+from .genfunc import getpoint, log, setpoint, getstk, setstk, recstk, getrecstk
 from discord.ext import commands
 from discord.ext.commands import Context
 
@@ -206,245 +206,202 @@ async def stock(ctx: Context, *args):
         return True
 
     if (len(args)) != 2:
-        await ctx.send("`" + prefix + " 주식 (그래프|매수|매도) (A|B|ENT|CORP)` 이 올바른 사용법이에요 ^^")
+        await ctx.send(
+            "`" + prefix + " 주식 (그래프|매수|매도|통계) (A|B|C|ENT|CORP|AT7)` 이 올바른 사용법이에요 ^^"
+        )
         return
-    if not args[0] in ["그래프", "매수", "매도"]:
-        await ctx.send("`" + prefix + " 주식 (그래프|매수|매도) (A|B|ENT|CORP)` 이 올바른 사용법이에요 ^^")
+    if not args[0] in ["그래프", "매수", "매도", "통계"]:
+        await ctx.send(
+            "`" + prefix + " 주식 (그래프|매수|매도|통계) (A|B|C|ENT|CORP|AT7)` 이 올바른 사용법이에요 ^^"
+        )
         return
-    if args[1] in ["A", "A주식", "주식A", "ENT", "BFYENT"]:
-        stktype = 0
-    elif args[1] in ["B", "B주식", "주식B", "CORP", "BFYCORP"]:
-        stktype = 1
+    if args[1] in [
+        "A",
+        "A주식",
+        "주식A",
+        "ENT",
+        "BFYENT",
+        "a",
+        "a주식",
+        "주식a",
+        "ent",
+        "bfyent",
+    ]:
+        types = "a"
+        names = "BFY ENT(A)"
+    elif args[1] in [
+        "B",
+        "B주식",
+        "주식B",
+        "CORP",
+        "BFYCORP",
+        "b",
+        "b주식",
+        "주식b",
+        "corp",
+        "bfycorp",
+    ]:
+        types = "b"
+        names = "BFY CORP(B)"
+    elif args[1] in [
+        "C",
+        "C주식",
+        "주식C",
+        "AT7",
+        "AT7GROUP",
+        "c",
+        "c주식",
+        "주식c",
+        "at7",
+        "at7group",
+    ]:
+        types = "c"
+        names = "AT7 GROUP(C)"
     else:
-        await ctx.send("`" + prefix + " 주식 (그래프|매수|매도) (A|B|ENT|CORP)` 이 올바른 사용법이에요 ^^")
+        await ctx.send(
+            "`" + prefix + " 주식 (그래프|매수|매도) (A|B|C|ENT|CORP|AT7)` 이 올바른 사용법이에요 ^^"
+        )
         return
     using.append(ctx.author.id)
     if args[0] == "그래프":
-        if stktype == 0:
-            stka = bot.get_cog("updatestka")
-            if stka is not None:
-                res = stka.getprice()
-            else:
-                await ctx.send("ERROR")
-                using.remove(ctx.author.id)
-                return
-            msg = discord.Embed(
-                title="현재 가격: " + str(res),
-                color=botcolor,
-                description="BFY ENT(A)의 그래프입니다.",
-            )
-            await ctx.send(embed=msg, file=discord.File("./bbdata/stock_a.png"))
-        elif stktype == 1:
-            stkb = bot.get_cog("updatestkb")
-            if stkb is not None:
-                res = stkb.getprice()
-            else:
-                await ctx.send("ERROR")
-                using.remove(ctx.author.id)
-                return
-            msg = discord.Embed(
-                title="현재 가격: " + str(res),
-                color=botcolor,
-                description="BFY CORP(B)의 그래프입니다.",
-            )
-            await ctx.send(embed=msg, file=discord.File("./bbdata/stock_b.png"))
+        stk = bot.get_cog("updatestk" + types)
+        if stk is not None:
+            res = stk.getprice()
+        else:
+            await ctx.send("ERROR")
+            using.remove(ctx.author.id)
+            return
+        msg = discord.Embed(
+            title="현재 가격: " + str(res),
+            color=botcolor,
+            description=names + "의 그래프입니다.",
+        )
+        await ctx.send(embed=msg, file=discord.File("./bbdata/stock_" + types + ".png"))
     elif args[0] == "매수":
-        if stktype == 0:
-            stka = bot.get_cog("updatestka")
-            if stka is not None:
-                res = stka.getprice()
-            else:
-                await ctx.send("ERROR")
-                using.remove(ctx.author.id)
-                return
-            pnt = getpoint(ctx.author.id, guild=ctx.guild)
-            if pnt == -1:
-                setpoint(ctx.author.id, 0, guild=ctx.guild)
-                pnt = 0
-            stk = getstk("stka", ctx.author.id, ctx.guild)
-            if stk == -1:
-                setstk("stka", ctx.author.id, 0, ctx.guild)
-                stk = 0
-            if pnt <= res:
-                await ctx.channel.send(content="돈도없으면서 주식같은 소리하네")
-                using.remove(ctx.author.id)
-                return
-            msg = await ctx.channel.send(
-                "얼마나 구매하시겠어요? 잔액: `💰 "
-                + str(pnt)
-                + "`, 현재가격: "
-                + str(res)
-                + ", 구매가능수량: "
-                + str(pnt // res)
-                + "주"
-            )
-            try:
-                reply = await bot.wait_for("message", check=check, timeout=10.0)
-            except asyncio.TimeoutError:
-                await msg.edit(content="안살거면 가세요")
-                using.remove(ctx.author.id)
-                return
-            num = int(reply.content)
-            if pnt // res < num or num == 0:
-                await msg.edit(content="정확한 수량을 입력하십쇼")
-                using.remove(ctx.author.id)
-                return
-            await msg.edit(content=str(num) + "주를 구매하셨습니다. `💰-" + str(res * num) + "`")
-            setpoint(ctx.author.id, pnt - res * num, guild=ctx.guild)
-            log(
-                "Taking " + str(res * num) + " Points from " + str(ctx.author),
-                guild=ctx.guild,
-            )
-            setstk("stka", ctx.author.id, stk + num, ctx.guild)
-            stka.buy(num)
-            log(
-                "Giving " + str(num) + " A Stocks to " + str(ctx.author),
-                guild=ctx.guild,
-            )
-        elif stktype == 1:
-            stkb = bot.get_cog("updatestkb")
-            if stkb is not None:
-                res = stkb.getprice()
-            else:
-                await ctx.send("ERROR")
-                using.remove(ctx.author.id)
-                return
-            pnt = getpoint(ctx.author.id, guild=ctx.guild)
-            if pnt == -1:
-                setpoint(ctx.author.id, 0, guild=ctx.guild)
-                pnt = 0
-            stk = getstk("stkb", ctx.author.id, ctx.guild)
-            if stk == -1:
-                setstk("stkb", ctx.author.id, 0, ctx.guild)
-                stk = 0
-            if pnt <= res:
-                await ctx.channel.send(content="돈도없으면서 주식같은 소리하네")
-                using.remove(ctx.author.id)
-                return
-            msg = await ctx.channel.send(
-                "얼마나 구매하시겠어요? 잔액: `💰 "
-                + str(pnt)
-                + "`, 현재가격: "
-                + str(res)
-                + ", 구매가능수량: "
-                + str(pnt // res)
-                + "주"
-            )
-            try:
-                reply = await bot.wait_for("message", check=check, timeout=10.0)
-            except asyncio.TimeoutError:
-                await msg.edit(content="안살거면 가세요")
-                using.remove(ctx.author.id)
-                return
-            num = int(reply.content)
-            if pnt // res < num or num == 0:
-                await msg.edit(content="정확한 수량을 입력하십쇼")
-                using.remove(ctx.author.id)
-                return
-            await msg.edit(content=str(num) + "주를 구매하셨습니다. `💰-" + str(res * num) + "`")
-            setpoint(ctx.author.id, pnt - res * num, guild=ctx.guild)
-            log(
-                "Taking " + str(res * num) + " Points from " + str(ctx.author),
-                guild=ctx.guild,
-            )
-            setstk("stkb", ctx.author.id, stk + num, ctx.guild)
-            stkb.buy(num)
-            log(
-                "Giving " + str(num) + " B Stocks to " + str(ctx.author),
-                guild=ctx.guild,
-            )
+        stkx = bot.get_cog("updatestk" + types)
+        if stkx is not None:
+            res = stkx.getprice()
+        else:
+            await ctx.send("ERROR")
+            using.remove(ctx.author.id)
+            return
+        pnt = getpoint(ctx.author.id, guild=ctx.guild)
+        if pnt == -1:
+            setpoint(ctx.author.id, 0, guild=ctx.guild)
+            pnt = 0
+        stk = getstk(types, ctx.author.id, ctx.guild)
+        if stk == -1:
+            setstk(types, ctx.author.id, 0, ctx.guild)
+            stk = 0
+        if pnt <= res:
+            await ctx.channel.send(content="돈도없으면서 주식같은 소리하네")
+            using.remove(ctx.author.id)
+            return
+        msg = await ctx.channel.send(
+            "얼마나 구매하시겠어요? 잔액: `💰 "
+            + str(pnt)
+            + "`, 현재가격: "
+            + str(res)
+            + ", 구매가능수량: "
+            + str(pnt // res)
+            + "주"
+        )
+        try:
+            reply = await bot.wait_for("message", check=check, timeout=10.0)
+        except asyncio.TimeoutError:
+            await msg.edit(content="안살거면 가세요")
+            using.remove(ctx.author.id)
+            return
+        num = int(reply.content)
+        if pnt // res < num or num == 0:
+            await msg.edit(content="정확한 수량을 입력하십쇼")
+            using.remove(ctx.author.id)
+            return
+        await msg.edit(content=str(num) + "주를 구매하셨습니다. `💰-" + str(res * num) + "`")
+        setpoint(ctx.author.id, pnt - res * num, guild=ctx.guild)
+        log(
+            "Taking " + str(res * num) + " Points from " + str(ctx.author),
+            guild=ctx.guild,
+        )
+        setstk(types, ctx.author.id, stk + num, ctx.guild)
+        stkx.buy(num)
+        recstk(types, ctx.author.id, ctx.guild, True, num, res)
+        log(
+            "Giving " + str(num) + " A Stocks to " + str(ctx.author),
+            guild=ctx.guild,
+        )
     elif args[0] == "매도":
-        if stktype == 0:
-            stka = bot.get_cog("updatestka")
-            if stka is not None:
-                res = stka.getprice()
+        stkx = bot.get_cog("updatestk" + types)
+        if stkx is not None:
+            res = stkx.getprice()
+        else:
+            await ctx.send("ERROR")
+            using.remove(ctx.author.id)
+            return
+        pnt = getpoint(ctx.author.id, guild=ctx.guild)
+        if pnt == -1:
+            setpoint(ctx.author.id, 0, guild=ctx.guild)
+            pnt = 0
+        stk = getstk(types, ctx.author.id, guild=ctx.guild)
+        if stk == -1:
+            setstk(types, ctx.author.id, 0, guild=ctx.guild)
+            stk = 0
+        if stk == 0:
+            await ctx.channel.send(content="주식도 없으면서 매도같은 소리하네")
+            using.remove(ctx.author.id)
+            return
+        msg = await ctx.channel.send(
+            "얼마나 판매하시겠어요? 현재가격: " + str(res) + ", 판매가능수량: " + str(stk) + "주"
+        )
+        try:
+            reply = await bot.wait_for("message", check=check, timeout=10.0)
+        except asyncio.TimeoutError:
+            await msg.edit(content="안팔거면 가세요")
+            using.remove(ctx.author.id)
+            return
+        num = int(reply.content)
+        if stk < num or num == 0:
+            await msg.edit(content="정확한 수량을 입력하십쇼")
+            using.remove(ctx.author.id)
+            return
+        await msg.edit(content=str(num) + "주를 판매하셨습니다. `💰+" + str(res * num) + "`")
+        setpoint(ctx.author.id, pnt + res * num, guild=ctx.guild)
+        log(
+            "Giving " + str(res * num) + " Points to " + str(ctx.author),
+            guild=ctx.guild,
+        )
+        setstk(types, ctx.author.id, stk - num, ctx.guild)
+        stkx.sell(num)
+        recstk(types, ctx.author.id, ctx.guild, False, num, res)
+        log(
+            "Taking " + str(num) + " A Stocks from " + str(ctx.author),
+            guild=ctx.guild,
+        )
+    elif args[0] == "통계":
+        stk = getrecstk(types, ctx.author.id, guild=ctx.guild)
+        if len(stk) == 0:
+            await ctx.channel.send(content="거래내역을 못찾았어요 ㅎㅎ;")
+            using.remove(ctx.author.id)
+            return
+        desc = ""
+        for substk in stk:
+            if substk[0]:
+                substk[0] = "매수"
             else:
-                await ctx.send("ERROR")
-                using.remove(ctx.author.id)
-                return
-            pnt = getpoint(ctx.author.id, guild=ctx.guild)
-            if pnt == -1:
-                setpoint(ctx.author.id, 0, guild=ctx.guild)
-                pnt = 0
-            stk = getstk("stka", ctx.author.id, guild=ctx.guild)
-            if stk == -1:
-                setstk("stka", ctx.author.id, 0, guild=ctx.guild)
-                stk = 0
-            if stk == 0:
-                await ctx.channel.send(content="주식도 없으면서 매도같은 소리하네")
-                using.remove(ctx.author.id)
-                return
-            msg = await ctx.channel.send(
-                "얼마나 판매하시겠어요? 현재가격: " + str(res) + ", 판매가능수량: " + str(stk) + "주"
+                substk[0] = "매도"
+        for substk in stk:
+            desc = (
+                desc
+                + "{} - {}포인트 - {}주 - 총 {}포인트".format(
+                    substk[0], substk[2], substk[1], substk[1] * substk[2]
+                )
+                + "\n"
             )
-            try:
-                reply = await bot.wait_for("message", check=check, timeout=10.0)
-            except asyncio.TimeoutError:
-                await msg.edit(content="안팔거면 가세요")
-                using.remove(ctx.author.id)
-                return
-            num = int(reply.content)
-            if stk < num or num == 0:
-                await msg.edit(content="정확한 수량을 입력하십쇼")
-                using.remove(ctx.author.id)
-                return
-            await msg.edit(content=str(num) + "주를 판매하셨습니다. `💰+" + str(res * num) + "`")
-            setpoint(ctx.author.id, pnt + res * num, guild=ctx.guild)
-            log(
-                "Giving " + str(res * num) + " Points to " + str(ctx.author),
-                guild=ctx.guild,
-            )
-            setstk("stka", ctx.author.id, stk - num, ctx.guild)
-            stka.sell(num)
-            log(
-                "Taking " + str(num) + " A Stocks from " + str(ctx.author),
-                guild=ctx.guild,
-            )
-        elif stktype == 1:
-            stkb = bot.get_cog("updatestkb")
-            if stkb is not None:
-                res = stkb.getprice()
-            else:
-                await ctx.send("ERROR")
-                using.remove(ctx.author.id)
-                return
-            pnt = getpoint(ctx.author.id, guild=ctx.guild)
-            if pnt == -1:
-                setpoint(ctx.author.id, 0, guild=ctx.guild)
-                pnt = 0
-            stk = getstk("stkb", ctx.author.id, guild=ctx.guild)
-            if stk == -1:
-                setstk("stkb", ctx.author.id, 0, guild=ctx.guild)
-                stk = 0
-            if stk == 0:
-                await ctx.channel.send(content="주식도 없으면서 매도같은 소리하네")
-                using.remove(ctx.author.id)
-                return
-            msg = await ctx.channel.send(
-                "얼마나 판매하시겠어요? 현재가격: " + str(res) + ", 판매가능수량: " + str(stk) + "주"
-            )
-            try:
-                reply = await bot.wait_for("message", check=check, timeout=10.0)
-            except asyncio.TimeoutError:
-                await msg.edit(content="안팔거면 가세요")
-                using.remove(ctx.author.id)
-                return
-            num = int(reply.content)
-            if stk < num or num == 0:
-                await msg.edit(content="정확한 수량을 입력하십쇼")
-                using.remove(ctx.author.id)
-                return
-            await msg.edit(content=str(num) + "주를 판매하셨습니다. `💰+" + str(res * num) + "`")
-            setpoint(ctx.author.id, pnt + res * num, guild=ctx.guild)
-            log(
-                "Giving " + str(res * num) + " Points to " + str(ctx.author),
-                guild=ctx.guild,
-            )
-            setstk("stkb", ctx.author.id, stk - num, ctx.guild)
-            stkb.sell(num)
-            log(
-                "Taking " + str(num) + " B Stocks from " + str(ctx.author),
-                guild=ctx.guild,
-            )
+        msg = discord.Embed(
+            title=names + " 주식 거래내역입니다.",
+            color=botcolor,
+            description=desc,
+        )
+        await ctx.send(embed=msg)
     using.remove(ctx.author.id)
     return

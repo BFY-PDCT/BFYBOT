@@ -170,7 +170,7 @@ def delowner(uid):
 
 def getpoint(uid, guild):
     point_list = loadfile("point", guild=guild)
-    if id not in point_list:
+    if uid not in point_list:
         return -1
     return point_list[uid]
 
@@ -181,22 +181,41 @@ def setpoint(uid, newpoint: int, guild):
     savefile("point", point_list, guild=guild)
 
 
-def getstk(stype, id, guild):  # type in ['stka', 'stkb']
-    point_list = loadfile(stype, guild=guild)
-    if id not in point_list:
+def getstk(stype, uid, guild):
+    point_list = loadfile("stk" + stype, guild=guild)
+    if uid not in point_list:
         return -1
-    return point_list[id]
+    return point_list[uid]
 
 
-def setstk(stype, id, newpoint: int, guild):  # type in ['stka', 'stkb']
-    point_list = loadfile(stype, guild=guild)
-    point_list[id] = newpoint
-    savefile(stype, point_list, guild=guild)
+def setstk(stype, uid, newpoint: int, guild):
+    point_list = loadfile("stk" + stype, guild=guild)
+    point_list[uid] = newpoint
+    savefile("stk" + stype, point_list, guild=guild)
     return
 
 
-def loadfile(type: str, *, guild=None):
-    if type == "dict":
+def recstk(stype, uid, guild, buy, cnt, price):
+    point_list = loadfile("lstk" + stype, guild=guild)
+    slog = [buy, cnt, price]
+    if not uid in point_list:
+        point_list[uid] = []
+    point_list[uid].append(slog)
+    while len(point_list[uid]) > 10:
+        point_list[uid].pop(0)
+    savefile("lstk" + stype, point_list, guild=guild)
+    return
+
+
+def getrecstk(stype, uid, guild):
+    point_list = loadfile("lstk" + stype, guild=guild)
+    if not uid in point_list:
+        point_list[uid] = []
+    return point_list[uid]
+
+
+def loadfile(stype: str, *, guild=None):
+    if stype == "dict":
         a = is_non_zero_file("./bbdata/dict.custom")
         if not a:
             createFolder("./bbdata")
@@ -207,7 +226,7 @@ def loadfile(type: str, *, guild=None):
         with open("./bbdata/dict.custom", "rb") as fr:
             dict_loaded = pickle.load(fr)
         return dict_loaded
-    elif type == "point":
+    if stype == "point":
         a = is_non_zero_file("./bbdata/" + str(guild.id) + "/point.custom")
         if not a:
             createFolder("./bbdata")
@@ -219,31 +238,35 @@ def loadfile(type: str, *, guild=None):
         with open("./bbdata/" + str(guild.id) + "/point.custom", "rb") as fr:
             setting_loaded = pickle.load(fr)
         return setting_loaded
-    elif type == "stka":
-        a = is_non_zero_file("./bbdata/" + str(guild.id) + "/stka.custom")
+    if stype.startswith("stk"):
+        a = is_non_zero_file("./bbdata/" + str(guild.id) + "/" + stype + ".custom")
         if not a:
             createFolder("./bbdata")
             createFolder("./bbdata/" + str(guild.id) + "/")
             new_dict = {}
-            with open("./bbdata/" + str(guild.id) + "/stka.custom", "wb") as fw:
+            with open(
+                "./bbdata/" + str(guild.id) + "/" + stype + ".custom", "wb"
+            ) as fw:
                 pickle.dump(new_dict, fw)
             return {}
-        with open("./bbdata/" + str(guild.id) + "/stka.custom", "rb") as fr:
+        with open("./bbdata/" + str(guild.id) + "/" + stype + ".custom", "rb") as fr:
             setting_loaded = pickle.load(fr)
         return setting_loaded
-    elif type == "stkb":
-        a = is_non_zero_file("./bbdata/" + str(guild.id) + "/stkb.custom")
+    if stype.startswith("lstk"):
+        a = is_non_zero_file("./bbdata/" + str(guild.id) + "/" + stype + ".custom")
         if not a:
             createFolder("./bbdata")
             createFolder("./bbdata/" + str(guild.id) + "/")
             new_dict = {}
-            with open("./bbdata/" + str(guild.id) + "/stkb.custom", "wb") as fw:
+            with open(
+                "./bbdata/" + str(guild.id) + "/" + stype + ".custom", "wb"
+            ) as fw:
                 pickle.dump(new_dict, fw)
             return {}
-        with open("./bbdata/" + str(guild.id) + "/stkb.custom", "rb") as fr:
+        with open("./bbdata/" + str(guild.id) + "/" + stype + ".custom", "rb") as fr:
             setting_loaded = pickle.load(fr)
         return setting_loaded
-    elif type == "setting":
+    if stype == "setting":
         a = is_non_zero_file("./bbdata/" + str(guild.id) + "/settings.custom")
         if not a:
             createFolder("./bbdata")
@@ -255,7 +278,7 @@ def loadfile(type: str, *, guild=None):
         with open("./bbdata/" + str(guild.id) + "/settings.custom", "rb") as fr:
             setting_loaded = pickle.load(fr)
         return setting_loaded
-    elif type == "owner":
+    if stype == "owner":
         a = is_non_zero_file("./bbdata/" + str(guild.id) + "/owner.custom")
         if not a:
             createFolder("./bbdata")
@@ -267,7 +290,7 @@ def loadfile(type: str, *, guild=None):
         with open("./bbdata/" + str(guild.id) + "/owner.custom", "rb") as fr:
             owner_loaded = pickle.load(fr)
         return owner_loaded
-    elif type == "sowner":
+    if stype == "sowner":
         a = is_non_zero_file("./bbdata/sowner.custom")
         if not a:
             createFolder("./bbdata")
@@ -278,7 +301,7 @@ def loadfile(type: str, *, guild=None):
         with open("./bbdata/sowner.custom", "rb") as fr:
             array_loaded = pickle.load(fr)
         return array_loaded
-    elif type == "ban":
+    if stype == "ban":
         a = is_non_zero_file("./bbdata/ban.custom")
         if not a:
             createFolder("./bbdata")
@@ -289,7 +312,7 @@ def loadfile(type: str, *, guild=None):
         with open("./bbdata/ban.custom", "rb") as fr:
             array_loaded = pickle.load(fr)
         return array_loaded
-    elif type == "settingall":
+    if stype == "settingall":
         setting_loaded = []
         files = os.listdir("./bbdata/")
         for item in files:
@@ -307,36 +330,36 @@ def loadfile(type: str, *, guild=None):
         return setting_loaded
 
 
-def savefile(type: str, data, *, guild=None):
-    if type == "dict":
+def savefile(stype: str, data, *, guild=None):
+    if stype == "dict":
         with open("./bbdata/dict.custom", "wb") as fw:
             pickle.dump(data, fw)
         return
-    elif type == "point":
+    if stype == "point":
         with open("./bbdata/" + str(guild.id) + "/point.custom", "wb") as fw:
             pickle.dump(data, fw)
         return
-    elif type == "stka":
-        with open("./bbdata/" + str(guild.id) + "/stka.custom", "wb") as fw:
+    if stype.startswith("stk"):
+        with open("./bbdata/" + str(guild.id) + "/" + stype + ".custom", "wb") as fw:
             pickle.dump(data, fw)
         return
-    elif type == "stkb":
-        with open("./bbdata/" + str(guild.id) + "/stkb.custom", "wb") as fw:
+    if stype.startswith("lstk"):
+        with open("./bbdata/" + str(guild.id) + "/" + stype + ".custom", "wb") as fw:
             pickle.dump(data, fw)
         return
-    elif type == "setting":
+    if stype == "setting":
         with open("./bbdata/" + str(guild.id) + "/settings.custom", "wb") as fw:
             pickle.dump(data, fw)
         return
-    elif type == "owner":
+    if stype == "owner":
         with open("./bbdata/" + str(guild.id) + "/owner.custom", "wb") as fw:
             pickle.dump(data, fw)
         return
-    elif type == "sowner":
+    if stype == "sowner":
         with open("./bbdata/sowner.custom", "wb") as fw:
             pickle.dump(data, fw)
         return
-    elif type == "ban":
+    if stype == "ban":
         with open("./bbdata/ban.custom", "wb") as fw:
             pickle.dump(data, fw)
         return

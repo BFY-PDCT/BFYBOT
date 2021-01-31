@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from cmds.genfunc import loadfile, is_non_zero_file, createFolder
+from cmds import loadfile, is_non_zero_file, createFolder
 
 
 def func():

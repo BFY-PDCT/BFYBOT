@@ -37,6 +37,7 @@ def initcmd():
     # bot.add_command (함수 이름)
     bot.add_cog(updatestka(bot))
     bot.add_cog(updatestkb(bot))
+    bot.add_cog(updatestkc(bot))
     bot.add_cog(updatemute(bot))
 
 
@@ -72,7 +73,7 @@ class updatestka(commands.Cog):
         self.pn = self.pn + self.delta
         self.delta = 0
         cp, ra, rb, t, mn, mx = 7, 5, 100, 500000, 500, 100000  # stock const numbers
-        x = random.randrange(ra, rb + 1)
+        x = random.uniform(ra, rb)
         x = t / (x * x * x)
         x = x // 1
         if not random.randrange(0, cp):
@@ -162,7 +163,7 @@ class updatestkb(commands.Cog):
             20000,
             1000000,
         )  # stock const numbers
-        x = random.randrange(ra, rb + 1)
+        x = random.uniform(ra, rb)
         x = t / (x * x * x)
         x = x // 1
         if not random.randrange(0, cp):
@@ -210,6 +211,89 @@ class updatestkb(commands.Cog):
             log("save stockb data")
             print("save stockb data")
             with open("./bbdata/stockb.custom", "wb") as fw:
+                pickle.dump(self.res, fw)
+
+
+class updatestkc(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        log("load stockc data")
+        print("load stockc data")
+        a = is_non_zero_file("./bbdata/stockc.custom")
+        if not a:
+            createFolder("./bbdata")
+            new_array = [2000, 2000]
+            with open("./bbdata/stockc.custom", "wb") as fw:
+                pickle.dump(new_array, fw)
+            self.res = new_array
+        else:
+            with open("./bbdata/stockc.custom", "rb") as fr:
+                array_loaded = pickle.load(fr)
+            self.res = array_loaded
+        self.inc, self.pn = True, self.res[len(self.res) - 1]
+        self.delta = 0
+        self.process.start()
+
+    def cog_unload(self):
+        self.process.cancel()
+
+    @tasks.loop(seconds=15.0)
+    async def process(self):
+        if self.delta > 50:
+            self.delta = 50
+        if self.delta < -50:
+            self.delta = -50
+        self.pn = self.pn + self.delta
+        self.delta = 0
+        cp, ra, rb, t, mn, mx = 10, 10, 80, 20000, 200, 5000  # stock const numbers
+        x = random.uniform(ra, rb)
+        x = t / (x * x)
+        x = x // 1
+        if not random.randrange(0, cp):
+            self.inc = not self.inc
+        if self.inc:
+            self.pn = self.pn + x
+        else:
+            self.pn = self.pn - x
+        if self.pn > mx:
+            self.pn = mx
+            self.inc = not self.inc
+        if self.pn < mn:
+            self.pn = mn
+            self.inc = not self.inc
+        self.res.append(self.pn)
+
+        if len(self.res) > 1000:
+            self.res.pop(0)
+
+        x = np.arange(len(self.res))
+        resary = np.array(self.res)
+
+        plt.plot(x, resary[x])
+        plt.title("STOCK: AT7 Group")
+        plt.xlabel("time")
+        plt.ylabel("price")
+        plt.tight_layout()
+        plt.savefig("./bbdata/stock_c.png", dpi=200)
+        plt.clf()
+
+    def getprice(self):
+        return int(self.pn)
+
+    def buy(self, cnt: int):
+        self.delta = self.delta - cnt // 20
+        return
+
+    def sell(self, cnt: int):
+        self.delta = self.delta + cnt // 20
+        return
+
+    @process.after_loop
+    async def on_process_cancel(self):
+        if self.process.is_being_cancelled():
+            log("save stockc data")
+            print("save stockc data")
+            with open("./bbdata/stockc.custom", "wb") as fw:
                 pickle.dump(self.res, fw)
 
 
