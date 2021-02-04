@@ -22,43 +22,5 @@ if __name__ == "__main__":
     print("Please execute bot.py")
     sys.exit(0)
 
-from .config import (
-    owner,
-    token,
-    invlink,
-    vernum,
-    prefix,
-    botname,
-    hasmusic,
-    botcolor,
-    pending,
-    noticed,
-    using,
-    muted,
-    bot,
-)
-from .genfunc import (
-    addadmin,
-    addban,
-    addowner,
-    admincheck,
-    calculate,
-    createFolder,
-    deladmin,
-    delban,
-    delowner,
-    download,
-    errlog,
-    getpoint,
-    is_non_zero_file,
-    isadmin,
-    isban,
-    isowner,
-    loadfile,
-    log,
-    msglog,
-    savefile,
-    setpoint,
-    getstk,
-    setstk,
-)
+from .config import *
+from .genfunc import *

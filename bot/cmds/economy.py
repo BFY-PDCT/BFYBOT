@@ -72,7 +72,6 @@ async def getmoney(ctx: Context):
                 guild=ctx.guild,
             )
         await ctx.channel.send("어휴 불쌍한넘 내가 특별히 1000포인트 준다 `💰+1000`")
-        log("Giving 1000 Points to " + str(ctx.author), guild=ctx.guild)
     elif i == 2:
         await ctx.channel.send("싫은뒈~~에베ㅔㅔ")
     elif i == 3:
@@ -87,7 +86,6 @@ async def getmoney(ctx: Context):
                 guild=ctx.guild,
             )
         await ctx.channel.send("가져가서 어디 써보시던가 ㅋㅋ `💰+100`")
-        log("Giving 100 Points to " + str(ctx.author), guild=ctx.guild)
     elif i == 5:
         msg = await ctx.channel.send(botname + " 형님 해봐")
         try:
@@ -104,7 +102,6 @@ async def getmoney(ctx: Context):
                     guild=ctx.guild,
                 )
             await msg.edit(content="옳지 잘한다 옛다 선물 `💰+2500`")
-        log("Giving 2500 Points to " + str(ctx.author), guild=ctx.guild)
     elif i == 6:
         await ctx.channel.send("내가 니한테 돈을 왜주냐?")
     elif i == 7:
@@ -204,3 +201,6 @@ async def sendmoney_error(ctx: Context, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send("금액을 올바르게 입력해주세요.")
         return
+    errlog(error)
+    await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+    return

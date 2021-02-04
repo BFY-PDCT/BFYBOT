@@ -36,7 +36,7 @@ from .config import (
     musicstr,
     helpmusicstr,
 )
-from .genfunc import calculate, errlog, log
+from .genfunc import calculate, errlog, dbglog
 from discord.ext import commands
 from discord.ext.commands import Context
 
@@ -105,7 +105,7 @@ async def help(ctx: Context):
 async def lolsearch(ctx: Context, *, arg):
     lolid = arg
     url = "https://www.op.gg/summoner/userName=" + quote(lolid)
-    log("querying " + url)
+    dbglog("querying " + url)
     subres = urllib.request.urlopen(url).read().decode("utf-8")
     tmp = subres[
         subres.find('<meta name="description" content="')
@@ -117,7 +117,6 @@ async def lolsearch(ctx: Context, *, arg):
     tmp3 = tmp2[tmp2.find('<img src="') + len('<img src="') :]
     res2 = tmp3[: tmp3.find('"')]
     res3 = "https:" + res2
-    log("res3: " + res3)
     msgtos = discord.Embed(color=botcolor)
     try:
         msgtos.set_author(name=reslist[0], icon_url=res3)

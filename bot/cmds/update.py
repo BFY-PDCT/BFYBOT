@@ -22,12 +22,12 @@ if __name__ == "__main__":
     print("Please execute bot.py")
     sys.exit(0)
 
-import pickle
 import random
+import time
 import numpy as np
 import matplotlib.pyplot as plt
-from .config import bot, muted
-from .genfunc import loadfile, log, is_non_zero_file, createFolder
+from .config import bot, muted, conn, db
+from .genfunc import dbglog, log, dumpdb, loadsetting
 from discord.errors import Forbidden, HTTPException
 from discord.ext import tasks, commands
 from discord.ext.commands import Context
@@ -35,30 +35,43 @@ from discord.ext.commands import Context
 
 def initcmd():
     # bot.add_command (함수 이름)
+    bot.add_cog(autodumpdb(bot))
     bot.add_cog(updatestka(bot))
     bot.add_cog(updatestkb(bot))
     bot.add_cog(updatestkc(bot))
     bot.add_cog(updatemute(bot))
 
 
+class autodumpdb(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.process.start()
+
+    def cog_unload(self):
+        self.process.cancel()
+
+    @tasks.loop(seconds=3600)
+    async def process(self):
+        dumpdb()
+
+
 class updatestka(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         log("load stocka data")
-        print("load stocka data")
-        a = is_non_zero_file("./bbdata/stocka.custom")
-        if not a:
-            createFolder("./bbdata")
-            new_array = [19500, 20000]
-            with open("./bbdata/stocka.custom", "wb") as fw:
-                pickle.dump(new_array, fw)
-            self.res = new_array
+        ts = time.time()
+        print("Loading StockA Data...", end="")
+        db.execute("SELECT * FROM stockdata WHERE stype=?", ("a"))
+        subres = db.fetchall()
+        self.res = []
+        for tmp in subres:
+            self.res.append(tmp[1])
+        if len(self.res) == 0:
+            self.inc, self.pn = True, 10000
         else:
-            with open("./bbdata/stocka.custom", "rb") as fr:
-                array_loaded = pickle.load(fr)
-            self.res = array_loaded
-        self.inc, self.pn = True, self.res[len(self.res) - 1]
+            self.inc, self.pn = True, self.res[len(self.res) - 1]
         self.delta = 0
+        print("OK ({}s)".format(str(time.time() - ts)))
         self.process.start()
 
     def cog_unload(self):
@@ -119,29 +132,37 @@ class updatestka(commands.Cog):
     async def on_process_cancel(self):
         if self.process.is_being_cancelled():
             log("save stocka data")
-            print("save stocka data")
-            with open("./bbdata/stocka.custom", "wb") as fw:
-                pickle.dump(self.res, fw)
+            ts = time.time()
+            print("Saving StockA Data...", end="")
+            resdata = []
+            for data in self.res:
+                resdata.append(("a", data))
+            db.execute("DELETE FROM stockdata WHERE stype=?", ("a"))
+            db.executemany(
+                "INSERT INTO stockdata(stype, price) \
+                VALUES(?,?)",
+                resdata,
+            )
+            print("OK ({}s)".format(str(time.time() - ts)))
 
 
 class updatestkb(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         log("load stockb data")
-        print("load stockb data")
-        a = is_non_zero_file("./bbdata/stockb.custom")
-        if not a:
-            createFolder("./bbdata")
-            new_array = [195000, 200000]
-            with open("./bbdata/stockb.custom", "wb") as fw:
-                pickle.dump(new_array, fw)
-            self.res = new_array
+        ts = time.time()
+        print("Loading StockB Data...", end="")
+        db.execute("SELECT * FROM stockdata WHERE stype=?", ("b"))
+        subres = db.fetchall()
+        self.res = []
+        for tmp in subres:
+            self.res.append(tmp[1])
+        if len(self.res) == 0:
+            self.inc, self.pn = True, 100000
         else:
-            with open("./bbdata/stockb.custom", "rb") as fr:
-                array_loaded = pickle.load(fr)
-            self.res = array_loaded
-        self.inc, self.pn = True, self.res[len(self.res) - 1]
+            self.inc, self.pn = True, self.res[len(self.res) - 1]
         self.delta = 0
+        print("OK ({}s)".format(str(time.time() - ts)))
         self.process.start()
 
     def cog_unload(self):
@@ -209,29 +230,37 @@ class updatestkb(commands.Cog):
     async def on_process_cancel(self):
         if self.process.is_being_cancelled():
             log("save stockb data")
-            print("save stockb data")
-            with open("./bbdata/stockb.custom", "wb") as fw:
-                pickle.dump(self.res, fw)
+            ts = time.time()
+            print("Saving StockB Data...", end="")
+            resdata = []
+            for data in self.res:
+                resdata.append(("b", data))
+            db.execute("DELETE FROM stockdata WHERE stype=?", ("b"))
+            db.executemany(
+                "INSERT INTO stockdata(stype, price) \
+                VALUES(?,?)",
+                resdata,
+            )
+            print("OK ({}s)".format(str(time.time() - ts)))
 
 
 class updatestkc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         log("load stockc data")
-        print("load stockc data")
-        a = is_non_zero_file("./bbdata/stockc.custom")
-        if not a:
-            createFolder("./bbdata")
-            new_array = [2000, 2000]
-            with open("./bbdata/stockc.custom", "wb") as fw:
-                pickle.dump(new_array, fw)
-            self.res = new_array
+        ts = time.time()
+        print("Loading StockC Data...", end="")
+        db.execute("SELECT * FROM stockdata WHERE stype=?", ("c"))
+        subres = db.fetchall()
+        self.res = []
+        for tmp in subres:
+            self.res.append(tmp[1])
+        if len(self.res) == 0:
+            self.inc, self.pn = True, 1000
         else:
-            with open("./bbdata/stockc.custom", "rb") as fr:
-                array_loaded = pickle.load(fr)
-            self.res = array_loaded
-        self.inc, self.pn = True, self.res[len(self.res) - 1]
+            self.inc, self.pn = True, self.res[len(self.res) - 1]
         self.delta = 0
+        print("OK ({}s)".format(str(time.time() - ts)))
         self.process.start()
 
     def cog_unload(self):
@@ -292,9 +321,18 @@ class updatestkc(commands.Cog):
     async def on_process_cancel(self):
         if self.process.is_being_cancelled():
             log("save stockc data")
-            print("save stockc data")
-            with open("./bbdata/stockc.custom", "wb") as fw:
-                pickle.dump(self.res, fw)
+            ts = time.time()
+            print("Saving StockC Data...", end="")
+            resdata = []
+            for data in self.res:
+                resdata.append(("c", data))
+            db.execute("DELETE FROM stockdata WHERE stype=?", ("c"))
+            db.executemany(
+                "INSERT INTO stockdata(stype, price) \
+                VALUES(?,?)",
+                resdata,
+            )
+            print("OK ({}s)".format(str(time.time() - ts)))
 
 
 class updatemute(commands.Cog):
@@ -311,34 +349,44 @@ class updatemute(commands.Cog):
             if mute[2] == 0:
                 try:
                     await self.unmute(mute)
-                except:
-                    pass
+                except Exception as e:
+                    dbglog(
+                        "unmute failed roleid: "
+                        + str(mute[3])
+                        + ", guildid: "
+                        + str(mute[0])
+                    )
                 muted.remove(mute)
             if mute[2] <= -1:
                 try:
                     await self.unmute(mute, param=1)
-                except:
-                    pass
+                except Exception as e:
+                    dbglog(
+                        "unmute failed roleid: "
+                        + str(mute[3])
+                        + ", guildid: "
+                        + str(mute[0])
+                    )
                 muted.remove(mute)
             mute[2] = mute[2] - 1
 
     async def unmute(self, mute, param=0):
         guild = bot.get_guild(mute[1])
-        if guild == None:
+        if guild is None:
             log("Can't find guild")
             return
         member = await guild.fetch_member(mute[0])
-        if member == None:
-            log("Can't find guild")
+        if member is None:
+            log("Can't find member")
             return
-        setting_loaded = loadfile("setting", guild=guild)
+        setting_loaded = loadsetting("chnl", guild)
         channel = guild.get_channel(mute[4])
         if param == 0:
             await member.edit(roles=mute[3], reason="MUTE Command Timeout")
             log("Unmuted " + member.name, guild=guild)
-            if "chnl" in setting_loaded:
+            if not setting_loaded == False:
                 try:
-                    await bot.get_channel(setting_loaded["chnl"]).send(
+                    await bot.get_channel(setting_loaded).send(
                         "처리 종료되었습니다 - 뮤트 {.mention}".format(member)
                     )
                 except HTTPException:
@@ -352,9 +400,9 @@ class updatemute(commands.Cog):
         elif param == 1:
             await member.edit(roles=mute[3], reason="MUTE Command Cancel")
             log("Unmuted " + member.name, guild=guild)
-            if "chnl" in setting_loaded:
+            if not setting_loaded == False:
                 try:
-                    await bot.get_channel(setting_loaded["chnl"]).send(
+                    await bot.get_channel(setting_loaded).send(
                         "처리 종료되었습니다 - 뮤트 {.mention} / 처리자: {.mention}".format(
                             member, mute[5]
                         )
@@ -397,7 +445,53 @@ class updatemute(commands.Cog):
 
     @process.before_loop
     async def before_process(self):
+        log("wait until bot ready")
+        ts = time.time()
+        print("Waiting Until Bot Ready...", end="")
         await self.bot.wait_until_ready()
+        print("OK ({}s)".format(str(time.time() - ts)))
+        log("load ongiong mute data")
+        ts = time.time()
+        print("Loading Ongiong Mute Data...", end="")
+        db.execute("SELECT * FROM muted")
+        res = db.fetchall()
+        tmp = [0, 0, 0, 0, 0]
+        for mute in res:
+            if (
+                tmp[0] == mute[1]
+                and tmp[1] == mute[0]
+                and tmp[2] == mute[2]
+                and tmp[4] == mute[4]
+            ):
+                try:
+                    tmp[3].append(bot.get_guild(mute[0]).get_role(mute[3]))
+                except Exception as e:
+                    dbglog(
+                        "get role failed roleid: "
+                        + str(mute[3])
+                        + ", guildid: "
+                        + str(mute[0])
+                    )
+            else:
+                if tmp != [0, 0, 0, 0, 0]:
+                    muted.append(tmp)
+                try:
+                    tmp = [
+                        mute[1],
+                        mute[0],
+                        mute[2],
+                        [bot.get_guild(mute[0]).get_role(mute[3])],
+                        mute[4],
+                    ]
+                except Exception as e:
+                    dbglog(
+                        "get role failed roleid: "
+                        + str(mute[3])
+                        + ", guildid: "
+                        + str(mute[0])
+                    )
+        muted.append(tmp)
+        print("OK ({}s)".format(str(time.time() - ts)))
 
     @process.after_loop
     async def on_process_cancel(self):
@@ -406,23 +500,49 @@ class updatemute(commands.Cog):
                 if mute[2] == 0:
                     try:
                         await self.unmute(mute)
-                    except:
-                        pass
+                    except Exception as e:
+                        dbglog(
+                            "unmute failed roleid: "
+                            + str(mute[3])
+                            + ", guildid: "
+                            + str(mute[0])
+                        )
                     muted.remove(mute)
                 if mute[2] <= -1:
                     try:
                         await self.unmute(mute, param=1)
-                    except:
-                        pass
+                    except Exception as e:
+                        dbglog(
+                            "unmute failed roleid: "
+                            + str(mute[3])
+                            + ", guildid: "
+                            + str(mute[0])
+                        )
                     muted.remove(mute)
                 nrlist = []
                 for role in mute[3]:
                     try:
                         nrlist.append(role.id)
-                    except:
-                        pass
+                    except Exception as e:
+                        dbglog(
+                            "get role failed roleid: "
+                            + str(mute[3])
+                            + ", guildid: "
+                            + str(mute[0])
+                        )
                 mute[3] = nrlist
+            res = []
+            for mute in muted:
+                for role in mute[3]:
+                    res.append([mute[1], mute[0], mute[2], role, mute[4]])
             log("save ongoing mute data")
-            print("save ongoing mute data")
-            with open("./bbdata/muted.custom", "wb") as fw:
-                pickle.dump(muted, fw)
+            ts = time.time()
+            print("Saving Ongoing Mute Data...", end="")
+            db.execute("DELETE FROM muted")
+            db.executemany(
+                "INSERT INTO muted(guildid, uid, time, role, channel) \
+                VALUES(?,?,?,?,?)",
+                res,
+            )
+            conn.commit()
+            print("OK ({}s)".format(str(time.time() - ts)))

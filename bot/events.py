@@ -23,50 +23,30 @@ if __name__ == "__main__":
     sys.exit(0)
 
 import discord
-import pickle
+import time
 from private import on_admin_message, on_message_pre
 from cmds import (
     prefix,
     botcolor,
     using,
     bot,
-    muted,
-    is_non_zero_file,
-    createFolder,
+    timestart,
     isowner,
-    loadfile,
+    loadsetting,
     log,
-    msglog,
 )
 from discord.errors import Forbidden, HTTPException
 
 
 @bot.event
 async def on_ready():
-    log("We have logged in as {0.user}".format(bot))
-    print("We have logged in as {0.user}".format(bot))
-    log("loading ongiong mute data")
-    print("loading ongiong mute data")
-    a = is_non_zero_file("./bbdata/muted.custom")
-    if not a:
-        createFolder("./bbdata")
-        new_array = []
-        with open("./bbdata/muted.custom", "wb") as fw:
-            pickle.dump(new_array, fw)
-    else:
-        with open("./bbdata/muted.custom", "rb") as fr:
-            mutedtmp = pickle.load(fr)
-        for mute in mutedtmp:
-            nrlist = []
-            for role in mute[3]:
-                try:
-                    nrlist.append(bot.get_guild(mute[1]).get_role(role))
-                except:
-                    print("not found")
-                    pass
-            mute[3] = nrlist
-            muted.append(mute)
     await bot.change_presence(activity=discord.Game("열심히 일"))
+    log("We have logged in as {.user}".format(bot))
+    print(
+        "Done Loading, logged in as {.user}! (total {}sec)".format(
+            bot, time.time() - timestart
+        )
+    )
 
 
 @bot.event
@@ -75,32 +55,34 @@ async def on_member_join(member):
         "member joined NAME: " + str(member) + ", ID:" + str(member.id),
         guild=member.guild,
     )
-    setting_loaded = loadfile("setting", guild=member.guild)
+    setting_loaded = loadsetting("chnl", guild=member.guild)
+    msgj = loadsetting("msgj", guild=member.guild)
+    joinrole = loadsetting("joinrole", guild=member.guild)
     chnl = False
-    if "chnl" in setting_loaded and "msgj" in setting_loaded:
+    if not setting_loaded == False and not msgj == False:
         try:
-            msgj = discord.Embed(title=setting_loaded["msgj"], color=botcolor)
-            await bot.get_channel(setting_loaded["chnl"]).send(
-                "{.mention}님이 참가했어요".format(member), embed=msgj
+            msgje = discord.Embed(title=msgj, color=botcolor)
+            await bot.get_channel(setting_loaded).send(
+                "{.mention}님이 참가했어요".format(member), embed=msgje
             )
             chnl = True
         except HTTPException:
             log("Error Sending Notice to " + str(setting_loaded["chnl"]))
         except Forbidden:
             log("Error Sending Notice to " + str(setting_loaded["chnl"]))
-    if "joinrole" in setting_loaded:
+    if not joinrole == False:
         try:
             xrole: discord.Role = None
             find = False
             for rl in member.guild.roles:
-                if rl.id == setting_loaded["joinrole"]:
+                if rl.id == joinrole:
                     xrole = rl
                     find = True
                     break
             if not find:
                 log("role not found", guild=member.guild)
                 if chnl:
-                    await bot.get_channel(setting_loaded["chnl"]).send(
+                    await bot.get_channel(setting_loaded).send(
                         "새 멤버 역할이 잘못 지정되어 있습니다.",
                         allowed_mentions=discord.AllowedMentions.all(),
                     )
@@ -110,7 +92,7 @@ async def on_member_join(member):
         except Forbidden:
             log("NO PERMISSION", guild=member.guild)
             if chnl:
-                await bot.get_channel(setting_loaded["chnl"]).send(
+                await bot.get_channel(setting_loaded).send(
                     "새 멤버 역할 변경 권한이 부족합니다.",
                     allowed_mentions=discord.AllowedMentions.all(),
                 )
@@ -124,17 +106,18 @@ async def on_member_remove(member):
         "member removed NAME: " + str(member) + ", ID:" + str(member.id),
         guild=member.guild,
     )
-    setting_loaded = loadfile("setting", guild=member.guild)
+    setting_loaded = loadsetting("chnl", guild=member.guild)
+    msgl = loadsetting("msgj", guild=member.guild)
     if "chnl" in setting_loaded and "msgl" in setting_loaded:
         try:
-            msgl = discord.Embed(title=setting_loaded["msgl"], color=botcolor)
-            await bot.get_channel(setting_loaded["chnl"]).send(
-                "{.mention}님이 떠났어요".format(member), embed=msgl
+            msgle = discord.Embed(title=msgl, color=botcolor)
+            await bot.get_channel(setting_loaded).send(
+                "{.mention}님이 떠났어요".format(member), embed=msgle
             )
         except HTTPException:
-            log("Error Sending Notice to " + str(setting_loaded["chnl"]))
+            log("Error Sending Notice to " + str(setting_loaded))
         except Forbidden:
-            log("Error Sending Notice to " + str(setting_loaded["chnl"]))
+            log("Error Sending Notice to " + str(setting_loaded))
 
 
 @bot.event
@@ -150,7 +133,6 @@ async def on_guild_remove(guild):
 @bot.event
 async def on_message(message):
     await bot.wait_until_ready()
-    msglog(message, guild=message.guild)
 
     if message.author == bot.user:  # Ignore My Message
         return
@@ -167,6 +149,6 @@ async def on_message(message):
         using.append(message.author.id)
         await on_admin_message(message)  # Custom Admin Commands
         return
-    else:
-        await bot.process_commands(message)
-        return
+
+    await bot.process_commands(message)
+    return

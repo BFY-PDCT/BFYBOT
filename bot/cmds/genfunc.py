@@ -22,14 +22,13 @@ if __name__ == "__main__":
     print("Please execute bot.py")
     sys.exit(0)
 
-import pickle
 import os
-import datetime
-import http3
 import traceback
+import time
+from datetime import datetime
 from operator import pow, truediv, mul, add, sub
 from discord.ext import commands
-from .config import owner, eventlogger
+from .config import owner, eventlogger, conn, db
 
 operators = {"+": add, "-": sub, "*": mul, "/": truediv, "^": pow}
 
@@ -57,59 +56,184 @@ def createFolder(directory):
 
 
 def log(msg, *, guild=None):
-    now = datetime.datetime.now()
     if guild is None:
         eventlogger.info(msg)
     else:
         eventlogger.info(str(guild.id) + " - " + msg)
 
 
-def msglog(msg, *, guild=None):
-    now = datetime.datetime.now()
+def dbglog(msg, *, guild=None):
     if guild is None:
-        eventlogger.info(str(msg.author) + ": " + str(msg.content))
+        eventlogger.debug(msg)
     else:
-        eventlogger.info(
-            str(guild.id) + " - " + str(msg.author) + ": " + str(msg.content)
-        )
+        eventlogger.debug(str(guild.id) + " - " + msg)
 
 
 def errlog(msg, *, guild=None):
-    now = datetime.datetime.now()
     if guild is None:
         eventlogger.warning(msg)
     else:
         eventlogger.warning(str(guild.id) + " - " + msg)
 
 
-def tblog(msg, e, *, guild=None):
-    traceback.print_exception(type(e), e, e.__traceback__)
+def dumpdb():
+    with conn:
+        ts = time.time()
+        log("Generating DB Backup")
+        try:
+            if not os.path.exists("./bbdata/backup"):
+                os.makedirs("./bbdata/backup")
+        except Exception as e:
+            return
+        with open(
+            "./bbdata/backup/dbbackup-"
+            + datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+            + ".txt",
+            "w",
+        ) as f:
+            for line in conn.iterdump():
+                f.write("%s\n" % line)
+        log("DB Backup generated in {}sec".format(str(time.time() - ts)))
 
 
-def isadmin(id, guild):
-    owner_list = loadfile("owner", guild=guild)
-    return id in owner_list
+def tblog(e, *, guild=None):
+    errlog(
+        "".join(traceback.format_exception(type(e), e, e.__traceback__)), guild=guild
+    )
 
 
-def addadmin(id, guild):
-    owner_list = loadfile("owner", guild=guild)
-    if id in owner_list:
+def loadallsetting(kwd):
+    db.execute("SELECT * FROM setting WHERE name=?", (kwd,))
+    subres = db.fetchall()
+    if subres is None:
         return False
-    owner_list.append(id)
-    savefile("owner", owner_list, guild=guild)
+    res = []
+    for tmp in subres:
+        res.append(tmp[2])
+    return res
+
+
+def loadsetting(kwd, guild):
+    db.execute(
+        "SELECT * FROM setting WHERE guildid=? AND name=?",
+        (
+            guild.id,
+            kwd,
+        ),
+    )
+    subres = db.fetchone()
+    if subres is None:
+        return None
+    return subres[2]
+
+
+def savesetting(kwd, guild, tosave):
+    delsetting(kwd, guild)
+    db.execute(
+        "INSERT OR REPLACE INTO setting(guildid, name, data) \
+        VALUES(?,?,?)",
+        (guild.id, kwd, tosave),
+    )
+    conn.commit()
+
+
+def delsetting(kwd, guild):
+    db.execute(
+        "DELETE FROM setting WHERE guildid=? AND name=?",
+        (
+            guild.id,
+            kwd,
+        ),
+    )
+    conn.commit()
+
+
+def loaddict(kwd):
+    db.execute("SELECT * FROM dict WHERE command=?", (kwd,))
+    subres = db.fetchone()
+    if subres is None:
+        return False
+    return (subres[1], subres[2], subres[3])
+
+
+def savedict(kwd, tosave):
+    db.execute(
+        "INSERT OR REPLACE INTO dict(command, replystr, editable, author) \
+        VALUES(?,?,?,?)",
+        (
+            kwd,
+            tosave[0],
+            tosave[1],
+            tosave[2],
+        ),
+    )
+    conn.commit()
+
+
+def deldict(kwd):
+    db.execute("DELETE FROM dict WHERE command=?", (kwd,))
+    conn.commit()
+
+
+def isadmin(uid, guild):
+    db.execute(
+        "SELECT * FROM setting WHERE guildid=? AND name=?",
+        (
+            guild.id,
+            "admin",
+        ),
+    )
+    subres = db.fetchall()
+    if len(subres) == 0:
+        db.execute(
+            "INSERT INTO setting(guildid, name, data) \
+            VALUES(?,?,?)",
+            (
+                guild.id,
+                "admin",
+                guild.owner_id,
+            ),
+        )
+        conn.commit()
+        subres.append([guild.owner_id, "admin", uid])
+    res = []
+    for tmp in subres:
+        res.append(tmp[2])
+    return uid in res
+
+
+def addadmin(uid, guild):
+    if isadmin(uid, guild):
+        return False
+    db.execute(
+        "INSERT INTO setting(guildid, name, data) \
+        VALUES(?,?,?)",
+        (
+            guild.id,
+            "admin",
+            uid,
+        ),
+    )
+    conn.commit()
     return True
 
 
-def deladmin(id, guild):
-    owner_list = loadfile("owner", guild=guild)
-    if id in owner:
+def deladmin(uid, guild):
+    guildid = guild.id
+    if uid in owner:
         return 3
-    if id == guild.owner_id:
+    if uid == guild.owner_id:
         return 2
-    if not id in owner_list:
+    if not isadmin(uid, guild):
         return 1
-    owner_list.remove(id)
-    savefile("owner", owner_list, guild=guild)
+    db.execute(
+        "DELETE FROM setting WHERE guildid=? AND name=?",
+        (
+            guildid,
+            "admin",
+        ),
+    )
+    conn.commit()
     return 0
 
 
@@ -121,253 +245,155 @@ def admincheck():
 
 
 def isban(uid):
-    owner_list = loadfile("ban")
-    return uid in owner_list
+    db.execute(
+        "SELECT * FROM gsetting WHERE name=? AND data=?",
+        (
+            "ban",
+            uid,
+        ),
+    )
+    subres = db.fetchall()
+    res = []
+    for tmp in subres:
+        res.append(tmp[1])
+    return uid in res
 
 
 def addban(uid):
-    owner_list = loadfile("ban")
-    if uid in owner_list:
+    if isban(uid):
         return False
-    owner_list.append(uid)
-    savefile("ban", owner_list)
+    db.execute(
+        "INSERT INTO gsetting(name, data) \
+        VALUES(?,?)",
+        (
+            "ban",
+            uid,
+        ),
+    )
+    conn.commit()
     return True
 
 
 def delban(uid):
-    owner_list = loadfile("ban")
-    if not uid in owner_list:
+    if not isban(uid):
         return 1
-    owner_list.remove(uid)
-    savefile("ban", owner_list)
+    db.execute(
+        "DELETE FROM gsetting WHERE name=? AND data=?",
+        (
+            "ban",
+            uid,
+        ),
+    )
+    conn.commit()
     return 0
 
 
 def isowner(uid):
-    owner_list = loadfile("sowner")
-    return uid in owner_list
-
-
-def addowner(uid):
-    owner_list = loadfile("sowner")
-    if uid in owner_list:
-        return False
-    owner_list.append(uid)
-    savefile("sowner", owner_list)
-    return True
-
-
-def delowner(uid):
-    owner_list = loadfile("sowner")
-    if uid in owner:
-        return 3
-    if not uid in owner_list:
-        return 1
-    owner_list.remove(uid)
-    savefile("sowner", owner_list)
-    return 0
-
-
-def getpoint(uid, guild):
-    point_list = loadfile("point", guild=guild)
-    if uid not in point_list:
-        return -1
-    return point_list[uid]
+    return uid in owner
 
 
 def setpoint(uid, newpoint: int, guild):
-    point_list = loadfile("point", guild=guild)
-    point_list[uid] = newpoint
-    savefile("point", point_list, guild=guild)
+    db.execute(
+        "INSERT OR REPLACE INTO point(guildid, uid, point) \
+        VALUES(?,?,?)",
+        (
+            guild.id,
+            uid,
+            newpoint,
+        ),
+    )
+    conn.commit()
 
 
-def getstk(stype, uid, guild):
-    point_list = loadfile("stk" + stype, guild=guild)
-    if uid not in point_list:
-        return -1
-    return point_list[uid]
+def getpoint(uid, guild):
+    db.execute(
+        "SELECT * FROM point WHERE guildid=? AND uid=?",
+        (
+            guild.id,
+            uid,
+        ),
+    )
+    res = db.fetchone()
+    if res is None:
+        setpoint(uid, 0, guild)
+        return 0
+    return res[2]
 
 
 def setstk(stype, uid, newpoint: int, guild):
-    point_list = loadfile("stk" + stype, guild=guild)
-    point_list[uid] = newpoint
-    savefile("stk" + stype, point_list, guild=guild)
-    return
+    db.execute(
+        "INSERT OR REPLACE INTO stock(guildid, uid, stype, count) \
+        VALUES(?,?,?,?)",
+        (
+            guild.id,
+            uid,
+            stype,
+            newpoint,
+        ),
+    )
+    conn.commit()
+
+
+def getstk(stype, uid, guild):
+    db.execute(
+        "SELECT * FROM stock WHERE guildid=? AND uid=? AND stype=?",
+        (
+            guild.id,
+            uid,
+            stype,
+        ),
+    )
+    res = db.fetchone()
+    if res is None:
+        setstk(stype, uid, 0, guild)
+        return 0
+    return res[3]
 
 
 def recstk(stype, uid, guild, buy, cnt, price):
-    point_list = loadfile("lstk" + stype, guild=guild)
-    slog = [buy, cnt, price]
-    if not uid in point_list:
-        point_list[uid] = []
-    point_list[uid].append(slog)
-    while len(point_list[uid]) > 10:
-        point_list[uid].pop(0)
-    savefile("lstk" + stype, point_list, guild=guild)
+    if not buy:
+        cnt *= -1
+    db.execute(
+        "INSERT INTO stocklog(guildid, uid, stype, count, price) \
+        VALUES(?,?,?,?,?)",
+        (
+            guild.id,
+            uid,
+            stype,
+            cnt,
+            price,
+        ),
+    )
+    conn.commit()
     return
 
 
 def getrecstk(stype, uid, guild):
-    point_list = loadfile("lstk" + stype, guild=guild)
-    if not uid in point_list:
-        point_list[uid] = []
-    return point_list[uid]
+    db.execute(
+        "SELECT * FROM stocklog WHERE guildid=? AND uid=? AND stype=?",
+        (
+            guild.id,
+            uid,
+            stype,
+        ),
+    )
+    subres = db.fetchall()
+    res = []
+    for tmp in subres:
+        if tmp[3] < 0:
+            a = False
+            b = tmp[3] * -1
+        else:
+            a = True
+            b = tmp[3]
+        res.insert(0, [a, b, tmp[4]])
 
 
-def loadfile(stype: str, *, guild=None):
-    if stype == "dict":
-        a = is_non_zero_file("./bbdata/dict.custom")
-        if not a:
-            createFolder("./bbdata")
-            new_dict = {}
-            with open("./bbdata/dict.custom", "wb") as fw:
-                pickle.dump(new_dict, fw)
-            return {}
-        with open("./bbdata/dict.custom", "rb") as fr:
-            dict_loaded = pickle.load(fr)
-        return dict_loaded
-    if stype == "point":
-        a = is_non_zero_file("./bbdata/" + str(guild.id) + "/point.custom")
-        if not a:
-            createFolder("./bbdata")
-            createFolder("./bbdata/" + str(guild.id) + "/")
-            new_dict = {}
-            with open("./bbdata/" + str(guild.id) + "/point.custom", "wb") as fw:
-                pickle.dump(new_dict, fw)
-            return {}
-        with open("./bbdata/" + str(guild.id) + "/point.custom", "rb") as fr:
-            setting_loaded = pickle.load(fr)
-        return setting_loaded
-    if stype.startswith("stk"):
-        a = is_non_zero_file("./bbdata/" + str(guild.id) + "/" + stype + ".custom")
-        if not a:
-            createFolder("./bbdata")
-            createFolder("./bbdata/" + str(guild.id) + "/")
-            new_dict = {}
-            with open(
-                "./bbdata/" + str(guild.id) + "/" + stype + ".custom", "wb"
-            ) as fw:
-                pickle.dump(new_dict, fw)
-            return {}
-        with open("./bbdata/" + str(guild.id) + "/" + stype + ".custom", "rb") as fr:
-            setting_loaded = pickle.load(fr)
-        return setting_loaded
-    if stype.startswith("lstk"):
-        a = is_non_zero_file("./bbdata/" + str(guild.id) + "/" + stype + ".custom")
-        if not a:
-            createFolder("./bbdata")
-            createFolder("./bbdata/" + str(guild.id) + "/")
-            new_dict = {}
-            with open(
-                "./bbdata/" + str(guild.id) + "/" + stype + ".custom", "wb"
-            ) as fw:
-                pickle.dump(new_dict, fw)
-            return {}
-        with open("./bbdata/" + str(guild.id) + "/" + stype + ".custom", "rb") as fr:
-            setting_loaded = pickle.load(fr)
-        return setting_loaded
-    if stype == "setting":
-        a = is_non_zero_file("./bbdata/" + str(guild.id) + "/settings.custom")
-        if not a:
-            createFolder("./bbdata")
-            createFolder("./bbdata/" + str(guild.id) + "/")
-            new_dict = {}
-            with open("./bbdata/" + str(guild.id) + "/settings.custom", "wb") as fw:
-                pickle.dump(new_dict, fw)
-            return {}
-        with open("./bbdata/" + str(guild.id) + "/settings.custom", "rb") as fr:
-            setting_loaded = pickle.load(fr)
-        return setting_loaded
-    if stype == "owner":
-        a = is_non_zero_file("./bbdata/" + str(guild.id) + "/owner.custom")
-        if not a:
-            createFolder("./bbdata")
-            createFolder("./bbdata/" + str(guild.id) + "/")
-            new_array = [guild.owner_id] + owner
-            with open("./bbdata/" + str(guild.id) + "/owner.custom", "wb") as fw:
-                pickle.dump(new_array, fw)
-            return new_array
-        with open("./bbdata/" + str(guild.id) + "/owner.custom", "rb") as fr:
-            owner_loaded = pickle.load(fr)
-        return owner_loaded
-    if stype == "sowner":
-        a = is_non_zero_file("./bbdata/sowner.custom")
-        if not a:
-            createFolder("./bbdata")
-            new_array = owner
-            with open("./bbdata/sowner.custom", "wb") as fw:
-                pickle.dump(new_array, fw)
-            return new_array
-        with open("./bbdata/sowner.custom", "rb") as fr:
-            array_loaded = pickle.load(fr)
-        return array_loaded
-    if stype == "ban":
-        a = is_non_zero_file("./bbdata/ban.custom")
-        if not a:
-            createFolder("./bbdata")
-            new_array = []
-            with open("./bbdata/ban.custom", "wb") as fw:
-                pickle.dump(new_array, fw)
-            return {}
-        with open("./bbdata/ban.custom", "rb") as fr:
-            array_loaded = pickle.load(fr)
-        return array_loaded
-    if stype == "settingall":
-        setting_loaded = []
-        files = os.listdir("./bbdata/")
-        for item in files:
-            if os.path.isdir("./bbdata/" + item):
-                a = is_non_zero_file("./bbdata/" + item + "/settings.custom")
-                if not a:
-                    new_dict = {}
-                    with open("./bbdata/" + item + "/settings.custom", "wb") as fw:
-                        pickle.dump(new_dict, fw)
-                else:
-                    with open("./bbdata/" + item + "/settings.custom", "rb") as fr:
-                        tmp = pickle.load(fr)
-                    if "chnl" in tmp:
-                        setting_loaded.append(tmp["chnl"])
-        return setting_loaded
-
-
-def savefile(stype: str, data, *, guild=None):
-    if stype == "dict":
-        with open("./bbdata/dict.custom", "wb") as fw:
-            pickle.dump(data, fw)
-        return
-    if stype == "point":
-        with open("./bbdata/" + str(guild.id) + "/point.custom", "wb") as fw:
-            pickle.dump(data, fw)
-        return
-    if stype.startswith("stk"):
-        with open("./bbdata/" + str(guild.id) + "/" + stype + ".custom", "wb") as fw:
-            pickle.dump(data, fw)
-        return
-    if stype.startswith("lstk"):
-        with open("./bbdata/" + str(guild.id) + "/" + stype + ".custom", "wb") as fw:
-            pickle.dump(data, fw)
-        return
-    if stype == "setting":
-        with open("./bbdata/" + str(guild.id) + "/settings.custom", "wb") as fw:
-            pickle.dump(data, fw)
-        return
-    if stype == "owner":
-        with open("./bbdata/" + str(guild.id) + "/owner.custom", "wb") as fw:
-            pickle.dump(data, fw)
-        return
-    if stype == "sowner":
-        with open("./bbdata/sowner.custom", "wb") as fw:
-            pickle.dump(data, fw)
-        return
-    if stype == "ban":
-        with open("./bbdata/ban.custom", "wb") as fw:
-            pickle.dump(data, fw)
-        return
-
-
+""" NOT USED
 async def download(url, file_name):
     with open(file_name, "wb") as file:
-        log("querying " + url)
+        dbglog("querying " + url)
         httpclient = http3.AsyncClient()
         resp = await httpclient.get(url, timeout=100.0)
         file.write(resp.content)
+"""

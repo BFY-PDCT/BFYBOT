@@ -26,7 +26,7 @@ import asyncio
 import random
 import discord
 from .config import using, bot, prefix, botcolor
-from .genfunc import getpoint, log, setpoint, getstk, setstk, recstk, getrecstk
+from .genfunc import getpoint, setpoint, getstk, setstk, recstk, getrecstk
 from discord.ext import commands
 from discord.ext.commands import Context
 
@@ -124,16 +124,11 @@ async def gamble(ctx: Context, *args):
             getpoint(ctx.author.id, guild=ctx.guild) - num,
             guild=ctx.guild,
         )
-        log("Taking " + str(num) + " Points from " + str(ctx.author), guild=ctx.guild)
     elif i >= 81 and i <= 128:
         await msg.edit(content="0.5배 다먹기엔 배불러 ㅋㅋ `💰-" + str(num // 2) + "`")
         setpoint(
             ctx.author.id,
             getpoint(ctx.author.id, guild=ctx.guild) - num // 2,
-            guild=ctx.guild,
-        )
-        log(
-            "Taking " + str(num // 2) + " Points from " + str(ctx.author),
             guild=ctx.guild,
         )
     elif i >= 128 and i <= 224:
@@ -145,7 +140,6 @@ async def gamble(ctx: Context, *args):
             getpoint(ctx.author.id, guild=ctx.guild) + num,
             guild=ctx.guild,
         )
-        log("Giving " + str(num) + " Points to " + str(ctx.author), guild=ctx.guild)
     elif i >= 241 and i <= 248:
         await msg.edit(content="올 4배 ㅊㅊ `💰+" + str(num * 3) + "`")
         setpoint(
@@ -153,7 +147,6 @@ async def gamble(ctx: Context, *args):
             getpoint(ctx.author.id, guild=ctx.guild) + num * 3,
             guild=ctx.guild,
         )
-        log("Giving " + str(num * 3) + " Points to " + str(ctx.author), guild=ctx.guild)
     elif i >= 249 and i <= 252:
         await msg.edit(content="이야 이걸 6배로 가져가네 `💰+" + str(num * 5) + "`")
         setpoint(
@@ -161,7 +154,6 @@ async def gamble(ctx: Context, *args):
             getpoint(ctx.author.id, guild=ctx.guild) + num * 5,
             guild=ctx.guild,
         )
-        log("Giving " + str(num * 5) + " Points to " + str(ctx.author), guild=ctx.guild)
     elif i >= 253 and i <= 254:
         await msg.edit(content="8배면 와... `💰+" + str(num * 7) + "`")
         setpoint(
@@ -169,7 +161,6 @@ async def gamble(ctx: Context, *args):
             getpoint(ctx.author.id, guild=ctx.guild) + num * 7,
             guild=ctx.guild,
         )
-        log("Giving " + str(num * 7) + " Points to " + str(ctx.author), guild=ctx.guild)
     elif i >= 255 and i <= 255:
         await msg.edit(content="10배라니 너 운 좀 좋다? `💰+" + str(num * 9) + "`")
         setpoint(
@@ -177,16 +168,12 @@ async def gamble(ctx: Context, *args):
             getpoint(ctx.author.id, guild=ctx.guild) + num * 9,
             guild=ctx.guild,
         )
-        log("Giving " + str(num * 9) + " Points to " + str(ctx.author), guild=ctx.guild)
     elif i >= 256 and i <= 256:
         await msg.edit(content="뭔 나 거지되겠네 50배는 너무한거아니냐 `💰+" + str(num * 29) + "`")
         setpoint(
             ctx.author.id,
             getpoint(ctx.author.id, guild=ctx.guild) + num * 49,
             guild=ctx.guild,
-        )
-        log(
-            "Giving " + str(num * 49) + " Points to " + str(ctx.author), guild=ctx.guild
         )
     using.remove(ctx.author.id)
     return
@@ -319,17 +306,9 @@ async def stock(ctx: Context, *args):
             return
         await msg.edit(content=str(num) + "주를 구매하셨습니다. `💰-" + str(res * num) + "`")
         setpoint(ctx.author.id, pnt - res * num, guild=ctx.guild)
-        log(
-            "Taking " + str(res * num) + " Points from " + str(ctx.author),
-            guild=ctx.guild,
-        )
         setstk(types, ctx.author.id, stk + num, ctx.guild)
         stkx.buy(num)
         recstk(types, ctx.author.id, ctx.guild, True, num, res)
-        log(
-            "Giving " + str(num) + " A Stocks to " + str(ctx.author),
-            guild=ctx.guild,
-        )
     elif args[0] == "매도":
         stkx = bot.get_cog("updatestk" + types)
         if stkx is not None:
@@ -366,17 +345,9 @@ async def stock(ctx: Context, *args):
             return
         await msg.edit(content=str(num) + "주를 판매하셨습니다. `💰+" + str(res * num) + "`")
         setpoint(ctx.author.id, pnt + res * num, guild=ctx.guild)
-        log(
-            "Giving " + str(res * num) + " Points to " + str(ctx.author),
-            guild=ctx.guild,
-        )
         setstk(types, ctx.author.id, stk - num, ctx.guild)
         stkx.sell(num)
         recstk(types, ctx.author.id, ctx.guild, False, num, res)
-        log(
-            "Taking " + str(num) + " A Stocks from " + str(ctx.author),
-            guild=ctx.guild,
-        )
     elif args[0] == "통계":
         stk = getrecstk(types, ctx.author.id, guild=ctx.guild)
         if len(stk) == 0:

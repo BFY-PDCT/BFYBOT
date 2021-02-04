@@ -25,7 +25,16 @@ if __name__ == "__main__":
 import discord
 import asyncio
 from .config import prefix, pending, using, bot
-from .genfunc import errlog, getpoint, isowner, loadfile, log, savefile, setpoint
+from .genfunc import (
+    deldict,
+    errlog,
+    getpoint,
+    isowner,
+    loaddict,
+    savedict,
+    setpoint,
+    tblog,
+)
 from discord.ext import commands
 
 
@@ -43,20 +52,30 @@ class CommandErrorHandler(commands.Cog):
         if hasattr(ctx.command, "on_error"):
             return
 
+        if isinstance(error, commands.CommandNotFound):
+            pass
+        elif isinstance(error, commands.CheckFailure):
+            await ctx.send("관리자 아니면 안해줄건뎅")
+            return
+        else:
+            tblog(error)
+            await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+            return
+
         # This prevents any cogs with an overwritten cog_command_error being handled here.
         cog = ctx.cog
         if cog:
             if cog._get_overridden_method(cog.cog_command_error) is not None:
                 return
 
-        log("PROCESS COMMAND ERROR : " + str(error))
-
         if ctx.author.id in using:
             using.remove(ctx.author.id)
 
         if ctx.message.content.startswith(prefix):  # prefix *
 
-            new_dict = loadfile("dict")
+            # reply: [replystr: str, editable: bool, author: int]
+            kwd = " ".join(ctx.message.content.split(" ")[1:])
+            reply = loaddict(kwd)
 
             def checka(m):
                 return (
@@ -84,34 +103,15 @@ class CommandErrorHandler(commands.Cog):
                     and ctx.message.author == m.author
                 )
 
-            if ctx.message.content in new_dict:
-                if new_dict.get(ctx.message.content) == "":
-                    errlog(
-                        "Error found, automatic fix process will be started",
-                        guild=ctx.message.guild,
-                    )
-                    await ctx.message.channel.send(
-                        "죄송합니다 에러가 발견되어 수정되었습니다.",
-                        allowed_mentions=discord.AllowedMentions.all(),
-                    )
-                    del new_dict[ctx.message.content]
-                    if "i" + ctx.message.content in new_dict:
-                        del new_dict["i" + ctx.message.content]
-                    savefile("dict", new_dict, guild=ctx.message.guild)
-                    return
-                mymsg = await ctx.message.channel.send(
-                    new_dict.get(ctx.message.content)
-                )
+            if not reply == False:
+                mymsg = await ctx.message.channel.send(reply[0])
                 if isowner(ctx.message.author.id):
                     try:
                         msg = await bot.wait_for("message", check=checka, timeout=10.0)
                     except asyncio.TimeoutError:
                         return
                     else:
-                        del new_dict[ctx.message.content]
-                        if "i" + ctx.message.content in new_dict:
-                            del new_dict["i" + ctx.message.content]
-                        savefile("dict", new_dict, guild=ctx.message.guild)
+                        deldict(kwd)
                         await mymsg.edit(
                             content="주인님 지웠읍니다.",
                             allowed_mentions=discord.AllowedMentions.all(),
@@ -122,10 +122,9 @@ class CommandErrorHandler(commands.Cog):
                 except asyncio.TimeoutError:
                     return
                 if msg.content == "바꿔":
-                    if "e" + ctx.message.content in new_dict:
-                        if not new_dict["e" + ctx.message.content]:
-                            await mymsg.edit(content="이건 못바꿔줘")
-                            return
+                    if reply[1]:
+                        await mymsg.edit(content="이건 못바꿔줘")
+                        return
                     if getpoint(ctx.message.author.id, guild=ctx.guild) >= 100000:
                         await mymsg.edit(
                             content="100000포인트를 사용해서 대답을 바꿔줄래?",
@@ -161,10 +160,6 @@ class CommandErrorHandler(commands.Cog):
                                 using.remove(ctx.message.author.id)
                                 return
                             if msg.content == "":
-                                errlog(
-                                    "Cannot store empty message",
-                                    guild=ctx.message.guild,
-                                )
                                 await mymsg.edit(
                                     content="이걸 어케등록하란겨",
                                     allowed_mentions=discord.AllowedMentions.all(),
@@ -172,36 +167,23 @@ class CommandErrorHandler(commands.Cog):
                                 pending.remove(ctx.message.content)
                                 using.remove(ctx.message.author.id)
                                 return
-                            else:
-                                new_dict[ctx.message.content] = msg.content
-                                new_dict["i" + ctx.message.content] = msg.author.id
-                                new_dict["e" + ctx.message.content] = True
-                                await mymsg.edit(
-                                    content="ㅇㅋ `💰-100000`",
-                                    allowed_mentions=discord.AllowedMentions.all(),
-                                )
-                                setpoint(
+                            savedict(kwd, [msg.content, True, msg.author.id])
+                            await mymsg.edit(
+                                content="ㅇㅋ `💰-100000`",
+                                allowed_mentions=discord.AllowedMentions.all(),
+                            )
+                            setpoint(
+                                ctx.message.author.id,
+                                getpoint(
                                     ctx.message.author.id,
-                                    getpoint(
-                                        ctx.message.author.id,
-                                        guild=ctx.guild,
-                                    )
-                                    - 50000,
                                     guild=ctx.guild,
                                 )
-                                log(
-                                    "Taking 100000 Points from "
-                                    + str(ctx.message.author),
-                                    guild=ctx.message.guild,
-                                )
-                                savefile(
-                                    "dict",
-                                    new_dict,
-                                    guild=ctx.message.guild,
-                                )
-                                pending.remove(ctx.message.content)
-                                using.remove(ctx.message.author.id)
-                                return
+                                - 50000,
+                                guild=ctx.guild,
+                            )
+                            pending.remove(ctx.message.content)
+                            using.remove(ctx.message.author.id)
+                            return
                         elif msg.content == "아니":
                             await mymsg.edit(content="ㅇㅋ 싫음말고")
                             return
@@ -246,10 +228,6 @@ class CommandErrorHandler(commands.Cog):
                         using.remove(ctx.message.author.id)
                         return
                     if msg.content == "":
-                        errlog(
-                            "Cannot store empty message",
-                            guild=ctx.message.guild,
-                        )
                         await mymsg.edit(
                             content="주인님 이건좀...",
                             allowed_mentions=discord.AllowedMentions.all(),
@@ -257,14 +235,11 @@ class CommandErrorHandler(commands.Cog):
                         pending.remove(ctx.message.content)
                         using.remove(ctx.message.author.id)
                     else:
-                        new_dict[ctx.message.content] = msg.content
-                        new_dict["i" + ctx.message.content] = msg.author.id
-                        new_dict["e" + ctx.message.content] = True
+                        savedict(kwd, [msg.content, True, msg.author.id])
                         await mymsg.edit(
                             content="주인님 등록하였읍니다.",
                             allowed_mentions=discord.AllowedMentions.all(),
                         )
-                        savefile("dict", new_dict, guild=ctx.message.guild)
                         pending.remove(ctx.message.content)
                         using.remove(ctx.message.author.id)
                 else:
@@ -299,9 +274,7 @@ class CommandErrorHandler(commands.Cog):
                         pending.remove(ctx.message.content)
                         using.remove(ctx.message.author.id)
                     else:
-                        new_dict[ctx.message.content] = msg.content
-                        new_dict["i" + ctx.message.content] = msg.author.id
-                        new_dict["e" + ctx.message.content] = True
+                        savedict(kwd, [msg.content, True, msg.author.id])
                         await mymsg.edit(
                             content="ㅇㅋ `💰-50000`",
                             allowed_mentions=discord.AllowedMentions.all(),
@@ -311,11 +284,6 @@ class CommandErrorHandler(commands.Cog):
                             getpoint(ctx.message.author.id, guild=ctx.guild) - 50000,
                             guild=ctx.guild,
                         )
-                        log(
-                            "Taking 50000 Points from " + str(ctx.message.author),
-                            guild=ctx.message.guild,
-                        )
-                        savefile("dict", new_dict, guild=ctx.message.guild)
                         pending.remove(ctx.message.content)
                         using.remove(ctx.message.author.id)
             elif msg.content == "아니":
