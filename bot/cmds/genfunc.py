@@ -184,6 +184,18 @@ def isadmin(uid, guild):
         ),
     )
     subres = db.fetchall()
+    if subres is None:
+        db.execute(
+            "INSERT INTO setting(guildid, name, data) \
+            VALUES(?,?,?)",
+            (
+                guild.id,
+                "admin",
+                guild.owner_id,
+            ),
+        )
+        conn.commit()
+        subres.append([guild.owner_id, "admin", uid])
     if len(subres) == 0:
         db.execute(
             "INSERT INTO setting(guildid, name, data) \
@@ -386,6 +398,7 @@ def getrecstk(stype, uid, guild):
             a = True
             b = tmp[3]
         res.insert(0, [a, b, tmp[4]])
+    return res
 
 
 """

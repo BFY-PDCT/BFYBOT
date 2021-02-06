@@ -122,7 +122,7 @@ class CommandErrorHandler(commands.Cog):
                 except asyncio.TimeoutError:
                     return
                 if msg.content == "바꿔":
-                    if reply[1]:
+                    if not reply[1]:
                         await mymsg.edit(content="이건 못바꿔줘")
                         return
                     if getpoint(ctx.message.author.id, guild=ctx.guild) >= 100000:
