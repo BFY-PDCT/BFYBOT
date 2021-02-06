@@ -34,9 +34,9 @@ from .config import (
     bot,
     musicstr,
     helpmusicstr,
+    prefix,
 )
 from .genfunc import calculate, errlog, dbglog, isadmin
-from .config import prefix, botname
 from discord.ext import commands
 from discord.ext.commands import Context
 
