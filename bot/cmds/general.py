@@ -23,9 +23,8 @@ if __name__ == "__main__":
     sys.exit(0)
 
 import discord
-import urllib.request
-import urllib.parse
 from urllib.parse import quote
+from requests import get
 from .config import (
     invlink,
     vernum,
@@ -36,7 +35,8 @@ from .config import (
     musicstr,
     helpmusicstr,
 )
-from .genfunc import calculate, errlog, dbglog
+from .genfunc import calculate, errlog, dbglog, isadmin
+from .config import prefix, botname
 from discord.ext import commands
 from discord.ext.commands import Context
 
@@ -96,8 +96,21 @@ async def help(ctx: Context):
         inline=False,
     )
     ver.add_field(name="초대", value=invlink, inline=False)
-    await ctx.author.send(botname + "한테 명령하는 방법입니다", embed=ver)
-    await ctx.message.add_reaction("👍")
+    if isadmin(ctx.author.id, ctx.guild):
+        ver.add_field(
+            name="구독하기",
+            value=botname
+            + "의 관리자이시군요! `"
+            + prefix
+            + " 구독 #채널` 명령어를 통해 점검 등의 공지사항을 받으시는 것을 추천드립니다!",
+            inline=False,
+        )
+    try:
+        await ctx.author.send(botname + "한테 명령하는 방법입니다", embed=ver)
+    except Exception as e:
+        await ctx.send("도움말 전송에 실패했어요 :( DM이 차단된건 아닌지 확인해주세요!")
+    else:
+        await ctx.message.add_reaction("👍")
     return
 
 
@@ -106,7 +119,7 @@ async def lolsearch(ctx: Context, *, arg):
     lolid = arg
     url = "https://www.op.gg/summoner/userName=" + quote(lolid)
     dbglog("querying " + url)
-    subres = urllib.request.urlopen(url).read().decode("utf-8")
+    subres = get(url).content.decode()
     tmp = subres[
         subres.find('<meta name="description" content="')
         + len('<meta name="description" content="') :

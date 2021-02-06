@@ -34,6 +34,7 @@ from cmds import (
     isowner,
     loadsetting,
     log,
+    dbglog,
 )
 from discord.errors import Forbidden, HTTPException
 
@@ -59,7 +60,7 @@ async def on_member_join(member):
     msgj = loadsetting("msgj", guild=member.guild)
     joinrole = loadsetting("joinrole", guild=member.guild)
     chnl = False
-    if not setting_loaded == False and not msgj == False:
+    if setting_loaded is not False and msgj is not False:
         try:
             msgje = discord.Embed(title=msgj, color=botcolor)
             await bot.get_channel(setting_loaded).send(
@@ -70,7 +71,7 @@ async def on_member_join(member):
             log("Error Sending Notice to " + str(setting_loaded["chnl"]))
         except Forbidden:
             log("Error Sending Notice to " + str(setting_loaded["chnl"]))
-    if not joinrole == False:
+    if joinrole is not False:
         try:
             xrole: discord.Role = None
             find = False
@@ -122,12 +123,16 @@ async def on_member_remove(member):
 
 @bot.event
 async def on_guild_join(guild):
-    log("guild joined NAME: " + str(guild.name) + ", ID:" + str(guild.id), guild=guild)
+    dbglog(
+        "guild joined NAME: " + str(guild.name) + ", ID:" + str(guild.id), guild=guild
+    )
 
 
 @bot.event
 async def on_guild_remove(guild):
-    log("guild removed NAME: " + str(guild.name) + ", ID:" + str(guild.id), guild=guild)
+    dbglog(
+        "guild removed NAME: " + str(guild.name) + ", ID:" + str(guild.id), guild=guild
+    )
 
 
 @bot.event

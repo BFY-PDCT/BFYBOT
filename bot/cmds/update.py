@@ -122,11 +122,9 @@ class updatestka(commands.Cog):
 
     def buy(self, cnt: int):
         self.delta = self.delta - cnt // 10
-        return
 
     def sell(self, cnt: int):
         self.delta = self.delta + cnt // 10
-        return
 
     @process.after_loop
     async def on_process_cancel(self):
@@ -220,11 +218,9 @@ class updatestkb(commands.Cog):
 
     def buy(self, cnt: int):
         self.delta = self.delta - cnt * 10
-        return
 
     def sell(self, cnt: int):
         self.delta = self.delta + cnt * 10
-        return
 
     @process.after_loop
     async def on_process_cancel(self):
@@ -311,11 +307,9 @@ class updatestkc(commands.Cog):
 
     def buy(self, cnt: int):
         self.delta = self.delta - cnt // 20
-        return
 
     def sell(self, cnt: int):
         self.delta = self.delta + cnt // 20
-        return
 
     @process.after_loop
     async def on_process_cancel(self):
@@ -384,7 +378,7 @@ class updatemute(commands.Cog):
         if param == 0:
             await member.edit(roles=mute[3], reason="MUTE Command Timeout")
             log("Unmuted " + member.name, guild=guild)
-            if not setting_loaded == False:
+            if setting_loaded is not False:
                 try:
                     await bot.get_channel(setting_loaded).send(
                         "처리 종료되었습니다 - 뮤트 {.mention}".format(member)
@@ -400,7 +394,7 @@ class updatemute(commands.Cog):
         elif param == 1:
             await member.edit(roles=mute[3], reason="MUTE Command Cancel")
             log("Unmuted " + member.name, guild=guild)
-            if not setting_loaded == False:
+            if setting_loaded is not False:
                 try:
                     await bot.get_channel(setting_loaded).send(
                         "처리 종료되었습니다 - 뮤트 {.mention} / 처리자: {.mention}".format(

@@ -103,7 +103,7 @@ class CommandErrorHandler(commands.Cog):
                     and ctx.message.author == m.author
                 )
 
-            if not reply == False:
+            if reply is not False:
                 mymsg = await ctx.message.channel.send(reply[0])
                 if isowner(ctx.message.author.id):
                     try:
@@ -184,7 +184,7 @@ class CommandErrorHandler(commands.Cog):
                             pending.remove(ctx.message.content)
                             using.remove(ctx.message.author.id)
                             return
-                        elif msg.content == "아니":
+                        if msg.content == "아니":
                             await mymsg.edit(content="ㅇㅋ 싫음말고")
                             return
                     else:

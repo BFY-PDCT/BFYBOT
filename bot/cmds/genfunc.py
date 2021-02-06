@@ -26,7 +26,7 @@ import os
 import traceback
 import time
 from datetime import datetime
-from operator import pow, truediv, mul, add, sub
+from operator import truediv, mul, add, sub
 from discord.ext import commands
 from .config import owner, eventlogger, conn, db
 
@@ -365,7 +365,6 @@ def recstk(stype, uid, guild, buy, cnt, price):
         ),
     )
     conn.commit()
-    return
 
 
 def getrecstk(stype, uid, guild):
@@ -389,7 +388,8 @@ def getrecstk(stype, uid, guild):
         res.insert(0, [a, b, tmp[4]])
 
 
-""" NOT USED
+"""
+NOT USED
 async def download(url, file_name):
     with open(file_name, "wb") as file:
         dbglog("querying " + url)
