@@ -127,7 +127,7 @@ conn = sqlite3.connect("./bbdata/bbdata.db")
 db = conn.cursor()
 db.execute(
     "CREATE TABLE IF NOT EXISTS dict \
-    (command text PRIMARY KEY, reply blob)"
+    (command text PRIMARY KEY, replystr text, editable blob, author integer)"
 )
 db.execute(
     "CREATE TABLE IF NOT EXISTS point \

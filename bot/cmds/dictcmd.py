@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
 import discord
 import asyncio
-from .config import prefix, pending, using, bot
+from .config import prefix, pending, using, bot, owner, botcolor
 from .genfunc import (
     deldict,
     errlog,
@@ -98,7 +98,7 @@ class CommandErrorHandler(commands.Cog):
 
             def checkd(m):
                 return (
-                    m.content == "바꿔"
+                    (m.content.startswith("신고") or m.content == "바꿔")
                     and m.channel == ctx.message.channel
                     and ctx.message.author == m.author
                 )
@@ -190,6 +190,26 @@ class CommandErrorHandler(commands.Cog):
                     else:
                         await mymsg.edit(content="100000포인트 벌고와")
                         return
+                else:
+                    ver = discord.Embed(
+                        title="새 신고",
+                        description="by: "
+                        + str(msg.author)
+                        + "\nid: "
+                        + str(msg.author.id),
+                        color=botcolor,
+                    )
+                    ver.add_field(name="질문", value=kwd)
+                    ver.add_field(name="답변", value=reply[0])
+                    ver.add_field(
+                        name="사유", value=" ".join(ctx.message.content.split()[1:])
+                    )
+                    ver.add_field(name="작성자", value=reply[2], inline=False)
+                    await bot.get_user(owner[0]).send("새 신고", embed=ver)
+                    await mymsg.edit(
+                        content="해당 답변을 신고하였습니다. 신고된 답변은 관리자가 검토 후 조치할 예정입니다."
+                    )
+                    return
             if isowner(ctx.message.author.id):
                 mymsg = await ctx.message.channel.send(
                     "주인님 새 명령어가 필요하십니까", allowed_mentions=discord.AllowedMentions.all()
