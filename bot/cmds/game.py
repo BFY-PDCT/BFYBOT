@@ -304,6 +304,11 @@ async def stock(ctx: Context, *args):
             await msg.edit(content="정확한 수량을 입력하십쇼")
             using.remove(ctx.author.id)
             return
+        stknow = getstk(types, ctx.author.id, ctx.guild)
+        if stknow + num > 100000:
+            await msg.edit(content="주식 최대 보유량은 10만주입니다.")
+            using.remove(ctx.author.id)
+            return
         await msg.edit(content=str(num) + "주를 구매하셨습니다. `💰-" + str(res * num) + "`")
         setpoint(ctx.author.id, pnt - res * num, guild=ctx.guild)
         setstk(types, ctx.author.id, stk + num, ctx.guild)
@@ -317,14 +322,8 @@ async def stock(ctx: Context, *args):
             await ctx.send("ERROR")
             using.remove(ctx.author.id)
             return
-        pnt = getpoint(ctx.author.id, guild=ctx.guild)
-        if pnt == -1:
-            setpoint(ctx.author.id, 0, guild=ctx.guild)
-            pnt = 0
-        stk = getstk(types, ctx.author.id, guild=ctx.guild)
-        if stk == -1:
-            setstk(types, ctx.author.id, 0, guild=ctx.guild)
-            stk = 0
+        pnt = getpoint(ctx.author.id, ctx.guild)
+        stk = getstk(types, ctx.author.id, ctx.guild)
         if stk == 0:
             await ctx.channel.send(content="주식도 없으면서 매도같은 소리하네")
             using.remove(ctx.author.id)

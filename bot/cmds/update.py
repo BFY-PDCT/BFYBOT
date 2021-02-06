@@ -264,13 +264,13 @@ class updatestkc(commands.Cog):
 
     @tasks.loop(seconds=15.0)
     async def process(self):
-        if self.delta > 50:
-            self.delta = 50
-        if self.delta < -50:
-            self.delta = -50
+        if self.delta > 20:
+            self.delta = 20
+        if self.delta < -20:
+            self.delta = -20
         self.pn = self.pn + self.delta
         self.delta = 0
-        cp, ra, rb, t, mn, mx = 10, 10, 80, 20000, 200, 5000  # stock const numbers
+        cp, ra, rb, t, mn, mx = 10, 10, 80, 20000, 500, 5000  # stock const numbers
         x = random.uniform(ra, rb)
         x = t / (x * x)
         x = x // 1
