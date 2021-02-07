@@ -85,7 +85,7 @@ class updatestka(commands.Cog):
             self.delta = -5000
         self.pn = self.pn + self.delta
         self.delta = 0
-        cp, ra, rb, t, mn, mx = 7, 5, 100, 500000, 500, 100000  # stock const numbers
+        cp, ra, rb, t, mn, mx = 7, 5, 100, 500000, 5000, 50000  # stock const numbers
         x = random.uniform(ra, rb)
         x = t / (x * x * x)
         x = x // 1
@@ -179,8 +179,8 @@ class updatestkb(commands.Cog):
             60,
             300,
             8000000000,
-            20000,
-            1000000,
+            50000,
+            500000,
         )  # stock const numbers
         x = random.uniform(ra, rb)
         x = t / (x * x * x)

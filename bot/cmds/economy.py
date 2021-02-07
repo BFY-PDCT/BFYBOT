@@ -25,7 +25,7 @@ if __name__ == "__main__":
 import asyncio
 import random
 from .config import botname, bot
-from .genfunc import errlog, getpoint, log, setpoint, getstk, setstk, getrecstk
+from .genfunc import tblog, getpoint, log, setpoint, getstk, setstk
 from discord.ext import commands
 from discord.ext.commands import Context
 
@@ -201,6 +201,9 @@ async def sendmoney_error(ctx: Context, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send("금액을 올바르게 입력해주세요.")
         return
-    errlog(error)
+    if isinstance(error, commands.BadArgument):
+        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+        return
+    tblog(error)
     await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
     return

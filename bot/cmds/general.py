@@ -118,7 +118,6 @@ async def help(ctx: Context):
 async def lolsearch(ctx: Context, *, arg):
     lolid = arg
     url = "https://www.op.gg/summoner/userName=" + quote(lolid)
-    dbglog("querying " + url)
     subres = get(url).content.decode()
     tmp = subres[
         subres.find('<meta name="description" content="')
@@ -151,7 +150,6 @@ async def lolsearch(ctx: Context, *, arg):
             msgtos.add_field(name="레벨", value=reslist[1], inline=False)
             msgtos.set_footer(text="데이터 제공: op.gg")
         else:
-            errlog("failed querying " + url)
             msgtos.clear_fields()
             msgtos.set_author(name=lolid)
             msgtos.description = "검색에 실패하였습니다."

@@ -23,7 +23,7 @@ if __name__ == "__main__":
     sys.exit(0)
 
 import discord
-from .config import botcolor, using, muted, bot
+from .config import botcolor, muted, bot
 from .genfunc import (
     addadmin,
     admincheck,
@@ -125,33 +125,30 @@ async def cleanchat(ctx: Context, *args):
     if not isadmin(ctx.author.id, ctx.guild):
         if not ctx.author.permissions_in(ctx.channel).manage_messages:
             await ctx.send("권한도 없으면서 나대긴 ㅋ")
-            using.remove(ctx.author.id)
             return
     cnt = 0
     try:
         cnt = int(args[0])
     except IndexError:
         await ctx.send("얼마나 치울지를 알려줘야 치우던가하지")
-        using.remove(ctx.author.id)
         return
     except ValueError:
         await ctx.send("숫자가 아닌걸 주시면 어쩌자는겁니까?")
-        using.remove(ctx.author.id)
         return
     if cnt <= 0:
         await ctx.send("정상적인 숫자를 좀 주시죠?")
-        using.remove(ctx.author.id)
         return
     if cnt > 200:
         await ctx.send("너무 많어 200개이상은 안치움 ㅅㄱ")
-        using.remove(ctx.author.id)
         return
     deleted = await ctx.channel.purge(limit=cnt + 1, check=check)
     mymsg = await ctx.send("{}개 치웠어용 히히 칭찬해조".format(len(deleted) - 1))
+    """
     log("Deleted Messages (Count: {})".format(len(deleted)), guild=ctx.guild)
     for submsg in deleted:
         dbglog(submsg.content, guild=ctx.guild)
     log("End of Deleted Messages", guild=ctx.guild)
+    """
     await mymsg.delete(delay=5)
     return
 
@@ -200,12 +197,15 @@ async def setpunish(ctx: Context, cnt: int, punish: str, pcnt: int = None, *args
 
 
 @setpunish.error
-async def setpunish_error(ctx, error):
+async def setpunish_error(ctx: Context, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send("모든 항목을 입력해주세요.")
         return
     if isinstance(error, commands.CheckFailure):
         await ctx.send("관리자가 아니면 못써요 흥")
+        return
+    if isinstance(error, commands.BadArgument):
+        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
         return
     tblog(error)
     await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
@@ -256,6 +256,9 @@ async def setwelcome_error(ctx: Context, error):
     if isinstance(error, commands.CheckFailure):
         await ctx.send("관리자가 아니면 못써요 흥")
         return
+    if isinstance(error, commands.BadArgument):
+        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+        return
     tblog(error)
     await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
     return
@@ -276,6 +279,9 @@ async def setbye_error(ctx: Context, error):
         return
     if isinstance(error, commands.CheckFailure):
         await ctx.send("관리자가 아니면 못써요 흥")
+        return
+    if isinstance(error, commands.BadArgument):
+        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
         return
     tblog(error)
     await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
@@ -410,6 +416,9 @@ async def execmute_error(ctx: Context, error):
     if isinstance(error, commands.CheckFailure):
         await ctx.send("관리자가 아니면 못써요 흥")
         return
+    if isinstance(error, commands.BadArgument):
+        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+        return
     tblog(error)
     await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
     return
@@ -446,6 +455,9 @@ async def donemute_error(ctx: Context, error):
         return
     if isinstance(error, commands.CheckFailure):
         await ctx.send("관리자가 아니면 못써요 흥")
+        return
+    if isinstance(error, commands.BadArgument):
+        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
         return
     tblog(error)
     await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
@@ -511,6 +523,9 @@ async def execkick_error(ctx: Context, error):
     if isinstance(error, commands.CheckFailure):
         await ctx.send("관리자가 아니면 못써요 흥")
         return
+    if isinstance(error, commands.BadArgument):
+        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+        return
     tblog(error)
     await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
     return
@@ -574,6 +589,9 @@ async def execban_error(ctx: Context, error):
         return
     if isinstance(error, commands.CheckFailure):
         await ctx.send("관리자가 아니면 못써요 흥")
+        return
+    if isinstance(error, commands.BadArgument):
+        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
         return
     tblog(error)
     await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
@@ -763,6 +781,9 @@ async def addwarning_error(ctx: Context, error):
         return
     if isinstance(error, commands.CheckFailure):
         await ctx.send("관리자가 아니면 못써요 흥")
+        return
+    if isinstance(error, commands.BadArgument):
+        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
         return
     tblog(error)
     await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
