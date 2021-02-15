@@ -91,7 +91,10 @@ async def getmoney(ctx: Context):
         try:
             await bot.wait_for("message", check=check, timeout=10.0)
         except asyncio.TimeoutError:
-            await msg.edit(content="자존심만 높아서는 ㅉㅉ")
+            try:
+                await msg.edit(content="자존심만 높아서는 ㅉㅉ")
+            except Exception as e:
+                await ctx.send(content="자존심만 높아서는 ㅉㅉ")
         else:
             if getpoint(ctx.author.id, guild=ctx.guild) == -1:
                 setpoint(ctx.author.id, 15, guild=ctx.guild)

@@ -143,12 +143,6 @@ async def cleanchat(ctx: Context, *args):
         return
     deleted = await ctx.channel.purge(limit=cnt + 1, check=check)
     mymsg = await ctx.send("{}개 치웠어용 히히 칭찬해조".format(len(deleted) - 1))
-    """
-    log("Deleted Messages (Count: {})".format(len(deleted)), guild=ctx.guild)
-    for submsg in deleted:
-        dbglog(submsg.content, guild=ctx.guild)
-    log("End of Deleted Messages", guild=ctx.guild)
-    """
     await mymsg.delete(delay=5)
     return
 
@@ -174,6 +168,9 @@ async def setmuterole(ctx: Context):
 async def setpunish(ctx: Context, cnt: int, punish: str, pcnt: int = None, *args):
     if cnt > 11:
         await ctx.send("경고는 최대 10개까지에요.")
+        return
+    if cnt < 1:
+        await ctx.send("경고는 최소 1개부터에요.")
         return
     if not punish in ["뮤트", "킥", "밴", "삭제"]:
         await ctx.send("뮤트, 킥, 밴, 삭제 중에서만 선택 가능해요.")
@@ -367,7 +364,6 @@ async def execmute(ctx: Context, time: int, mention: str, *, arg):
             return
         await mem.edit(roles=[xrole], reason="MUTE Command REASON: " + rsn)
     except Forbidden:
-        errlog("NO PERMISSION", guild=ctx.guild)
         await ctx.send("죄송합니다 권한이 부족합니다.")
         return
     else:
@@ -482,7 +478,6 @@ async def execkick(ctx: Context, mention: str, *, arg):
     try:
         await ctx.guild.kick(mem, reason="KICK Command REASON: " + rsn)
     except Forbidden:
-        errlog("NO PERMISSION", guild=ctx.guild)
         await ctx.send("권한이 부족합니다.")
         return
     if setting_loaded is not None:
@@ -549,7 +544,6 @@ async def execban(ctx, mention: str, *, arg):  # prefix 밴 @유저 (rsn: str)
     try:
         await ctx.guild.ban(mem, reason="BAN Command REASON: " + rsn)
     except Forbidden:
-        errlog("NO PERMISSION", guild=ctx.guild)
         await ctx.send("권한이 부족합니다.")
         return
     if setting_loaded is not None:
@@ -625,7 +619,6 @@ async def addwarning(ctx: Context, mention: str, *, arg):
         try:
             await ctx.guild.kick(mem, reason="KICK Command REASON: " + rsn)
         except Forbidden:
-            errlog("NO PERMISSION", guild=ctx.guild)
             await ctx.send("권한이 부족합니다.")
             return
         if setting is not None:
@@ -659,7 +652,6 @@ async def addwarning(ctx: Context, mention: str, *, arg):
         try:
             await ctx.guild.ban(mem, reason="BAN Command REASON: " + rsn)
         except Forbidden:
-            errlog("NO PERMISSION", guild=ctx.guild)
             await ctx.send("권한이 부족합니다.")
             return
         if setting is not None:
@@ -705,7 +697,6 @@ async def addwarning(ctx: Context, mention: str, *, arg):
                 return
             await mem.edit(roles=[xrole], reason="MUTE Command REASON: " + rsn)
         except Forbidden:
-            errlog("NO PERMISSION", guild=ctx.guild)
             await ctx.send("죄송합니다 권한이 부족합니다.")
             return
         else:

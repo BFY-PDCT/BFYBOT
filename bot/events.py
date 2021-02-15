@@ -86,7 +86,6 @@ async def on_member_join(member):
                         "새 멤버 역할이 잘못 지정되어 있습니다.",
                         allowed_mentions=discord.AllowedMentions.all(),
                     )
-                using.remove(member.id)
                 return
             await member.edit(roles=[xrole], reason="WELCOME!")
         except Forbidden:
@@ -96,7 +95,6 @@ async def on_member_join(member):
                     "새 멤버 역할 변경 권한이 부족합니다.",
                     allowed_mentions=discord.AllowedMentions.all(),
                 )
-            using.remove(member.id)
             return
 
 
@@ -107,7 +105,7 @@ async def on_member_remove(member):
         guild=member.guild,
     )
     setting_loaded = loadsetting("chnl", guild=member.guild)
-    msgl = loadsetting("msgj", guild=member.guild)
+    msgl = loadsetting("msgl", guild=member.guild)
     if setting_loaded is not None and msgl is not None:
         try:
             msgle = discord.Embed(title=msgl, color=botcolor)

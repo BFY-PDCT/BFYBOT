@@ -98,7 +98,7 @@ async def help(ctx: Context):
     ver.add_field(name="초대", value=invlink, inline=False)
     if isadmin(ctx.author.id, ctx.guild):
         ver.add_field(
-            name="구독하기",
+            name="점검 안내 수신하기",
             value=botname
             + "의 관리자이시군요! `"
             + prefix

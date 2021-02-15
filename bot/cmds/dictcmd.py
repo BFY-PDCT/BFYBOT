@@ -283,10 +283,6 @@ class CommandErrorHandler(commands.Cog):
                         using.remove(ctx.message.author.id)
                         return
                     if msg.content == "":
-                        errlog(
-                            "Cannot store empty message",
-                            guild=ctx.message.guild,
-                        )
                         await mymsg.edit(
                             content="이걸 어케등록하란겨",
                             allowed_mentions=discord.AllowedMentions.all(),
