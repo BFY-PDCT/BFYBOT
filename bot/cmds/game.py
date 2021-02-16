@@ -204,13 +204,9 @@ async def stock(ctx: Context, *args):
         return
     if args[1] in [
         "A",
-        "A주식",
-        "주식A",
         "ENT",
         "BFYENT",
         "a",
-        "a주식",
-        "주식a",
         "ent",
         "bfyent",
     ]:
@@ -218,13 +214,9 @@ async def stock(ctx: Context, *args):
         names = "BFY ENT(A)"
     elif args[1] in [
         "B",
-        "B주식",
-        "주식B",
         "CORP",
         "BFYCORP",
         "b",
-        "b주식",
-        "주식b",
         "corp",
         "bfycorp",
     ]:
@@ -232,13 +224,9 @@ async def stock(ctx: Context, *args):
         names = "BFY CORP(B)"
     elif args[1] in [
         "C",
-        "C주식",
-        "주식C",
         "AT7",
         "AT7GROUP",
         "c",
-        "c주식",
-        "주식c",
         "at7",
         "at7group",
     ]:
