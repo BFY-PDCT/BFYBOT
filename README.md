@@ -1,5 +1,5 @@
-# BFYBOT
 [![CodeFactor](https://www.codefactor.io/repository/github/bfy-pdct/bfybot/badge)](https://www.codefactor.io/repository/github/bfy-pdct/bfybot) ![Python Version](https://img.shields.io/badge/Python-3.8-yellowgreen.svg) [![Main Version](https://img.shields.io/badge/Version-v1.4.1-brightgreen.svg)](https://github.com/BFY-PDCT/BFYBOT/wiki/Patchnote) ![Code Style Check](https://github.com/BFY-PDCT/BFYBOT/workflows/Code%20Style%20Check/badge.svg)
+# BFYBOT
 
 간단하게 스스로 운영할 수 있는 디스코드 봇, BFYBOT입니다. 봇에 대한 소개는 [여기](https://www.bfy.kr/bluebot)를 참고해주세요.
 
@@ -15,7 +15,6 @@ BFYBOT의 대표적인 기능으로는 간편한 서버 관리(경고, 처벌, �
 
 또한, **봇을 사용하시거나, 코드를 변경하여 사용 혹은 참고하실 때에는 꼭 라이선스를 준수하여 사용해주시기 바랍니다.** BFYBOT의 오픈소스 라이선스는 GNU General Public License v3.0입니다.
 
-# BFYBOT
 This bot is a comprehensive server management bot that can be easily hosted yourself. For an introduction to bots, please refer to [here](https://www.bfy.kr/bluebot).
 
 The bot officially operated by BFY is Bluebot, and you can invite it from [here](https://discord.com/api/oauth2/authorize?client_id=738684108674433065&permissions=8&scope=bot).
