@@ -24,10 +24,10 @@ if __name__ == "__main__":
 
 import discord
 import asyncio
-from .config import prefix, pending, using, bot, owner, botcolor
+from .config import prefix, pending, using, bot, owner, botcolor, report
 from .genfunc import (
     deldict,
-    errlog,
+    getlocale,
     getpoint,
     isowner,
     loaddict,
@@ -48,6 +48,10 @@ class CommandErrorHandler(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error):
+        locale = getlocale(ctx)
+        if locale is None:
+            return
+
         # This prevents any commands with local handlers being handled here in on_command_error.
         if hasattr(ctx.command, "on_error"):
             return
@@ -167,6 +171,14 @@ class CommandErrorHandler(commands.Cog):
                                 pending.remove(ctx.message.content)
                                 using.remove(ctx.message.author.id)
                                 return
+                            if len(msg.content) > 100:
+                                await mymsg.edit(
+                                    content="최대 100글자까지만 등록할수 있어요",
+                                    allowed_mentions=discord.AllowedMentions.all(),
+                                )
+                                pending.remove(ctx.message.content)
+                                using.remove(ctx.message.author.id)
+                                return
                             savedict(kwd, [msg.content, True, msg.author.id])
                             await mymsg.edit(
                                 content="ㅇㅋ `💰-100000`",
@@ -191,24 +203,25 @@ class CommandErrorHandler(commands.Cog):
                         await mymsg.edit(content="100000포인트 벌고와")
                         return
                 else:
-                    ver = discord.Embed(
-                        title="새 신고",
-                        description="by: "
-                        + str(msg.author)
-                        + "\nid: "
-                        + str(msg.author.id),
-                        color=botcolor,
-                    )
-                    ver.add_field(name="질문", value=kwd)
-                    ver.add_field(name="답변", value=reply[0])
-                    ver.add_field(
-                        name="사유", value=" ".join(ctx.message.content.split()[1:])
-                    )
-                    ver.add_field(name="작성자", value=reply[2], inline=False)
-                    await bot.get_user(owner[0]).send("새 신고", embed=ver)
-                    await mymsg.edit(
-                        content="해당 답변을 신고하였습니다. 신고된 답변은 관리자가 검토 후 조치할 예정입니다."
-                    )
+                    if report:
+                        ver = discord.Embed(
+                            title="새 신고",
+                            description="by: "
+                            + str(msg.author)
+                            + "\nid: "
+                            + str(msg.author.id),
+                            color=botcolor,
+                        )
+                        ver.add_field(name="질문", value=kwd)
+                        ver.add_field(name="답변", value=reply[0])
+                        ver.add_field(
+                            name="사유", value=" ".join(ctx.message.content.split()[1:])
+                        )
+                        ver.add_field(name="작성자", value=reply[2], inline=False)
+                        await bot.get_user(owner[0]).send("새 신고", embed=ver)
+                        await mymsg.edit(
+                            content="해당 답변을 신고하였습니다. 신고된 답변은 관리자가 검토 후 조치할 예정입니다."
+                        )
                     return
             if isowner(ctx.message.author.id):
                 mymsg = await ctx.message.channel.send(
@@ -254,14 +267,22 @@ class CommandErrorHandler(commands.Cog):
                         )
                         pending.remove(ctx.message.content)
                         using.remove(ctx.message.author.id)
-                    else:
-                        savedict(kwd, [msg.content, True, msg.author.id])
+                        return
+                    if len(msg.content) > 100:
                         await mymsg.edit(
-                            content="주인님 등록하였읍니다.",
+                            content="주인님 최대 100글자까지만 등록할수 있어요",
                             allowed_mentions=discord.AllowedMentions.all(),
                         )
                         pending.remove(ctx.message.content)
                         using.remove(ctx.message.author.id)
+                        return
+                    savedict(kwd, [msg.content, True, msg.author.id])
+                    await mymsg.edit(
+                        content="주인님 등록하였읍니다.",
+                        allowed_mentions=discord.AllowedMentions.all(),
+                    )
+                    pending.remove(ctx.message.content)
+                    using.remove(ctx.message.author.id)
                 else:
                     if ctx.message.content in pending:
                         await mymsg.edit(content="누군가 수정중인것 같아요 ;)")
@@ -289,19 +310,27 @@ class CommandErrorHandler(commands.Cog):
                         )
                         pending.remove(ctx.message.content)
                         using.remove(ctx.message.author.id)
-                    else:
-                        savedict(kwd, [msg.content, True, msg.author.id])
+                        return
+                    if len(msg.content) > 100:
                         await mymsg.edit(
-                            content="ㅇㅋ `💰-50000`",
+                            content="최대 100글자까지만 등록할수 있어요",
                             allowed_mentions=discord.AllowedMentions.all(),
-                        )
-                        setpoint(
-                            ctx.message.author.id,
-                            getpoint(ctx.message.author.id, guild=ctx.guild) - 50000,
-                            guild=ctx.guild,
                         )
                         pending.remove(ctx.message.content)
                         using.remove(ctx.message.author.id)
+                        return
+                    savedict(kwd, [msg.content, True, msg.author.id])
+                    await mymsg.edit(
+                        content="ㅇㅋ `💰-50000`",
+                        allowed_mentions=discord.AllowedMentions.all(),
+                    )
+                    setpoint(
+                        ctx.message.author.id,
+                        getpoint(ctx.message.author.id, guild=ctx.guild) - 50000,
+                        guild=ctx.guild,
+                    )
+                    pending.remove(ctx.message.content)
+                    using.remove(ctx.message.author.id)
             elif msg.content == "아니":
                 if isowner(ctx.message.author.id):
                     await mymsg.edit(content="알겠습니다 주인님")

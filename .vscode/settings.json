@@ -1,5 +1,8 @@
 {
-    "python.analysis.extraPaths": ["./bot"], // fix import error from pylance
+    "python.analysis.extraPaths": [
+        "./bot",
+        "./bot/cmds"
+    ], // fix import error from pylance
     "editor.formatOnSave": true,
     "python.formatting.provider": "black"
 }

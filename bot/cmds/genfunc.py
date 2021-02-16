@@ -25,10 +25,12 @@ if __name__ == "__main__":
 import os
 import traceback
 import time
+import discord
 from datetime import datetime
 from operator import truediv, mul, add, sub
 from discord.ext import commands
 from .config import owner, eventlogger, conn, db
+from .locales import getlc
 
 operators = {"+": add, "-": sub, "*": mul, "/": truediv, "^": pow}
 
@@ -258,11 +260,8 @@ def admincheck():
 
 def isban(uid):
     db.execute(
-        "SELECT * FROM gsetting WHERE name=? AND data=?",
-        (
-            "ban",
-            uid,
-        ),
+        "SELECT * FROM gsetting WHERE name=?",
+        ("ban",),
     )
     subres = db.fetchall()
     res = []
@@ -298,6 +297,31 @@ def delban(uid):
     )
     conn.commit()
     return 0
+
+
+async def getlocale(ctx):
+    uid = ctx.author.id
+    db.execute("SELECT * FROM gsetting WHERE name=?", ("lang" + str(uid)))
+    res = db.fetchone()
+    if res is None:
+        emb = discord.Embed(title="Please set locale before using bot")
+        await ctx.send()
+        return None
+    lang = res[1]
+    return getlc.getlocale(lang)
+
+
+async def setlocale(ctx, lang):
+    uid = ctx.author.id
+    db.execute(
+        "INSERT OR REPLACE INTO gsetting(name, data) \
+        VALUES(?,?)",
+        (
+            ("lang" + str(uid)),
+            lang,
+        ),
+    )
+    conn.commit()
 
 
 def isowner(uid):
