@@ -15,7 +15,16 @@ BFYBOT의 대표적인 기능으로는 간편한 서버 관리(경고, 처벌, �
 
 또한, **봇을 사용하시거나, 코드를 변경하여 사용 혹은 참고하실 때에는 꼭 라이선스를 준수하여 사용해주시기 바랍니다.** BFYBOT의 오픈소스 라이선스는 GNU General Public License v3.0입니다.
 
-# BFYBOT
-This bot is a comprehensive server management bot that can be easily hosted yourself.
+This bot is a comprehensive server management bot that can be easily hosted yourself. For an introduction to bots, please refer to [here](https://www.bfy.kr/bluebot).
 
-English version will be developed later. English will be supported in v1.5.0. (planned, can be changed)
+The bot officially operated by BFY is Bluebot, and you can invite it from [here](https://discord.com/api/oauth2/authorize?client_id=738684108674433065&permissions=8&scope=bot).
+
+For the bot to function properly, the server must have all the necessary permissions granted to the bot. Even if you give the 'administrator' privilege, BFYBOT only acts as commanded, so there is no problem, so it is recommended to give the bot the 'administrator' privilege conveniently.
+
+BFYBOT's main functions include simple server management (warning, punishment, cleaning, etc.), simple games (gambling, stocks, etc.), helpful commands (roll record search, calculation, etc.), and the ability to create and store numerous commands. Also, in the case of Bluebot, a music bot function is also provided, and you can use the music bot function of your choice. The command creation function is a function that allows the bot owner to create it at will, and if the bot owner is not the bot owner, it can be created using 50000 points and modified using 100000 points. It can also be used as a memo on a server with a small number of people.
+
+If there is a bug, you can create an issue at any time. If there are any improvements, please PR and we will apply them after review.
+
+How to use the bot can be found [here](https://github.com/BFY-PDCT/BFYBOT/wiki/How-to-host-BFYBOT). You can find more information on the [wiki](https://github.com/BFY-PDCT/BFYBOT/wiki).
+
+Currently, bot uses korean. Multilanguage support including english will be added in v1.5.0. (planned, can be changed)
