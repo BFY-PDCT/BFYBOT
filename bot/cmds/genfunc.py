@@ -423,14 +423,3 @@ def getrecstk(stype, uid, guild):
             b = tmp[3]
         res.insert(0, [a, b, tmp[4]])
     return res
-
-
-"""
-NOT USED
-async def download(url, file_name):
-    with open(file_name, "wb") as file:
-        dbglog("querying " + url)
-        httpclient = http3.AsyncClient()
-        resp = await httpclient.get(url, timeout=100.0)
-        file.write(resp.content)
-"""

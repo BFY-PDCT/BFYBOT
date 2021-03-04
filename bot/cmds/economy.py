@@ -115,11 +115,9 @@ async def getmoney(ctx: Context):
 @commands.command(name="남의돈")  # prefix 남의돈 @유저
 async def seeothermoney(ctx: Context):
     if len(ctx.message.mentions) == 0:
-        log("no mentions for member", guild=ctx.guild)
         await ctx.channel.send("죄송합니다 대상자를 멘션해주세요.")
         return
     if len(ctx.message.mentions) > 1:
-        log("so many mentions for member", guild=ctx.guild)
         await ctx.channel.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
         return
     mem = ctx.message.mentions[0]
@@ -151,11 +149,9 @@ async def seestk(ctx: Context):
 @commands.command(name="남의주식")  # prefix 남의돈 @유저
 async def seeotherstk(ctx: Context):
     if len(ctx.message.mentions) == 0:
-        log("no mentions for member", guild=ctx.guild)
         await ctx.channel.send("죄송합니다 대상자를 멘션해주세요.")
         return
     if len(ctx.message.mentions) > 1:
-        log("so many mentions for member", guild=ctx.guild)
         await ctx.channel.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
         return
     mem = ctx.message.mentions[0]
