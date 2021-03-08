@@ -47,7 +47,6 @@ def initcmd():
     bot.add_command(delwelcome)
     bot.add_command(delbye)
     bot.add_command(unsubscribe)
-    bot.add_command(getpunishlist)
     bot.add_command(deldefaultrole)
     bot.add_command(cleanchat)
     bot.add_command(setmuterole)
@@ -64,6 +63,7 @@ def initcmd():
     bot.add_command(execban)
     bot.add_command(addwarning)
     bot.add_command(delwarning)
+    bot.add_command(getpunishlist)
     bot.add_command(seewarning)
 
 
@@ -359,7 +359,6 @@ async def execmute(ctx: Context, time: int, mention: str, *, arg):
                 find = True
                 break
         if not find:
-            errlog("role not found", guild=ctx.guild)
             await ctx.send("죄송합니다 역할이 잘못 지정되어 있습니다.")
             return
         await mem.edit(roles=[xrole], reason="MUTE Command REASON: " + rsn)
