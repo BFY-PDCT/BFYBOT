@@ -23,12 +23,14 @@ if __name__ == "__main__":
     sys.exit(0)
 
 import os
+from sqlite3.dbapi2 import Error
 import traceback
 import time
 import discord
 from datetime import datetime
 from operator import truediv, mul, add, sub
 from discord.ext import commands
+from discord.ext.commands.context import Context
 from .config import owner, eventlogger, conn, db
 from .locales import getlc
 
@@ -299,19 +301,17 @@ def delban(uid):
     return 0
 
 
-async def getlocale(ctx):
+def getlocale(ctx: Context):
     uid = ctx.author.id
-    db.execute("SELECT * FROM gsetting WHERE name=?", ("lang" + str(uid)))
+    db.execute("SELECT * FROM gsetting WHERE name=?", ("lang" + str(uid),))
     res = db.fetchone()
     if res is None:
-        emb = discord.Embed(title="Please set locale before using bot")
-        await ctx.send()
         return None
     lang = res[1]
     return getlc.getlocale(lang)
 
 
-async def setlocale(ctx, lang):
+def setlocale(ctx, lang):
     uid = ctx.author.id
     db.execute(
         "INSERT OR REPLACE INTO gsetting(name, data) \

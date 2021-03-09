@@ -56,6 +56,7 @@ locale_ko = {
     "dictcmd_general_ownerquestion": "주인님 무엇을 원하십니까.",
     "dictcmd_general_owneracpnew": "주인님 등록하였읍니다.",
     "dictcmd_general_ownercancel": "알겠습니다 주인님",
+    "dictcmd_general_acpnew": "ㅇㅋ `💰-50000`",
     "economy_seemoney_0": "{0} 니가 가진 돈은 이만큼이다 알았나 `💰 {1}`",
     "economy_getmoney_1": " 형님",
     "economy_getmoney_2": "어휴 불쌍한넘 내가 특별히 1000포인트 준다 `💰+1000`",

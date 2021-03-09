@@ -48,7 +48,7 @@ from discord.ext import commands
 owner = [0]
 token = ""
 invlink = ""
-vernum = "v1.4.1"
+vernum = "v1.5.0"
 prefix = [""]
 botname = ""
 hasmusic = False
@@ -178,7 +178,7 @@ print("OK ({}s)".format(str(time.time() - ts)))
 
 tmppfx = []
 for x in prefix:
-    tmppfx.append(prefix + " ")
+    tmppfx.append(x + " ")
 
 pending, noticed, using, muted = [], [], [], []
 

@@ -54,5 +54,5 @@ async def on_admin_message(message):
 
     # Custom Code Here
 
-    await bot.process_commands()
+    await bot.process_commands(message)
     return

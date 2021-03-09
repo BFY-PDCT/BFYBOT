@@ -50,6 +50,8 @@ class CommandErrorHandler(commands.Cog):
     async def on_command_error(self, ctx: commands.Context, error):
         locale = getlocale(ctx)
         if locale is None:
+            emb = discord.Embed(title="Please set locale before using bot")
+            await ctx.send("", embed=emb)
             return
 
         # This prevents any commands with local handlers being handled here in on_command_error.
@@ -59,11 +61,11 @@ class CommandErrorHandler(commands.Cog):
         if isinstance(error, commands.CommandNotFound):
             pass
         elif isinstance(error, commands.CheckFailure):
-            await ctx.send("관리자 아니면 안해줄건뎅")
+            await ctx.send(locale["dictcmd_error_notadmin"])
             return
         else:
             tblog(error)
-            await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+            await ctx.send(locale["dictcmd_error_err"])
             return
 
         # This prevents any cogs with an overwritten cog_command_error being handled here.
@@ -75,7 +77,7 @@ class CommandErrorHandler(commands.Cog):
         if ctx.author.id in using:
             using.remove(ctx.author.id)
 
-        if ctx.message.content.startswith(prefix):  # prefix *
+        if ctx.message.content.startswith(tuple(prefix)):  # prefix *
 
             # reply: [replystr: str, editable: bool, author: int]
             kwd = " ".join(ctx.message.content.split(" ")[1:])
@@ -83,14 +85,17 @@ class CommandErrorHandler(commands.Cog):
 
             def checka(m):
                 return (
-                    m.content == "지워"
+                    m.content == locale["dictcmd_checka_delete"]
                     and m.channel == ctx.message.channel
                     and ctx.message.author == m.author
                 )
 
             def checkb(m):
                 return (
-                    (m.content == "어" or m.content == "아니")
+                    (
+                        m.content == locale["dictcmd_checkb_yes"]
+                        or m.content == locale["dictcmd_checkb_no"]
+                    )
                     and m.channel == ctx.message.channel
                     and ctx.message.author == m.author
                 )
@@ -102,7 +107,10 @@ class CommandErrorHandler(commands.Cog):
 
             def checkd(m):
                 return (
-                    (m.content.startswith("신고") or m.content == "바꿔")
+                    (
+                        m.content.startswith(locale["dictcmd_checkd_report"])
+                        or m.content == locale["dictcmd_checkd_change"]
+                    )
                     and m.channel == ctx.message.channel
                     and ctx.message.author == m.author
                 )
@@ -117,7 +125,7 @@ class CommandErrorHandler(commands.Cog):
                     else:
                         deldict(kwd)
                         await mymsg.edit(
-                            content="주인님 지웠읍니다.",
+                            content=locale["dictcmd_general_deleted"],
                             allowed_mentions=discord.AllowedMentions.all(),
                         )
                         return
@@ -125,13 +133,13 @@ class CommandErrorHandler(commands.Cog):
                     msg = await bot.wait_for("message", check=checkd, timeout=10.0)
                 except asyncio.TimeoutError:
                     return
-                if msg.content == "바꿔":
+                if msg.content == locale["dictcmd_general_reqedit"]:
                     if not reply[1]:
-                        await mymsg.edit(content="이건 못바꿔줘")
+                        await mymsg.edit(content=locale["dictcmd_general_rejedit"])
                         return
                     if getpoint(ctx.message.author.id, guild=ctx.guild) >= 100000:
                         await mymsg.edit(
-                            content="100000포인트를 사용해서 대답을 바꿔줄래?",
+                            content=locale["dictcmd_general_cfmedit"],
                             allowed_mentions=discord.AllowedMentions.all(),
                         )
                         try:
@@ -141,17 +149,21 @@ class CommandErrorHandler(commands.Cog):
                         except asyncio.TimeoutError:
                             await mymsg.edit(content="...")
                             return
-                        if msg.content == "어":
+                        if msg.content == locale["dictcmd_general_yes"]:
                             if ctx.message.content in pending:
-                                await mymsg.edit(content="누군가 수정중인것 같아요 ;)")
+                                await mymsg.edit(
+                                    content=locale["dictcmd_general_editing"]
+                                )
                                 return
                             if ctx.message.author.id in using:
-                                await mymsg.edit(content="이미 사용중이에요 ;)")
+                                await mymsg.edit(
+                                    content=locale["dictcmd_general_using"]
+                                )
                                 return
                             pending.append(ctx.message.content)
                             using.append(ctx.message.author.id)
                             await mymsg.edit(
-                                content="머라고할건데",
+                                content=locale["dictcmd_general_question"],
                                 allowed_mentions=discord.AllowedMentions.all(),
                             )
                             try:
@@ -165,7 +177,7 @@ class CommandErrorHandler(commands.Cog):
                                 return
                             if msg.content == "":
                                 await mymsg.edit(
-                                    content="이걸 어케등록하란겨",
+                                    content=locale["dictcmd_general_emptyerr"],
                                     allowed_mentions=discord.AllowedMentions.all(),
                                 )
                                 pending.remove(ctx.message.content)
@@ -173,7 +185,7 @@ class CommandErrorHandler(commands.Cog):
                                 return
                             if len(msg.content) > 100:
                                 await mymsg.edit(
-                                    content="최대 100글자까지만 등록할수 있어요",
+                                    content=locale["dictcmd_general_limiterr"],
                                     allowed_mentions=discord.AllowedMentions.all(),
                                 )
                                 pending.remove(ctx.message.content)
@@ -181,7 +193,7 @@ class CommandErrorHandler(commands.Cog):
                                 return
                             savedict(kwd, [msg.content, True, msg.author.id])
                             await mymsg.edit(
-                                content="ㅇㅋ `💰-100000`",
+                                content=locale["dictcmd_general_acpedit"],
                                 allowed_mentions=discord.AllowedMentions.all(),
                             )
                             setpoint(
@@ -196,42 +208,51 @@ class CommandErrorHandler(commands.Cog):
                             pending.remove(ctx.message.content)
                             using.remove(ctx.message.author.id)
                             return
-                        if msg.content == "아니":
-                            await mymsg.edit(content="ㅇㅋ 싫음말고")
+                        if msg.content == locale["dictcmd_general_no"]:
+                            await mymsg.edit(content=locale["dictcmd_general_cancel"])
                             return
                     else:
-                        await mymsg.edit(content="100000포인트 벌고와")
+                        await mymsg.edit(content=locale["dictcmd_general_npntedit"])
                         return
                 else:
                     if report:
                         ver = discord.Embed(
-                            title="새 신고",
+                            title=locale["dictcmd_report_title"],
                             description="by: "
                             + str(msg.author)
                             + "\nid: "
                             + str(msg.author.id),
                             color=botcolor,
                         )
-                        ver.add_field(name="질문", value=kwd)
-                        ver.add_field(name="답변", value=reply[0])
+                        ver.add_field(name=locale["dictcmd_report_cmd"], value=kwd)
                         ver.add_field(
-                            name="사유", value=" ".join(ctx.message.content.split()[1:])
+                            name=locale["dictcmd_report_reply"], value=reply[0]
                         )
-                        ver.add_field(name="작성자", value=reply[2], inline=False)
-                        await bot.get_user(owner[0]).send("새 신고", embed=ver)
-                        await mymsg.edit(
-                            content="해당 답변을 신고하였습니다. 신고된 답변은 관리자가 검토 후 조치할 예정입니다."
+                        ver.add_field(
+                            name=locale["dictcmd_report_reason"],
+                            value=" ".join(ctx.message.content.split()[1:]),
                         )
+                        ver.add_field(
+                            name=locale["dictcmd_report_author"],
+                            value=reply[2],
+                            inline=False,
+                        )
+                        await bot.get_user(owner[0]).send(
+                            locale["dictcmd_report_title"], embed=ver
+                        )
+                        await mymsg.edit(content=locale["dictcmd_report_reported"])
                     return
             if isowner(ctx.message.author.id):
                 mymsg = await ctx.message.channel.send(
-                    "주인님 새 명령어가 필요하십니까", allowed_mentions=discord.AllowedMentions.all()
+                    locale["dictcmd_general_ownercfmnew"],
+                    allowed_mentions=discord.AllowedMentions.all(),
                 )
             elif getpoint(ctx.message.author.id, guild=ctx.guild) >= 50000:
-                mymsg = await ctx.message.channel.send("50000포인트를 사용해서 대답을 알려줄래?")
+                mymsg = await ctx.message.channel.send(locale["dictcmd_general_cfmnew"])
             else:
                 await ctx.message.channel.send(
-                    "뭐래 ㅋ", allowed_mentions=discord.AllowedMentions.all()
+                    locale["dictcmd_general_cancel"],
+                    allowed_mentions=discord.AllowedMentions.all(),
                 )
                 return
             try:
@@ -242,15 +263,15 @@ class CommandErrorHandler(commands.Cog):
             if msg.content == "어":
                 if isowner(ctx.message.author.id):
                     if ctx.message.content in pending:
-                        await mymsg.edit(content="누군가 수정중인것 같아요 ;)")
+                        await mymsg.edit(content=locale["dictcmd_general_editing"])
                         return
                     if ctx.message.author.id in using:
-                        await mymsg.edit(content="이미 사용중이에요 ;)")
+                        await mymsg.edit(content=locale["dictcmd_general_using"])
                         return
                     pending.append(ctx.message.content)
                     using.append(ctx.message.author.id)
                     await mymsg.edit(
-                        content="주인님 무엇을 원하십니까.",
+                        content=locale["dictcmd_ownerquestion"],
                         allowed_mentions=discord.AllowedMentions.all(),
                     )
                     try:
@@ -262,7 +283,7 @@ class CommandErrorHandler(commands.Cog):
                         return
                     if msg.content == "":
                         await mymsg.edit(
-                            content="주인님 이건좀...",
+                            content=locale["dictcmd_general_emptyerr"],
                             allowed_mentions=discord.AllowedMentions.all(),
                         )
                         pending.remove(ctx.message.content)
@@ -270,7 +291,7 @@ class CommandErrorHandler(commands.Cog):
                         return
                     if len(msg.content) > 100:
                         await mymsg.edit(
-                            content="주인님 최대 100글자까지만 등록할수 있어요",
+                            content=locale["dictcmd_general_limiterr"],
                             allowed_mentions=discord.AllowedMentions.all(),
                         )
                         pending.remove(ctx.message.content)
@@ -278,22 +299,22 @@ class CommandErrorHandler(commands.Cog):
                         return
                     savedict(kwd, [msg.content, True, msg.author.id])
                     await mymsg.edit(
-                        content="주인님 등록하였읍니다.",
+                        content=locale["dictcmd_general_owneracpnew"],
                         allowed_mentions=discord.AllowedMentions.all(),
                     )
                     pending.remove(ctx.message.content)
                     using.remove(ctx.message.author.id)
                 else:
                     if ctx.message.content in pending:
-                        await mymsg.edit(content="누군가 수정중인것 같아요 ;)")
+                        await mymsg.edit(content=locale["dictcmd_general_editing"])
                         return
                     if ctx.message.author.id in using:
-                        await mymsg.edit(content="이미 사용중이에요 ;)")
+                        await mymsg.edit(content=locale["dictcmd_general_using"])
                         return
                     pending.append(ctx.message.content)
                     using.append(ctx.message.author.id)
                     await mymsg.edit(
-                        content="머라고할건데",
+                        content=locale["dictcmd_general_question"],
                         allowed_mentions=discord.AllowedMentions.all(),
                     )
                     try:
@@ -305,7 +326,7 @@ class CommandErrorHandler(commands.Cog):
                         return
                     if msg.content == "":
                         await mymsg.edit(
-                            content="이걸 어케등록하란겨",
+                            content=locale["dictcmd_general_emptyerr"],
                             allowed_mentions=discord.AllowedMentions.all(),
                         )
                         pending.remove(ctx.message.content)
@@ -313,7 +334,7 @@ class CommandErrorHandler(commands.Cog):
                         return
                     if len(msg.content) > 100:
                         await mymsg.edit(
-                            content="최대 100글자까지만 등록할수 있어요",
+                            content=locale["dictcmd_general_limiterr"],
                             allowed_mentions=discord.AllowedMentions.all(),
                         )
                         pending.remove(ctx.message.content)
@@ -321,7 +342,7 @@ class CommandErrorHandler(commands.Cog):
                         return
                     savedict(kwd, [msg.content, True, msg.author.id])
                     await mymsg.edit(
-                        content="ㅇㅋ `💰-50000`",
+                        content=locale["dictcmd_general_acpnew"],
                         allowed_mentions=discord.AllowedMentions.all(),
                     )
                     setpoint(
@@ -331,9 +352,9 @@ class CommandErrorHandler(commands.Cog):
                     )
                     pending.remove(ctx.message.content)
                     using.remove(ctx.message.author.id)
-            elif msg.content == "아니":
+            elif msg.content == locale["dictcmd_general_no"]:
                 if isowner(ctx.message.author.id):
-                    await mymsg.edit(content="알겠습니다 주인님")
+                    await mymsg.edit(content=locale["dictcmd_general_ownercancel"])
                 else:
-                    await mymsg.edit(content="ㅇㅋ 싫음말고")
+                    await mymsg.edit(content=locale["dictcmd_general_cancel"])
             return
