@@ -36,18 +36,37 @@ from .config import (
     helpmusicstr,
     prefix,
 )
-from .genfunc import calculate, errlog, dbglog, isadmin
+from .genfunc import calculate, isadmin, setlocale
 from discord.ext import commands
 from discord.ext.commands import Context
 
 
 def initcmd():
     # bot.add_command (함수 이름)
+    bot.add_command(setlang)
     bot.add_command(ping)
     bot.add_command(version)
     bot.add_command(help)
     bot.add_command(lolsearch)
     bot.add_command(docalculate)
+
+
+@commands.command(name="언어", aliases=["lang"])  # prefix 언어 / prefix lang
+async def setlang(ctx: Context, *, arg):
+    if not arg in ["ko", "en"]:
+        await ctx.send(
+            f"""
+            Not Valid Language Code :(
+            How to use: `(prefix) lang (code)`
+            Valid codes: ko, en
+            유효하지 않은 언어 코드입니다 :(
+            사용 방법: `(prefix) 언어 (언어코드)`
+            유효한 언어코드: ko, en
+        """
+        )
+        return
+    setlocale(ctx, arg)
+    await ctx.send("설정되었습니다!")
 
 
 @commands.command(name="핑", aliases=["ping"])  # prefix 핑 / prefix ping

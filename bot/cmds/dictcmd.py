@@ -34,6 +34,7 @@ from .genfunc import (
     savedict,
     setpoint,
     tblog,
+    setlocale,
 )
 from discord.ext import commands
 
@@ -50,9 +51,15 @@ class CommandErrorHandler(commands.Cog):
     async def on_command_error(self, ctx: commands.Context, error):
         locale = getlocale(ctx)
         if locale is None:
-            emb = discord.Embed(title="Please set locale before using bot")
-            await ctx.send("", embed=emb)
-            return
+            await ctx.send(
+                f"""
+                언어가 설정되지 않아 자동으로 한국어로 설정되었습니다. 
+                언어를 변경하시려면 `(prefix) 언어 (언어코드)` 명령어를 사용해주세요.
+                Language is automatically set to korean.
+                To change language, use `(prefix) lang (code)`
+            """
+            )
+            setlocale(ctx, "ko")
 
         # This prevents any commands with local handlers being handled here in on_command_error.
         if hasattr(ctx.command, "on_error"):
