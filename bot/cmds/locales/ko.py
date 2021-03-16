@@ -70,7 +70,7 @@ locale_ko = {
     "economy_getmoney_10": "ㄲㅈ",
     "economy_seeothermoney_0": "죄송합니다 대상자를 멘션해주세요.",
     "economy_seeothermoney_1": "죄송합니다 1명의 대상자만을 멘션해주세요.",
-    "economy_seeothermoney_2": "{} 이 친구가 가진 돈은 이만큼이다 알았나 `💰 {1}`",
+    "economy_seeothermoney_2": "{0} 이 친구가 가진 돈은 이만큼이다 알았나 `💰 {1}`",
     "economy_seestk_0": "{0} 니가 가진 주식은 이만큼이다 A: {1}주 / B: {2}주 / C: {3}주",
     "economy_seeotherstk_0": "죄송합니다 대상자를 멘션해주세요.",
     "economy_seeotherstk_1": "죄송합니다 1명의 대상자만을 멘션해주세요.",
