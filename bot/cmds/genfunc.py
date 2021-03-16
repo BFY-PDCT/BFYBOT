@@ -324,6 +324,18 @@ def setlocale(ctx, lang):
     conn.commit()
 
 
+async def localeerr(ctx):
+    await ctx.send(
+        f"""
+    언어가 설정되지 않아 자동으로 한국어로 설정되었습니다. 
+    언어를 변경하시려면 `(prefix) 언어 (언어코드)` 명령어를 사용해주세요.
+    Language is automatically set to korean.
+    To change language, use `(prefix) lang (code)`
+    """
+    )
+    setlocale(ctx, "ko")
+
+
 def isowner(uid):
     return uid in owner
 
