@@ -27,4 +27,4 @@ If there is a bug, you can create an issue at any time. If there are any improve
 
 How to use the bot can be found [here](https://github.com/BFY-PDCT/BFYBOT/wiki/How-to-host-BFYBOT). You can find more information on the [wiki](https://github.com/BFY-PDCT/BFYBOT/wiki).
 
-Currently, bot uses korean. Multilanguage support including english will be added in v1.5.0. (planned, can be changed)
+Translation is currently in progress, and will be released in v1.5.0.
