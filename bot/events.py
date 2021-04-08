@@ -142,7 +142,7 @@ async def on_message(message):
     if await on_message_pre(message):  # Custom Pre-processing
         return
 
-    if message.content.startswith(prefix):  # Block User Already Using
+    if message.content.startswith(tuple(prefix)):  # Block User Already Using
         if message.author.id in using:
             log("User Already Using: " + str(message.author.id))
             return
