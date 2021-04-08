@@ -26,7 +26,16 @@ import asyncio
 import random
 import discord
 from .config import using, bot, prefix, botcolor
-from .genfunc import getpoint, setpoint, getstk, setstk, recstk, getrecstk
+from .genfunc import (
+    getpoint,
+    setpoint,
+    getstk,
+    setstk,
+    recstk,
+    getrecstk,
+    getlocale,
+    localeerr,
+)
 from discord.ext import commands
 from discord.ext.commands import Context
 
@@ -39,6 +48,9 @@ def initcmd():
 
 @commands.command(name="도박")  # prefix 도박 / prefix 도박 올인 / prefix 도박 (num: int)
 async def gamble(ctx: Context, *args):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
     using.append(ctx.author.id)
     if len(args) == 0:
 
@@ -58,22 +70,22 @@ async def gamble(ctx: Context, *args):
             setpoint(ctx.author.id, 0, guild=ctx.guild)
             pnt = 0
         if pnt == 0:
-            await ctx.channel.send(content="돈도없으면서 도박같은 소리하네")
+            await ctx.channel.send(content=locale["game_gamble_0"])
             using.remove(ctx.author.id)
             return
-        msg = await ctx.channel.send("얼마걸건데? 잔액: `💰 " + str(pnt) + "`")
+        msg = await ctx.channel.send(locale["game_gamble_1"].format(str(pnt)))
         try:
             reply = await bot.wait_for("message", check=check, timeout=10.0)
         except asyncio.TimeoutError:
-            await msg.edit(content="안할거면 ㄲㅈ")
+            await msg.edit(content=locale["game_gamble_2"])
             using.remove(ctx.author.id)
             return
         num = int(reply.content)
         if pnt < num or num == 0:
-            await msg.edit(content="돈도없으면서 도박같은 소리하네")
+            await msg.edit(content=locale["game_gamble_4"])
             using.remove(ctx.author.id)
             return
-        await msg.edit(content=str(num) + "포인트로 게임을 시작하지")
+        await msg.edit(content=locale["game_gamble_3"].format(str(num)))
         await asyncio.sleep(1)
     elif args[0] == "올인":
         pnt = getpoint(ctx.author.id, guild=ctx.guild)
@@ -81,15 +93,15 @@ async def gamble(ctx: Context, *args):
             setpoint(ctx.author.id, 0, guild=ctx.guild)
             pnt = 0
         if pnt == 0:
-            await ctx.channel.send(content="돈도없으면서 도박같은 소리하네")
+            await ctx.channel.send(content=locale["game_gamble_4"])
             using.remove(ctx.author.id)
             return
         num = getpoint(ctx.author.id, guild=ctx.guild)
         if pnt < num or num == 0:
-            await ctx.channel.send(content="돈도없으면서 도박같은 소리하네")
+            await ctx.channel.send(content=locale["game_gamble_4"])
             using.remove(ctx.author.id)
             return
-        msg = await ctx.channel.send(content=str(num) + "포인트로 게임을 시작하지")
+        msg = await ctx.channel.send(content=locale["game_gamble_3"].format(str(num)))
         await asyncio.sleep(1)
     else:
         pnt = getpoint(ctx.author.id, guild=ctx.guild)
@@ -97,24 +109,24 @@ async def gamble(ctx: Context, *args):
             setpoint(ctx.author.id, 0, guild=ctx.guild)
             pnt = 0
         if pnt == 0:
-            await ctx.channel.send(content="돈도없으면서 도박같은 소리하네")
+            await ctx.channel.send(content=locale["game_gamble_4"])
             using.remove(ctx.author.id)
             return
         try:
             num = int(args[0])
         except ValueError:
-            await ctx.channel.send(content="제대로 된 숫자를 좀 주시죠?")
+            await ctx.channel.send(content=locale["game_gamble_5"])
             using.remove(ctx.author.id)
             return
         if num <= 0:
-            await ctx.channel.send(content="제대로 된 숫자를 좀 주시죠?")
+            await ctx.channel.send(content=locale["game_gamble_5"])
             using.remove(ctx.author.id)
             return
         if pnt < num or num == 0:
-            await ctx.channel.send(content="돈도없으면서 도박같은 소리하네")
+            await ctx.channel.send(content=locale["game_gamble_4"])
             using.remove(ctx.author.id)
             return
-        msg = await ctx.channel.send(content=str(num) + "포인트로 게임을 시작하지")
+        msg = await ctx.channel.send(content=locale["game_gamble_3"].format(str(num)))
         await asyncio.sleep(1)
     i = random.randrange(1, 257)
     if i >= 1 and i <= 80:
@@ -181,6 +193,10 @@ async def gamble(ctx: Context, *args):
 
 @commands.command(name="주식")  # prefix 주식 / prefix 도박 올인 / prefix 도박 (num: int)
 async def stock(ctx: Context, *args):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+
     def check(m):
         base: bool = m.channel == ctx.channel and m.author == ctx.author
         if not base:

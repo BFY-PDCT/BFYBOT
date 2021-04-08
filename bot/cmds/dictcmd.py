@@ -355,5 +355,5 @@ class CommandErrorHandler(commands.Cog):
                 if isowner(ctx.message.author.id):
                     await mymsg.edit(content=locale["dictcmd_general_ownercancel"])
                 else:
-                    await mymsg.edit(content=locale["dictcmd_general_cancel"])
+                    await mymsg.edit(content=locale["dictcmd_general_cancel2"])
             return

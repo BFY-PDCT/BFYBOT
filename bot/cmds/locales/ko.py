@@ -52,7 +52,7 @@ locale_ko = {
     "dictcmd_report_reported": "해당 답변을 신고하였습니다. 신고된 답변은 관리자가 검토 후 조치할 예정입니다.",
     "dictcmd_general_ownercfmnew": "주인님 새 명령어가 필요하십니까",
     "dictcmd_general_cfmnew": "50000포인트를 사용해서 대답을 알려줄래?",
-    "dictcmd_general_cancel": "뭐래 ㅋ",
+    "dictcmd_general_cancel2": "뭐래 ㅋ",
     "dictcmd_general_ownerquestion": "주인님 무엇을 원하십니까.",
     "dictcmd_general_owneracpnew": "주인님 등록하였읍니다.",
     "dictcmd_general_ownercancel": "알겠습니다 주인님",
