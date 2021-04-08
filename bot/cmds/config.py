@@ -30,20 +30,18 @@ import time
 from datetime import datetime
 from discord.ext import commands
 
-"""
-    Owner Setting
-    owner - owner IDs as list / 소유자(슈퍼오너)의 ID를 리스트로 모두 입력해주세요.
-    token - bot token / 봇 토큰
-    invlink - invite link / 초대 링크
-    vernum - version info / 버전 정보
-    prefix - prefix / 프리픽스
-    botname - bot's name / 봇 이름
-    hasmusic - whether there is a music function / 음악 기능을 추가로 제공하는지
-    botcolor - bot color / 봇의 색상
-    musicstr - notice about music function
-    helpmusicstr - help command of music function
-    For detailed guide, see https://github.com/BFY-PDCT/BFYBOT/wiki/Editing-config.py
-"""
+# owner - owner IDs as list / 소유자(슈퍼오너)의 ID를 리스트로 모두 입력해주세요.
+# token - bot token / 봇 토큰
+# invlink - invite link / 초대 링크
+# vernum - version info / 버전 정보
+# prefix - prefix / 프리픽스
+# botname - bot's name / 봇 이름
+# hasmusic - whether there is a music function / 음악 기능을 추가로 제공하는지
+# botcolor - bot color / 봇의 색상
+# musicstr - notice about music function
+# helpmusicstr - help command of music function
+# For detailed guide, see https://github.com/BFY-PDCT/BFYBOT/wiki/Editing-config.py
+
 # Owner Setting
 owner = [0]
 token = ""

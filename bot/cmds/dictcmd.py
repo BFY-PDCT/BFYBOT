@@ -52,6 +52,7 @@ class CommandErrorHandler(commands.Cog):
         locale = getlocale(ctx)
         if locale is None:
             await localeerr(ctx)
+        locale = getlocale(ctx)
 
         # This prevents any commands with local handlers being handled here in on_command_error.
         if hasattr(ctx.command, "on_error"):

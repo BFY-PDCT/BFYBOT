@@ -313,8 +313,15 @@ def getlocale(ctx: Context):
 
 def setlocale(ctx, lang):
     uid = ctx.author.id
+    try:
+        db.execute(
+            "DELETE FROM gsetting WHERE name = ?",
+            (("lang" + str(uid)),),
+        )
+    except:
+        log("New user")
     db.execute(
-        "INSERT OR REPLACE INTO gsetting(name, data) \
+        "INSERT INTO gsetting(name, data) \
         VALUES(?,?)",
         (
             ("lang" + str(uid)),

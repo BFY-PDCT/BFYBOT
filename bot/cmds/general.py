@@ -55,13 +55,13 @@ def initcmd():
 async def setlang(ctx: Context, *, arg):
     if not arg in ["ko", "en"]:
         await ctx.send(
-            f"""
-            Not Valid Language Code :(
-            How to use: `(prefix) lang (code)`
-            Valid codes: ko, en
-            유효하지 않은 언어 코드입니다 :(
-            사용 방법: `(prefix) 언어 (언어코드)`
-            유효한 언어코드: ko, en
+        f"""
+        Not Valid Language Code :(
+        How to use: `(prefix) lang (code)`
+        Valid codes: ko, en
+        유효하지 않은 언어 코드입니다 :(
+        사용 방법: `(prefix) 언어 (언어코드)`
+        유효한 언어코드: ko, en
         """
         )
         return
