@@ -191,7 +191,7 @@ async def gamble(ctx: Context, *args):
     return
 
 
-@gamble.onerror
+@gamble.error
 async def gamble_error(ctx: Context, error):
     using.remove(ctx.author.id)
     return
@@ -387,7 +387,7 @@ async def stock(ctx: Context, *args):
     return
 
 
-@stock.onerror
+@stock.error
 async def stock_error(ctx: Context, error):
     using.remove(ctx.author.id)
     return
