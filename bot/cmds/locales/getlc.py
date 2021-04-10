@@ -16,25 +16,21 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from cmds import loadfile, is_non_zero_file, createFolder
+if __name__ == "__main__":
+    import sys
+
+    print("Please execute bot.py")
+    sys.exit(0)
+
+# ISO 639-1 (LANGUAGE CODES) is used for file name
+
+from .en import locale_en
+from .ko import locale_ko
 
 
-def func():
-    b = loadfile("dict")
-    c = is_non_zero_file("./bbdata/dict.export.txt")
-    if not c:
-        createFolder("./bbdata")
-    with open("./bbdata/dict.export.txt", "w", -1, "utf-8") as fw:
-        for d, e in b.items():
-            if d.startswith("id") or d.startswith("editable"):
-                continue
-            if "id" + d in b:
-                fw.write("id: " + str(b["id" + d]) + " ")
-            if "editable" + d in b:
-                fw.write("ed: " + str(b["editable" + d]) + " ")
-            fw.write("\n" + str(d) + "\n****\n" + str(e) + "\n--------\n")
-    print("done")
-    return
-
-
-func()
+def getlocale(langcode):
+    if langcode == "en":
+        return locale_en
+    if langcode == "ko":
+        return locale_ko
+    return None

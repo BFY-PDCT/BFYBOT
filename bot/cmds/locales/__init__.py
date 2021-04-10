@@ -22,37 +22,4 @@ if __name__ == "__main__":
     print("Please execute bot.py")
     sys.exit(0)
 
-import discord
-from cmds import (
-    botname,
-    botcolor,
-    bot,
-    log,
-)
-
-
-@bot.event
-async def on_private_channel_create(channel):
-    ver = discord.Embed(
-        title="안녕하세요! 저는 " + botname + "입니다.",
-        color=botcolor,
-    )
-    await channel.send("안녕하세요!", embed=ver)
-
-
-async def on_message_pre(
-    message,
-):  # if this function return true, on_message will return
-
-    # Custom Code Here
-
-    return False
-
-
-async def on_admin_message(message):
-    log("WELCOME ADMIN")
-
-    # Custom Code Here
-
-    await bot.process_commands(message)
-    return
+from .getlc import getlocale

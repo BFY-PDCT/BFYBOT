@@ -23,12 +23,16 @@ if __name__ == "__main__":
     sys.exit(0)
 
 import os
+from sqlite3.dbapi2 import Error
 import traceback
 import time
+import discord
 from datetime import datetime
 from operator import truediv, mul, add, sub
 from discord.ext import commands
+from discord.ext.commands.context import Context
 from .config import owner, eventlogger, conn, db
+from .locales import getlc
 
 operators = {"+": add, "-": sub, "*": mul, "/": truediv, "^": pow}
 
@@ -258,11 +262,8 @@ def admincheck():
 
 def isban(uid):
     db.execute(
-        "SELECT * FROM gsetting WHERE name=? AND data=?",
-        (
-            "ban",
-            uid,
-        ),
+        "SELECT * FROM gsetting WHERE name=?",
+        ("ban",),
     )
     subres = db.fetchall()
     res = []
@@ -298,6 +299,48 @@ def delban(uid):
     )
     conn.commit()
     return 0
+
+
+def getlocale(ctx: Context):
+    uid = ctx.author.id
+    db.execute("SELECT * FROM gsetting WHERE name=?", ("lang" + str(uid),))
+    res = db.fetchone()
+    if res is None:
+        return None
+    lang = res[1]
+    return getlc.getlocale(lang)
+
+
+def setlocale(ctx, lang):
+    uid = ctx.author.id
+    try:
+        db.execute(
+            "DELETE FROM gsetting WHERE name = ?",
+            (("lang" + str(uid)),),
+        )
+    except:
+        log("New user")
+    db.execute(
+        "INSERT INTO gsetting(name, data) \
+        VALUES(?,?)",
+        (
+            ("lang" + str(uid)),
+            lang,
+        ),
+    )
+    conn.commit()
+
+
+async def localeerr(ctx):
+    await ctx.send(
+        f"""
+    언어가 설정되지 않아 자동으로 한국어로 설정되었습니다. 
+    언어를 변경하시려면 `(prefix) 언어 (언어코드)` 명령어를 사용해주세요.
+    Language is automatically set to korean.
+    To change language, use `(prefix) lang (code)`
+    """
+    )
+    setlocale(ctx, "ko")
 
 
 def isowner(uid):
@@ -399,14 +442,3 @@ def getrecstk(stype, uid, guild):
             b = tmp[3]
         res.insert(0, [a, b, tmp[4]])
     return res
-
-
-"""
-NOT USED
-async def download(url, file_name):
-    with open(file_name, "wb") as file:
-        dbglog("querying " + url)
-        httpclient = http3.AsyncClient()
-        resp = await httpclient.get(url, timeout=100.0)
-        file.write(resp.content)
-"""
