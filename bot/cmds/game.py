@@ -179,6 +179,11 @@ async def gamble(ctx: Context, *args):
     return
 
 
+@gamble.error
+async def gamble_error(ctx: Context, error):
+    using.remove(ctx.author.id)
+
+
 @commands.command(name="주식")  # prefix 주식 / prefix 도박 올인 / prefix 도박 (num: int)
 async def stock(ctx: Context, *args):
     def check(m):
@@ -375,3 +380,8 @@ async def stock(ctx: Context, *args):
         await ctx.send(embed=msg)
     using.remove(ctx.author.id)
     return
+
+
+@stock.error
+async def stock_error(ctx: Context, error):
+    using.remove(ctx.author.id)
