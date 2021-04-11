@@ -164,8 +164,13 @@ async def lolsearch(ctx: Context, *, arg):
 
 @lolsearch.error
 async def lolsearch_error(ctx: Context, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("닉네임을 입력해주세요.")
+    try:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("닉네임을 입력해주세요.")
+            return
+        errlog(error)
+        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+    except:
         return
 
 
@@ -180,6 +185,11 @@ async def docalculate(ctx: Context, *, arg):
 
 @docalculate.error
 async def docalculate_error(ctx: Context, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("계산할 식을 입력해주세요.")
+    try:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("계산할 식을 입력해주세요.")
+            return
+        errlog(error)
+        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+    except:
         return

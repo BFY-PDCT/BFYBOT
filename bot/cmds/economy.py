@@ -198,9 +198,11 @@ async def sendmoney(ctx: Context, money: int, *args):
 
 @sendmoney.error
 async def sendmoney_error(ctx: Context, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("금액을 올바르게 입력해주세요.")
+    try:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("금액을 올바르게 입력해주세요.")
+            return
+        errlog(error)
+        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+    except:
         return
-    errlog(error)
-    await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    return
