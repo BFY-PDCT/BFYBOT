@@ -45,6 +45,7 @@ async def seemoney(ctx: Context):
     locale = getlocale(ctx)
     if locale is None:
         await localeerr(ctx)
+        locale = getlocale(ctx)
     pnt = getpoint(ctx.author.id, guild=ctx.guild)
     if pnt == -1:
         setpoint(ctx.author.id, 0, guild=ctx.guild)
@@ -60,6 +61,7 @@ async def getmoney(ctx: Context):
     locale = getlocale(ctx)
     if locale is None:
         await localeerr(ctx)
+        locale = getlocale(ctx)
 
     def check(m):
         return (
@@ -124,6 +126,7 @@ async def seeothermoney(ctx: Context):
     locale = getlocale(ctx)
     if locale is None:
         await localeerr(ctx)
+        locale = getlocale(ctx)
     if len(ctx.message.mentions) == 0:
         await ctx.channel.send(locale["economy_seeothermoney_0"])
         return
@@ -143,6 +146,7 @@ async def seestk(ctx: Context):
     locale = getlocale(ctx)
     if locale is None:
         await localeerr(ctx)
+        locale = getlocale(ctx)
     pnt = {}
     for s in ["a", "b", "c"]:
         pnt[s] = getstk(s, ctx.author.id, guild=ctx.guild)
@@ -162,6 +166,7 @@ async def seeotherstk(ctx: Context):
     locale = getlocale(ctx)
     if locale is None:
         await localeerr(ctx)
+        locale = getlocale(ctx)
     if len(ctx.message.mentions) == 0:
         await ctx.channel.send(locale["economy_seeotherstk_0"])
         return
@@ -188,6 +193,7 @@ async def sendmoney(ctx: Context, money: int, *args):
     locale = getlocale(ctx)
     if locale is None:
         await localeerr(ctx)
+        locale = getlocale(ctx)
     if getpoint(ctx.author.id, guild=ctx.guild) == -1:
         setpoint(ctx.author.id, 0, guild=ctx.guild)
     if money <= 0 or money > getpoint(ctx.author.id, guild=ctx.guild):
@@ -217,6 +223,7 @@ async def sendmoney_error(ctx: Context, error):
     locale = getlocale(ctx)
     if locale is None:
         await localeerr(ctx)
+        locale = getlocale(ctx)
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send(locale["economy_sendmoneyerror_0"])
         return

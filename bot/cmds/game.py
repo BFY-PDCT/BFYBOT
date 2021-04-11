@@ -51,6 +51,7 @@ async def gamble(ctx: Context, *args):
     locale = getlocale(ctx)
     if locale is None:
         await localeerr(ctx)
+        locale = getlocale(ctx)
     using.append(ctx.author.id)
     if len(args) == 0:
 
@@ -202,6 +203,7 @@ async def stock(ctx: Context, *args):
     locale = getlocale(ctx)
     if locale is None:
         await localeerr(ctx)
+        locale = getlocale(ctx)
 
     def check(m):
         base: bool = m.channel == ctx.channel and m.author == ctx.author
