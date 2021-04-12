@@ -195,18 +195,20 @@ async def setpunish(ctx: Context, cnt: int, punish: str, pcnt: int = None, *args
 
 @setpunish.error
 async def setpunish_error(ctx: Context, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("모든 항목을 입력해주세요.")
+    try:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("모든 항목을 입력해주세요.")
+            return
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send("관리자가 아니면 못써요 흥")
+            return
+        if isinstance(error, commands.BadArgument):
+            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            return
+        tblog(error)
+        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+    except Exception as e:
         return
-    if isinstance(error, commands.CheckFailure):
-        await ctx.send("관리자가 아니면 못써요 흥")
-        return
-    if isinstance(error, commands.BadArgument):
-        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
-        return
-    tblog(error)
-    await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    return
 
 
 @commands.command(name="기본역할")  # prefix 기본역할 @역할
@@ -247,18 +249,20 @@ async def setwelcome(ctx: Context, *, arg):
 
 @setwelcome.error
 async def setwelcome_error(ctx: Context, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("인사말을 입력해주세요.")
+    try:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("인사말을 입력해주세요.")
+            return
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send("관리자가 아니면 못써요 흥")
+            return
+        if isinstance(error, commands.BadArgument):
+            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            return
+        tblog(error)
+        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+    except Exception as e:
         return
-    if isinstance(error, commands.CheckFailure):
-        await ctx.send("관리자가 아니면 못써요 흥")
-        return
-    if isinstance(error, commands.BadArgument):
-        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
-        return
-    tblog(error)
-    await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    return
 
 
 @commands.command(name="작별인사")  # prefix 작별인사 (msgl: str)
@@ -271,18 +275,20 @@ async def setbye(ctx: Context, *, arg):
 
 @setbye.error
 async def setbye_error(ctx: Context, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("인사말을 입력해주세요.")
+    try:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("인사말을 입력해주세요.")
+            return
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send("관리자가 아니면 못써요 흥")
+            return
+        if isinstance(error, commands.BadArgument):
+            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            return
+        tblog(error)
+        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+    except Exception as e:
         return
-    if isinstance(error, commands.CheckFailure):
-        await ctx.send("관리자가 아니면 못써요 흥")
-        return
-    if isinstance(error, commands.BadArgument):
-        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
-        return
-    tblog(error)
-    await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    return
 
 
 @commands.command(name="해방")  # prefix 해방 @유저
@@ -405,18 +411,20 @@ async def execmute(ctx: Context, time: int, mention: str, *, arg):
 
 @execmute.error
 async def execmute_error(ctx: Context, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("모든 항목을 입력해주세요.")
+    try:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("모든 항목을 입력해주세요.")
+            return
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send("관리자가 아니면 못써요 흥")
+            return
+        if isinstance(error, commands.BadArgument):
+            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            return
+        tblog(error)
+        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+    except Exception as e:
         return
-    if isinstance(error, commands.CheckFailure):
-        await ctx.send("관리자가 아니면 못써요 흥")
-        return
-    if isinstance(error, commands.BadArgument):
-        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
-        return
-    tblog(error)
-    await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    return
 
 
 @commands.command(name="충분하다", aliases=["뮤트해제"])  # prefix 충분하다 @유저 / prefix 뮤트해제 @유저
@@ -445,18 +453,20 @@ async def donemute(ctx: Context):
 
 @donemute.error
 async def donemute_error(ctx: Context, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("모든 항목을 입력해주세요.")
+    try:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("모든 항목을 입력해주세요.")
+            return
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send("관리자가 아니면 못써요 흥")
+            return
+        if isinstance(error, commands.BadArgument):
+            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            return
+        tblog(error)
+        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+    except Exception as e:
         return
-    if isinstance(error, commands.CheckFailure):
-        await ctx.send("관리자가 아니면 못써요 흥")
-        return
-    if isinstance(error, commands.BadArgument):
-        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
-        return
-    tblog(error)
-    await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    return
 
 
 @commands.command(name="킥")  # prefix 킥 @유저 (rsn: str)
@@ -511,18 +521,20 @@ async def execkick(ctx: Context, mention: str, *, arg):
 
 @execkick.error
 async def execkick_error(ctx: Context, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("모든 항목을 입력해주세요.")
+    try:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("모든 항목을 입력해주세요.")
+            return
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send("관리자가 아니면 못써요 흥")
+            return
+        if isinstance(error, commands.BadArgument):
+            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            return
+        tblog(error)
+        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+    except Exception as e:
         return
-    if isinstance(error, commands.CheckFailure):
-        await ctx.send("관리자가 아니면 못써요 흥")
-        return
-    if isinstance(error, commands.BadArgument):
-        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
-        return
-    tblog(error)
-    await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    return
 
 
 @commands.command(name="밴")
@@ -577,18 +589,20 @@ async def execban(ctx, mention: str, *, arg):  # prefix 밴 @유저 (rsn: str)
 
 @execban.error
 async def execban_error(ctx: Context, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("모든 항목을 입력해주세요.")
+    try:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("모든 항목을 입력해주세요.")
+            return
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send("관리자가 아니면 못써요 흥")
+            return
+        if isinstance(error, commands.BadArgument):
+            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            return
+        tblog(error)
+        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+    except Exception as e:
         return
-    if isinstance(error, commands.CheckFailure):
-        await ctx.send("관리자가 아니면 못써요 흥")
-        return
-    if isinstance(error, commands.BadArgument):
-        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
-        return
-    tblog(error)
-    await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    return
 
 
 @commands.command(name="경고")  # prefix 경고 @유저 (rsn: str)
@@ -766,18 +780,20 @@ async def addwarning(ctx: Context, mention: str, *, arg):
 
 @addwarning.error
 async def addwarning_error(ctx: Context, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("모든 항목을 입력해주세요.")
+    try:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("모든 항목을 입력해주세요.")
+            return
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send("관리자가 아니면 못써요 흥")
+            return
+        if isinstance(error, commands.BadArgument):
+            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            return
+        tblog(error)
+        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+    except Exception as e:
         return
-    if isinstance(error, commands.CheckFailure):
-        await ctx.send("관리자가 아니면 못써요 흥")
-        return
-    if isinstance(error, commands.BadArgument):
-        await ctx.send("뭔가 잘못 입력하신것 같아요,,")
-        return
-    tblog(error)
-    await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    return
 
 
 @commands.command(name="경고취소")  # prefix 경고취소 @유저

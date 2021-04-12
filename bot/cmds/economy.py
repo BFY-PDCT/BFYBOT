@@ -224,12 +224,14 @@ async def sendmoney_error(ctx: Context, error):
     if locale is None:
         await localeerr(ctx)
         locale = getlocale(ctx)
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send(locale["economy_sendmoneyerror_0"])
-        return
-    if isinstance(error, commands.BadArgument):
-        await ctx.send(locale["economy_sendmoneyerror_1"])
-        return
-    tblog(error)
-    await ctx.send(locale["economy_sendmoneyerror_2"])
-    return
+    try:
+      if isinstance(error, commands.MissingRequiredArgument):
+          await ctx.send(locale["economy_sendmoneyerror_0"])
+          return
+      if isinstance(error, commands.BadArgument):
+          await ctx.send(locale["economy_sendmoneyerror_1"])
+          return
+      tblog(error)
+      await ctx.send(locale["economy_sendmoneyerror_2"])
+    except:
+      return
