@@ -202,12 +202,12 @@ async def setpunish_error(ctx: Context, error):
         if isinstance(error, commands.CheckFailure):
             await ctx.send("관리자가 아니면 못써요 흥")
             return
-      if isinstance(error, commands.BadArgument):
-          await ctx.send("뭔가 잘못 입력하신것 같아요,,")
-          return
+        if isinstance(error, commands.BadArgument):
+            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            return
         tblog(error)
         await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    except:
+    except Exception as e:
         return
 
 
@@ -261,7 +261,7 @@ async def setwelcome_error(ctx: Context, error):
             return
         tblog(error)
         await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    except:
+    except Exception as e:
         return
 
 
@@ -287,7 +287,7 @@ async def setbye_error(ctx: Context, error):
             return
         tblog(error)
         await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    except:
+    except Exception as e:
         return
 
 
@@ -423,7 +423,7 @@ async def execmute_error(ctx: Context, error):
             return
         tblog(error)
         await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    except:
+    except Exception as e:
         return
 
 
@@ -465,7 +465,7 @@ async def donemute_error(ctx: Context, error):
             return
         tblog(error)
         await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    except:
+    except Exception as e:
         return
 
 
@@ -533,7 +533,7 @@ async def execkick_error(ctx: Context, error):
             return
         tblog(error)
         await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    except:
+    except Exception as e:
         return
 
 
@@ -601,7 +601,7 @@ async def execban_error(ctx: Context, error):
             return
         tblog(error)
         await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    except:
+    except Exception as e:
         return
 
 
@@ -792,7 +792,7 @@ async def addwarning_error(ctx: Context, error):
             return
         tblog(error)
         await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
-    except:
+    except Exception as e:
         return
 
 
