@@ -31,6 +31,7 @@ from cmds import (
     using,
     bot,
     timestart,
+    vernum,
     isowner,
     loadsetting,
     log,
@@ -43,11 +44,9 @@ from discord.errors import Forbidden, HTTPException
 async def on_ready():
     await bot.change_presence(activity=discord.Game("열심히 일"))
     log("We have logged in as {.user}".format(bot))
-    print(
-        "Done Loading, logged in as {.user}! (total {}sec)".format(
-            bot, time.time() - timestart
-        )
-    )
+    loadtime = time.time() - timestart
+    log("---- Done Loading in {} sec! Running BFYBOT {} ----".format(loadtime, vernum))
+    print("Done Loading, logged in as {.user}! (total {}sec)".format(bot, loadtime))
 
 
 @bot.event
@@ -60,7 +59,7 @@ async def on_member_join(member):
     msgj = loadsetting("msgj", guild=member.guild)
     joinrole = loadsetting("joinrole", guild=member.guild)
     chnl = False
-    if setting_loaded is not False and msgj is not False:
+    if setting_loaded is not None and msgj is not None:
         try:
             msgje = discord.Embed(title=msgj, color=botcolor)
             await bot.get_channel(setting_loaded).send(
@@ -71,7 +70,7 @@ async def on_member_join(member):
             log("Error Sending Notice to " + str(setting_loaded["chnl"]))
         except Forbidden:
             log("Error Sending Notice to " + str(setting_loaded["chnl"]))
-    if joinrole is not False:
+    if joinrole is not None:
         try:
             xrole: discord.Role = None
             find = False
@@ -87,7 +86,6 @@ async def on_member_join(member):
                         "새 멤버 역할이 잘못 지정되어 있습니다.",
                         allowed_mentions=discord.AllowedMentions.all(),
                     )
-                using.remove(member.id)
                 return
             await member.edit(roles=[xrole], reason="WELCOME!")
         except Forbidden:
@@ -97,7 +95,6 @@ async def on_member_join(member):
                     "새 멤버 역할 변경 권한이 부족합니다.",
                     allowed_mentions=discord.AllowedMentions.all(),
                 )
-            using.remove(member.id)
             return
 
 
@@ -108,8 +105,8 @@ async def on_member_remove(member):
         guild=member.guild,
     )
     setting_loaded = loadsetting("chnl", guild=member.guild)
-    msgl = loadsetting("msgj", guild=member.guild)
-    if "chnl" in setting_loaded and "msgl" in setting_loaded:
+    msgl = loadsetting("msgl", guild=member.guild)
+    if setting_loaded is not None and msgl is not None:
         try:
             msgle = discord.Embed(title=msgl, color=botcolor)
             await bot.get_channel(setting_loaded).send(
@@ -145,7 +142,7 @@ async def on_message(message):
     if await on_message_pre(message):  # Custom Pre-processing
         return
 
-    if message.content.startswith(prefix):  # Block User Already Using
+    if message.content.startswith(tuple(prefix)):  # Block User Already Using
         if message.author.id in using:
             log("User Already Using: " + str(message.author.id))
             return
