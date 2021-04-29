@@ -27,7 +27,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 from .config import bot, muted, conn, db
-from .genfunc import dbglog, log, dumpdb, loadsetting
+from .genfunc import dbglog, log, dumpdb, loadsetting, getlocalebyuid, localeerr
 from discord.errors import Forbidden, HTTPException
 from discord.ext import tasks, commands
 from discord.ext.commands import Context
@@ -373,6 +373,10 @@ class updatemute(commands.Cog):
         if member is None:
             log("Can't find member")
             return
+        locale = getlocalebyuid(member.id)
+        if locale is None:
+            await localeerr(member.id)
+            locale = getlocalebyuid(member.id)
         setting_loaded = loadsetting("chnl", guild)
         channel = guild.get_channel(mute[4])
         if param == 0:
@@ -381,45 +385,37 @@ class updatemute(commands.Cog):
             if setting_loaded is not False:
                 try:
                     await bot.get_channel(setting_loaded).send(
-                        "처리 종료되었습니다 - 뮤트 {.mention}".format(member)
+                        locale["update_1"].format(member.mention)
                     )
                 except HTTPException:
-                    await channel.send("처리 종료되었습니다 - 뮤트 {.mention}".format(member))
-                    await channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                    await channel.send(locale["update_1"].format(member.mention))
+                    await channel.send(locale["update_2"])
                 except Forbidden:
-                    await channel.send("처리 종료되었습니다 - 뮤트 {.mention}".format(member))
-                    await channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                    await channel.send(locale["update_1"].format(member.mention))
+                    await channel.send(locale["update_2"])
             else:
-                await channel.send("처리 종료되었습니다 - 뮤트 {.mention}".format(member))
+                await channel.send(locale["update_1"].format(member.mention))
         elif param == 1:
             await member.edit(roles=mute[3], reason="MUTE Command Cancel")
             log("Unmuted " + member.name, guild=guild)
             if setting_loaded is not False:
                 try:
                     await bot.get_channel(setting_loaded).send(
-                        "처리 종료되었습니다 - 뮤트 {.mention} / 처리자: {.mention}".format(
-                            member, mute[5]
-                        )
+                        locale["update_0"].format(member.mention, mute[5].mention)
                     )
                 except HTTPException:
                     await channel.send(
-                        "처리 종료되었습니다 - 뮤트 {.mention} / 처리자: {.mention}".format(
-                            member, mute[5]
-                        )
+                        locale["update_0"].format(member.mention, mute[5].mention)
                     )
-                    await channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                    await channel.send(locale["update_2"])
                 except Forbidden:
                     await channel.send(
-                        "처리 종료되었습니다 - 뮤트 {.mention} / 처리자: {.mention}".format(
-                            member, mute[5]
-                        )
+                        locale["update_0"].format(member.mention, mute[5].mention)
                     )
-                    await channel.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                    await channel.send(locale["update_2"])
             else:
                 await channel.send(
-                    "처리 종료되었습니다 - 뮤트 {.mention} / 처리자: {.mention}".format(
-                        member, mute[5]
-                    )
+                    locale["update_0"].format(member.mention, mute[5].mention)
                 )
         return
 

@@ -131,58 +131,58 @@ async def gamble(ctx: Context, *args):
         await asyncio.sleep(1)
     i = random.randrange(1, 257)
     if i >= 1 and i <= 80:
-        await msg.edit(content="꿀--꺼억 `💰-" + str(num) + "`")
+        await msg.edit(content=locale["game_gamble_6"].format(str(num)))
         setpoint(
             ctx.author.id,
             getpoint(ctx.author.id, guild=ctx.guild) - num,
             guild=ctx.guild,
         )
     elif i >= 81 and i <= 128:
-        await msg.edit(content="0.5배 다먹기엔 배불러 ㅋㅋ `💰-" + str(num // 2) + "`")
+        await msg.edit(content=locale["game_gamble_7"].format(str(num // 2)))
         setpoint(
             ctx.author.id,
             getpoint(ctx.author.id, guild=ctx.guild) - num // 2,
             guild=ctx.guild,
         )
     elif i >= 128 and i <= 224:
-        await msg.edit(content="꿀--꺼억하려다 참았다... 후... `💰+0`")
+        await msg.edit(content=locale["game_gamble_8"])
     elif i >= 225 and i <= 240:
-        await msg.edit(content="2배... 나쁘지 않지? `💰+" + str(num) + "`")
+        await msg.edit(content=locale["game_gamble_9"].format(str(num)))
         setpoint(
             ctx.author.id,
             getpoint(ctx.author.id, guild=ctx.guild) + num,
             guild=ctx.guild,
         )
     elif i >= 241 and i <= 248:
-        await msg.edit(content="올 4배 ㅊㅊ `💰+" + str(num * 3) + "`")
+        await msg.edit(content=locale["game_gamble_10"].format(str(num * 3)))
         setpoint(
             ctx.author.id,
             getpoint(ctx.author.id, guild=ctx.guild) + num * 3,
             guild=ctx.guild,
         )
     elif i >= 249 and i <= 252:
-        await msg.edit(content="이야 이걸 6배로 가져가네 `💰+" + str(num * 5) + "`")
+        await msg.edit(content=locale["game_gamble_11"].format(str(num * 5)))
         setpoint(
             ctx.author.id,
             getpoint(ctx.author.id, guild=ctx.guild) + num * 5,
             guild=ctx.guild,
         )
     elif i >= 253 and i <= 254:
-        await msg.edit(content="8배면 와... `💰+" + str(num * 7) + "`")
+        await msg.edit(content=locale["game_gamble_12"].format(str(num * 7)))
         setpoint(
             ctx.author.id,
             getpoint(ctx.author.id, guild=ctx.guild) + num * 7,
             guild=ctx.guild,
         )
     elif i >= 255 and i <= 255:
-        await msg.edit(content="10배라니 너 운 좀 좋다? `💰+" + str(num * 9) + "`")
+        await msg.edit(content=locale["game_gamble_13"].format(str(num * 9)))
         setpoint(
             ctx.author.id,
             getpoint(ctx.author.id, guild=ctx.guild) + num * 9,
             guild=ctx.guild,
         )
     elif i >= 256 and i <= 256:
-        await msg.edit(content="뭔 나 거지되겠네 50배는 너무한거아니냐 `💰+" + str(num * 29) + "`")
+        await msg.edit(content=locale["game_gamble_14"].format(str(num * 49)))
         setpoint(
             ctx.author.id,
             getpoint(ctx.author.id, guild=ctx.guild) + num * 49,
@@ -217,14 +217,10 @@ async def stock(ctx: Context, *args):
         return True
 
     if (len(args)) != 2:
-        await ctx.send(
-            "`" + prefix + " 주식 (그래프|매수|매도|통계) (A|B|C|ENT|CORP|AT7)` 이 올바른 사용법이에요 ^^"
-        )
+        await ctx.send(locale["game_stock_0"].format(prefix))
         return
     if not args[0] in ["그래프", "매수", "매도", "통계"]:
-        await ctx.send(
-            "`" + prefix + " 주식 (그래프|매수|매도|통계) (A|B|C|ENT|CORP|AT7)` 이 올바른 사용법이에요 ^^"
-        )
+        await ctx.send(locale["game_stock_0"].format(prefix))
         return
     if args[1] in [
         "A",
@@ -257,9 +253,7 @@ async def stock(ctx: Context, *args):
         types = "c"
         names = "AT7 GROUP(C)"
     else:
-        await ctx.send(
-            "`" + prefix + " 주식 (그래프|매수|매도) (A|B|C|ENT|CORP|AT7)` 이 올바른 사용법이에요 ^^"
-        )
+        await ctx.send(locale["game_stock_0"].format(prefix))
         return
     using.append(ctx.author.id)
     if args[0] == "그래프":
@@ -271,9 +265,9 @@ async def stock(ctx: Context, *args):
             using.remove(ctx.author.id)
             return
         msg = discord.Embed(
-            title="현재 가격: " + str(res),
+            title=locale["game_stock_1"].format(str(res)),
             color=botcolor,
-            description=names + "의 그래프입니다.",
+            description=locale["game_stock_2"].format("의 그래프입니다."),
         )
         await ctx.send(embed=msg, file=discord.File("./bbdata/stock_" + types + ".png"))
     elif args[0] == "매수":
@@ -293,35 +287,29 @@ async def stock(ctx: Context, *args):
             setstk(types, ctx.author.id, 0, ctx.guild)
             stk = 0
         if pnt <= res:
-            await ctx.channel.send(content="돈도없으면서 주식같은 소리하네")
+            await ctx.channel.send(content=locale["game_stock_3"])
             using.remove(ctx.author.id)
             return
         msg = await ctx.channel.send(
-            "얼마나 구매하시겠어요? 잔액: `💰 "
-            + str(pnt)
-            + "`, 현재가격: "
-            + str(res)
-            + ", 구매가능수량: "
-            + str(pnt // res)
-            + "주"
+            locale["game_stock_4"].format(str(pnt), str(res), str(pnt // res))
         )
         try:
             reply = await bot.wait_for("message", check=check, timeout=10.0)
         except asyncio.TimeoutError:
-            await msg.edit(content="안살거면 가세요")
+            await msg.edit(content=locale["game_stock_5"])
             using.remove(ctx.author.id)
             return
         num = int(reply.content)
         if pnt // res < num or num == 0:
-            await msg.edit(content="정확한 수량을 입력하십쇼")
+            await msg.edit(content=locale["game_stock_6"])
             using.remove(ctx.author.id)
             return
         stknow = getstk(types, ctx.author.id, ctx.guild)
         if stknow + num > 100000:
-            await msg.edit(content="주식 최대 보유량은 10만주입니다.")
+            await msg.edit(content=locale["game_stock_7"])
             using.remove(ctx.author.id)
             return
-        await msg.edit(content=str(num) + "주를 구매하셨습니다. `💰-" + str(res * num) + "`")
+        await msg.edit(content=locale["game_stock_8"].format(str(num), str(res * num)))
         setpoint(ctx.author.id, pnt - res * num, guild=ctx.guild)
         setstk(types, ctx.author.id, stk + num, ctx.guild)
         stkx.buy(num)
@@ -337,24 +325,22 @@ async def stock(ctx: Context, *args):
         pnt = getpoint(ctx.author.id, ctx.guild)
         stk = getstk(types, ctx.author.id, ctx.guild)
         if stk == 0:
-            await ctx.channel.send(content="주식도 없으면서 매도같은 소리하네")
+            await ctx.channel.send(content=locale["game_stock_9"])
             using.remove(ctx.author.id)
             return
-        msg = await ctx.channel.send(
-            "얼마나 판매하시겠어요? 현재가격: " + str(res) + ", 판매가능수량: " + str(stk) + "주"
-        )
+        msg = await ctx.channel.send(locale["game_stock_10"].format(str(res), str(stk)))
         try:
             reply = await bot.wait_for("message", check=check, timeout=10.0)
         except asyncio.TimeoutError:
-            await msg.edit(content="안팔거면 가세요")
+            await msg.edit(content=locale["game_stock_11"])
             using.remove(ctx.author.id)
             return
         num = int(reply.content)
         if stk < num or num == 0:
-            await msg.edit(content="정확한 수량을 입력하십쇼")
+            await msg.edit(content=locale["game_stock_6"])
             using.remove(ctx.author.id)
             return
-        await msg.edit(content=str(num) + "주를 판매하셨습니다. `💰+" + str(res * num) + "`")
+        await msg.edit(content=locale["game_stock_12"].format(str(num), str(res * num)))
         setpoint(ctx.author.id, pnt + res * num, guild=ctx.guild)
         setstk(types, ctx.author.id, stk - num, ctx.guild)
         stkx.sell(num)
@@ -362,7 +348,7 @@ async def stock(ctx: Context, *args):
     elif args[0] == "통계":
         stk = getrecstk(types, ctx.author.id, guild=ctx.guild)
         if len(stk) == 0:
-            await ctx.channel.send(content="거래내역을 못찾았어요 ㅎㅎ;")
+            await ctx.channel.send(content=locale["game_stock_13"])
             using.remove(ctx.author.id)
             return
         desc = ""
@@ -374,13 +360,13 @@ async def stock(ctx: Context, *args):
         for substk in stk:
             desc = (
                 desc
-                + "{} - {}포인트 - {}주 - 총 {}포인트".format(
+                + locale["game_stock_16"].format(
                     substk[0], substk[2], substk[1], substk[1] * substk[2]
                 )
                 + "\n"
             )
         msg = discord.Embed(
-            title=names + " 주식 거래내역입니다.",
+            title=locale["game_stock_17"].format(names),
             color=botcolor,
             description=desc,
         )

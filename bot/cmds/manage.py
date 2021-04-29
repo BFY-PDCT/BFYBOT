@@ -31,11 +31,12 @@ from .genfunc import (
     errlog,
     isadmin,
     log,
-    dbglog,
+    getlocale,
     tblog,
     loadsetting,
     savesetting,
     delsetting,
+    localeerr,
 )
 from discord.errors import Forbidden, HTTPException
 from discord.ext import commands
@@ -70,48 +71,64 @@ def initcmd():
 @commands.command(name="환영인사삭제")  # prefix 환영인사삭제
 @admincheck()
 async def delwelcome(ctx: Context):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     setting_loaded = loadsetting("msgj", guild=ctx.guild)
     if setting_loaded is None:
-        await ctx.send("일단 설정하고 말씀하시죠?")
+        await ctx.send(locale["manage_delwelcome_0"])
         return
     delsetting("msgj", guild=ctx.guild)
-    await ctx.send("환영인사는 이제 없습니다.")
+    await ctx.send(locale["manage_delwelcome_1"])
     return
 
 
 @commands.command(name="작별인사삭제")  # prefix 작별인사삭제
 @admincheck()
 async def delbye(ctx: Context):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     setting_loaded = loadsetting("msgl", guild=ctx.guild)
     if setting_loaded is None:
-        await ctx.send("일단 설정하고 말씀하시죠?")
+        await ctx.send(locale["manage_delbye_0"])
         return
     delsetting("msgl", guild=ctx.guild)
-    await ctx.send("작별인사는 이제 없습니다.")
+    await ctx.send(locale["manage_delbye_1"])
     return
 
 
 @commands.command(name="구독해제", aliases=["구독취소"])  # prefix 구독해제 / prefix 구독취소
 @admincheck()
 async def unsubscribe(ctx: Context):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     setting_loaded = loadsetting("chnl", guild=ctx.guild)
     if setting_loaded is None:
-        await ctx.send("구독하지도 않아놓고는 ㅋㅋ")
+        await ctx.send(locale["manage_unsubscribe_0"])
         return
     delsetting("chnl", guild=ctx.guild)
-    await ctx.send("구독해제되었어요 힝 ㅠㅠ")
+    await ctx.send(locale["manage_unsubscribe_1"])
     return
 
 
 @commands.command(name="기본역할삭제")  # prefix 기본역할삭제
 @admincheck()
 async def deldefaultrole(ctx: Context):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     setting_loaded = loadsetting("joinrole", guild=ctx.guild)
     if setting_loaded is None:
-        await ctx.send("기본 역할이 설정되지 않았습니다.")
+        await ctx.send(locale["manage_deldefaultrole_0"])
         return
     delsetting("joinrole", guild=ctx.guild)
-    await ctx.send("넵^^7")
+    await ctx.send(locale["manage_cfrm"])
     return
 
 
@@ -119,30 +136,35 @@ async def deldefaultrole(ctx: Context):
     name="치워", aliases=["청소"]
 )  # prefix 치워 (cnt: int) / prefix 청소 (cnt: int)
 async def cleanchat(ctx: Context, *args):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
+
     def check(m):
         return m.channel == ctx.channel and not m == ctx
 
     if not isadmin(ctx.author.id, ctx.guild):
         if not ctx.author.permissions_in(ctx.channel).manage_messages:
-            await ctx.send("권한도 없으면서 나대긴 ㅋ")
+            await ctx.send(locale["manage_cleanchat_0"])
             return
     cnt = 0
     try:
         cnt = int(args[0])
     except IndexError:
-        await ctx.send("얼마나 치울지를 알려줘야 치우던가하지")
+        await ctx.send(locale["manage_cleanchat_1"])
         return
     except ValueError:
-        await ctx.send("숫자가 아닌걸 주시면 어쩌자는겁니까?")
+        await ctx.send(locale["manage_cleanchat_2"])
         return
     if cnt <= 0:
-        await ctx.send("정상적인 숫자를 좀 주시죠?")
+        await ctx.send(locale["manage_cleanchat_3"])
         return
     if cnt > 200:
-        await ctx.send("너무 많어 200개이상은 안치움 ㅅㄱ")
+        await ctx.send(locale["manage_cleanchat_4"])
         return
     deleted = await ctx.channel.purge(limit=cnt + 1, check=check)
-    mymsg = await ctx.send("{}개 치웠어용 히히 칭찬해조".format(len(deleted) - 1))
+    mymsg = await ctx.send(locale["manage_cleanchat_5"].format(len(deleted) - 1))
     await mymsg.delete(delay=5)
     return
 
@@ -150,14 +172,18 @@ async def cleanchat(ctx: Context, *args):
 @commands.command(name="이거로조져", aliases=["뮤트설정"])  # prefix 이거로조져 @역할 / prefix 뮤트설정 @역할
 @admincheck()
 async def setmuterole(ctx: Context):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     if len(ctx.message.role_mentions) == 0:
-        await ctx.send("죄송합니다 역할을 멘션해주세요.")
+        await ctx.send(locale["manage_setmutterole_0"])
         return
     if len(ctx.message.role_mentions) > 1:
-        await ctx.send("죄송합니다 1개의 역할만을 멘션해주세요.")
+        await ctx.send(locale["manage_setmutterole_1"])
         return
     savesetting("role", ctx.guild, ctx.message.role_mentions[0].id)
-    await ctx.send("넵^^7")
+    await ctx.send(locale["manage_cfrm"])
     return
 
 
@@ -166,47 +192,60 @@ async def setmuterole(ctx: Context):
 )  # prefix 처벌설정 (cnt: int) (punish: str) (pcnt: int = None)
 @admincheck()
 async def setpunish(ctx: Context, cnt: int, punish: str, pcnt: int = None, *args):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     if cnt > 11:
-        await ctx.send("경고는 최대 10개까지에요.")
+        await ctx.send(locale["manage_setpunish_0"])
         return
     if cnt < 1:
-        await ctx.send("경고는 최소 1개부터에요.")
+        await ctx.send(locale["manage_setpunish_1"])
         return
-    if not punish in ["뮤트", "킥", "밴", "삭제"]:
-        await ctx.send("뮤트, 킥, 밴, 삭제 중에서만 선택 가능해요.")
+    if not punish in [
+        locale["manage_setpunish_2"],
+        locale["manage_setpunish_3"],
+        locale["manage_setpunish_4"],
+        locale["manage_setpunish_5"],
+    ]:
+        await ctx.send(locale["manage_setpunish_6"])
         return
-    if punish == "삭제":
+    if punish == locale["manage_setpunish_5"]:
         setting_loaded = loadsetting("punish" + str(cnt), guild=ctx.guild)
         if setting_loaded is None:
             delsetting("punish" + str(cnt), guild=ctx.guild)
-            await ctx.send("넵^^7")
+            await ctx.send(locale["manage_cfrm"])
             return
-        await ctx.send("설정이 되어있지 않습니다.")
+        await ctx.send(locale["manage_setpunish_7"])
         return
-    if punish == "뮤트":
+    if punish == locale["manage_setpunish_2"]:
         if pcnt is None:
-            await ctx.send("모든 항목을 입력해주세요.")
+            await ctx.send(locale["manage_setpunish_8"])
             return
         savesetting("mpunish" + str(cnt), ctx.guild, pcnt)
     savesetting("punish" + str(cnt), ctx.guild, punish)
-    await ctx.send("넵^^7")
+    await ctx.send(locale["manage_cfrm"])
     return
 
 
 @setpunish.error
 async def setpunish_error(ctx: Context, error):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     try:
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("모든 항목을 입력해주세요.")
+            await ctx.send(locale["manage_error_0"])
             return
         if isinstance(error, commands.CheckFailure):
-            await ctx.send("관리자가 아니면 못써요 흥")
+            await ctx.send(locale["manage_error_1"])
             return
         if isinstance(error, commands.BadArgument):
-            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            await ctx.send(locale["manage_error_2"])
             return
         tblog(error)
-        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+        await ctx.send(locale["manage_error_3"])
     except Exception as e:
         return
 
@@ -214,53 +253,69 @@ async def setpunish_error(ctx: Context, error):
 @commands.command(name="기본역할")  # prefix 기본역할 @역할
 @admincheck()
 async def setdefaultrole(ctx: Context):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     if len(ctx.message.role_mentions) == 0:
-        await ctx.send("죄송합니다 역할을 멘션해주세요.")
+        await ctx.send(locale["manage_setdefaultrole_0"])
         return
     if len(ctx.message.role_mentions) > 1:
-        await ctx.send("죄송합니다 1개의 역할만을 멘션해주세요.")
+        await ctx.send(locale["manage_setdefaultrole_1"])
         return
     savesetting("joinrole", ctx.guild, ctx.message.role_mentions[0].id)
-    await ctx.send("넵^^7")
+    await ctx.send(locale["manage_cfrm"])
     return
 
 
 @commands.command(name="구독")  # prefix 구독 #채널
 @admincheck()
 async def subscribe(ctx: Context):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     if len(ctx.message.channel_mentions) == 0:
-        await ctx.send("죄송합니다 채널을 멘션해주세요.")
+        await ctx.send(locale["manage_subscribe_0"])
         return
     if len(ctx.message.channel_mentions) > 1:
-        await ctx.send("죄송합니다 1개의 채널만을 멘션해주세요.")
+        await ctx.send(locale["manage_subscribe_1"])
         return
     savesetting("chnl", ctx.guild, ctx.message.channel_mentions[0].id)
-    await ctx.send("넵^^7")
+    await ctx.send(locale["manage_cfrm"])
     return
 
 
 @commands.command(name="환영인사")  # prefix 환영인사 (msgj: str)
 @admincheck()
 async def setwelcome(ctx: Context, *, arg):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     savesetting("msgj", ctx.guild, arg)
-    await ctx.send("넵^^7")
+    await ctx.send(locale["manage_cfrm"])
     return
 
 
 @setwelcome.error
 async def setwelcome_error(ctx: Context, error):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     try:
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("인사말을 입력해주세요.")
+            await ctx.send(locale["manage_error_0"])
             return
         if isinstance(error, commands.CheckFailure):
-            await ctx.send("관리자가 아니면 못써요 흥")
+            await ctx.send(locale["manage_error_1"])
             return
         if isinstance(error, commands.BadArgument):
-            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            await ctx.send(locale["manage_error_2"])
             return
         tblog(error)
-        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+        await ctx.send(locale["manage_error_3"])
     except Exception as e:
         return
 
@@ -268,25 +323,33 @@ async def setwelcome_error(ctx: Context, error):
 @commands.command(name="작별인사")  # prefix 작별인사 (msgl: str)
 @admincheck()
 async def setbye(ctx: Context, *, arg):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     savesetting("msgl", ctx.guild, arg)
-    await ctx.send("넵^^7")
+    await ctx.send(locale["manage_cfrm"])
     return
 
 
 @setbye.error
 async def setbye_error(ctx: Context, error):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     try:
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("인사말을 입력해주세요.")
+            await ctx.send(locale["manage_error_0"])
             return
         if isinstance(error, commands.CheckFailure):
-            await ctx.send("관리자가 아니면 못써요 흥")
+            await ctx.send(locale["manage_error_1"])
             return
         if isinstance(error, commands.BadArgument):
-            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            await ctx.send(locale["manage_error_2"])
             return
         tblog(error)
-        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+        await ctx.send(locale["manage_error_3"])
     except Exception as e:
         return
 
@@ -294,44 +357,52 @@ async def setbye_error(ctx: Context, error):
 @commands.command(name="해방")  # prefix 해방 @유저
 @admincheck()
 async def delguildadmin(ctx: Context):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     if len(ctx.message.mentions) == 0:
-        await ctx.send("죄송합니다 대상자를 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_0"])
         return
     if len(ctx.message.mentions) > 1:
-        await ctx.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_1"])
         return
     res = deladmin(ctx.message.mentions[0].id, ctx.guild)
     if res == 0:
         await ctx.send(
-            "{.mention} 넌이제 내 주인이 아니다 ㅋㅋㅋㅋㅋㅋㅋㅋ".format(ctx.message.mentions[0]),
+            locale["manage_delguildadmin_0"].format(ctx.message.mentions[0].mention),
             allowed_mentions=discord.AllowedMentions.all(),
         )
     elif res == 1:
-        await ctx.send("누구세요?")
+        await ctx.send(locale["manage_delguildadmin_1"])
     elif res == 2:
-        await ctx.send("이게 서버주인을 건드리네?")
+        await ctx.send(locale["manage_delguildadmin_2"])
     elif res == 3:
-        await ctx.send("이게 아버지를 건드리네?")
+        await ctx.send(locale["manage_delguildadmin_3"])
     return
 
 
 @commands.command(name="새주인")  # prefix 새주인 @유저
 @admincheck()
 async def addguildadmin(ctx: Context):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     if len(ctx.message.mentions) == 0:
-        await ctx.send("죄송합니다 대상자를 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_0"])
         return
     if len(ctx.message.mentions) > 1:
-        await ctx.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_1"])
         return
     res = addadmin(ctx.message.mentions[0].id, ctx.guild)
     if res:
         await ctx.send(
-            "작업완료 ^^7 환영합니다 {.mention} 주인님!".format(ctx.message.mentions[0]),
+            locale["manage_addguildadmin_4"].format(ctx.message.mentions[0].mention),
             allowed_mentions=discord.AllowedMentions.all(),
         )
     else:
-        await ctx.send("이미 주인님이십니다.")
+        await ctx.send(locale["manage_addguildadmin_5"])
     return
 
 
@@ -339,21 +410,25 @@ async def addguildadmin(ctx: Context):
     name="조져", aliases=["뮤트"]
 )  # prefix 조져 (time: int) @유저 (rsn: str) / prefix 뮤트 (time: int) @유저 (rsn: str)
 async def execmute(ctx: Context, time: int, mention: str, *, arg):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     if not isadmin(ctx.author.id, ctx.guild):
         if not ctx.author.permissions_in(ctx.channel).manage_roles:
-            await ctx.send("권한도 없으면서 나대긴 ㅋ")
+            await ctx.send(locale["manage_error_6"])
             return
     if len(ctx.message.mentions) == 0:
-        await ctx.send("죄송합니다 대상자를 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_0"])
         return
     if len(ctx.message.mentions) > 1:
-        await ctx.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_1"])
         return
     mem = ctx.message.mentions[0]
     currole = mem.roles
     setting_loaded = loadsetting("role", ctx.guild)
     if setting_loaded is None:
-        await ctx.send("죄송합니다 역할을 지정해주세요.")
+        await ctx.send(locale["manage_execmute_0"])
         return
     rsn = arg
     try:
@@ -365,16 +440,16 @@ async def execmute(ctx: Context, time: int, mention: str, *, arg):
                 find = True
                 break
         if not find:
-            await ctx.send("죄송합니다 역할이 잘못 지정되어 있습니다.")
+            await ctx.send(locale["manage_execmute_1"])
             return
         await mem.edit(roles=[xrole], reason="MUTE Command REASON: " + rsn)
     except Forbidden:
-        await ctx.send("죄송합니다 권한이 부족합니다.")
+        await ctx.send(locale["manage_execmute_2"])
         return
     else:
         for mute in muted:
             if mem.id == mute[0] and ctx.guild.id == mute[1]:
-                await ctx.send("이미 뮤트처리된 사용자입니다.".format(mem))
+                await ctx.send(locale["manage_execmute_3"].format(mem))
                 return
         muted.append([mem.id, mem.guild.id, time, currole, ctx.channel.id])
         log("Muted " + mem.name, guild=ctx.guild)
@@ -382,104 +457,118 @@ async def execmute(ctx: Context, time: int, mention: str, *, arg):
         if setting_loaded is not None:
             try:
                 await bot.get_channel(setting_loaded).send(
-                    "처리 완료되었습니다 - 뮤트 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                        mem, rsn, ctx.author
+                    locale["manage_execmute_4"].format(
+                        mem.mention, rsn, ctx.author.mention
                     )
                 )
             except HTTPException:
                 await ctx.send(
-                    "처리 완료되었습니다 - 뮤트 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                        mem, rsn, ctx.author
+                    locale["manage_execmute_4"].format(
+                        mem.mention, rsn, ctx.author.mention
                     )
                 )
-                await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                await ctx.send(locale["manage_error_5"])
             except Forbidden:
                 await ctx.send(
-                    "처리 완료되었습니다 - 뮤트 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                        mem, rsn, ctx.author
+                    locale["manage_execmute_4"].format(
+                        mem.mention, rsn, ctx.author.mention
                     )
                 )
-                await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                await ctx.send(locale["manage_error_5"])
         else:
             await ctx.send(
-                "처리 완료되었습니다 - 뮤트 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                    mem, rsn, ctx.author
-                )
+                locale["manage_execmute_4"].format(mem.mention, rsn, ctx.author.mention)
             )
     return
 
 
 @execmute.error
 async def execmute_error(ctx: Context, error):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     try:
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("모든 항목을 입력해주세요.")
+            await ctx.send(locale["manage_error_0"])
             return
         if isinstance(error, commands.CheckFailure):
-            await ctx.send("관리자가 아니면 못써요 흥")
+            await ctx.send(locale["manage_error_1"])
             return
         if isinstance(error, commands.BadArgument):
-            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            await ctx.send(locale["manage_error_2"])
             return
         tblog(error)
-        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+        await ctx.send(locale["manage_error_3"])
     except Exception as e:
         return
 
 
 @commands.command(name="충분하다", aliases=["뮤트해제"])  # prefix 충분하다 @유저 / prefix 뮤트해제 @유저
 async def donemute(ctx: Context):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     if not isadmin(ctx.author.id, ctx.guild):
         if not ctx.author.permissions_in(ctx.channel).manage_roles:
-            await ctx.send("권한도 없으면서 나대긴 ㅋ")
+            await ctx.send(locale["manage_error_6"])
             return
     if len(ctx.message.mentions) == 0:
-        await ctx.send("죄송합니다 대상자를 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_0"])
         return
     if len(ctx.message.mentions) > 1:
-        await ctx.send("죄송합니다 1명의 대상자만을 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_1"])
         return
     udmute = bot.get_cog("updatemute")
     if udmute is not None:
         res = await udmute.unmutenow(ctx)
     else:
-        await ctx.send("문제가 있었어요,, 관리자한테 문의해주세요 ㅠㅠ")
+        await ctx.send(locale["manage_execkick_0"])
         return
     if not res:
-        await ctx.send("문제가 있었어요,, 아마 뮤트를 한적이 없는거 아닐까요..?")
+        await ctx.send(locale["manage_execkick_1"])
         return
     return
 
 
 @donemute.error
 async def donemute_error(ctx: Context, error):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     try:
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("모든 항목을 입력해주세요.")
+            await ctx.send(locale["manage_error_0"])
             return
         if isinstance(error, commands.CheckFailure):
-            await ctx.send("관리자가 아니면 못써요 흥")
+            await ctx.send(locale["manage_error_1"])
             return
         if isinstance(error, commands.BadArgument):
-            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            await ctx.send(locale["manage_error_2"])
             return
         tblog(error)
-        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+        await ctx.send(locale["manage_error_3"])
     except Exception as e:
         return
 
 
 @commands.command(name="킥")  # prefix 킥 @유저 (rsn: str)
 async def execkick(ctx: Context, mention: str, *, arg):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     if not isadmin(ctx.author.id, ctx.guild):
         if not ctx.author.permissions_in(ctx.channel).kick_members:
-            await ctx.send("권한도 없으면서 나대긴 ㅋ")
+            await ctx.send(locale["manage_error_6"])
             return
     if len(ctx.message.mentions) == 0:
-        await ctx.send("대상자를 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_0"])
         return
     if len(ctx.message.mentions) > 1:
-        await ctx.send("1명의 대상자만을 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_1"])
         return
     mem = ctx.message.mentions[0]
     rsn = arg
@@ -487,67 +576,67 @@ async def execkick(ctx: Context, mention: str, *, arg):
     try:
         await ctx.guild.kick(mem, reason="KICK Command REASON: " + rsn)
     except Forbidden:
-        await ctx.send("권한이 부족합니다.")
+        await ctx.send(locale["manage_error_6"])
         return
     if setting_loaded is not None:
         try:
             await bot.get_channel(setting_loaded).send(
-                "처리 완료되었습니다 - 킥 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                    mem, rsn, ctx.author
-                )
+                locale["manage_execkick_2"].format(mem.mention, rsn, ctx.author.mention)
             )
         except HTTPException:
             await ctx.send(
-                "처리 완료되었습니다 - 킥 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                    mem, rsn, ctx.author
-                )
+                locale["manage_execkick_2"].format(mem.mention, rsn, ctx.author.mention)
             )
-            await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+            await ctx.send(locale["manage_error_5"])
         except Forbidden:
             await ctx.send(
-                "처리 완료되었습니다 - 킥 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                    mem, rsn, ctx.author
-                )
+                locale["manage_execkick_2"].format(mem.mention, rsn, ctx.author.mention)
             )
-            await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+            await ctx.send(locale["manage_error_5"])
     else:
         await ctx.send(
-            "처리 완료되었습니다 - 킥 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                mem, rsn, ctx.author
-            )
+            locale["manage_execkick_2"].format(mem.mention, rsn, ctx.author.mention)
         )
     return
 
 
 @execkick.error
 async def execkick_error(ctx: Context, error):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     try:
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("모든 항목을 입력해주세요.")
+            await ctx.send(locale["manage_error_0"])
             return
         if isinstance(error, commands.CheckFailure):
-            await ctx.send("관리자가 아니면 못써요 흥")
+            await ctx.send(locale["manage_error_1"])
             return
         if isinstance(error, commands.BadArgument):
-            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            await ctx.send(locale["manage_error_2"])
             return
         tblog(error)
-        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+        await ctx.send(locale["manage_error_3"])
     except Exception as e:
         return
 
 
 @commands.command(name="밴")
 async def execban(ctx, mention: str, *, arg):  # prefix 밴 @유저 (rsn: str)
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     if not isadmin(ctx.author.id, ctx.guild):
         if not ctx.author.permissions_in(ctx.channel).ban_members:
-            await ctx.send("권한도 없으면서 나대긴 ㅋ")
+            await ctx.send(locale["manage_error_6"])
             return
     if len(ctx.message.mentions) == 0:
-        await ctx.send("대상자를 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_0"])
         return
     if len(ctx.message.mentions) > 1:
-        await ctx.send("1명의 대상자만을 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_1"])
         return
     mem = ctx.message.mentions[0]
     rsn = arg
@@ -555,52 +644,48 @@ async def execban(ctx, mention: str, *, arg):  # prefix 밴 @유저 (rsn: str)
     try:
         await ctx.guild.ban(mem, reason="BAN Command REASON: " + rsn)
     except Forbidden:
-        await ctx.send("권한이 부족합니다.")
+        await ctx.send(locale["manage_error_6"])
         return
     if setting_loaded is not None:
         try:
             await bot.get_channel(setting_loaded).send(
-                "처리 완료되었습니다 - 밴 {.mention}, 최근 1일 메시지 삭제 / 이유: {} / 처리자: {.mention}".format(
-                    mem, rsn, ctx.author
-                )
+                locale["manage_execban_2"].format(mem.mention, rsn, ctx.author.mention)
             )
         except HTTPException:
             await ctx.send(
-                "처리 완료되었습니다 - 밴 {.mention}, 최근 1일 메시지 삭제 / 이유: {} / 처리자: {.mention}".format(
-                    mem, rsn, ctx.author
-                )
+                locale["manage_execban_2"].format(mem.mention, rsn, ctx.author.mention)
             )
-            await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+            await ctx.send(locale["manage_error_5"])
         except Forbidden:
             await ctx.send(
-                "처리 완료되었습니다 - 밴 {.mention}, 최근 1일 메시지 삭제 / 이유: {} / 처리자: {.mention}".format(
-                    mem, rsn, ctx.author
-                )
+                locale["manage_execban_2"].format(mem.mention, rsn, ctx.author.mention)
             )
-            await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+            await ctx.send(locale["manage_error_5"])
     else:
         await ctx.send(
-            "처리 완료되었습니다 - 밴 {.mention}, 최근 1일 메시지 삭제 / 이유: {} / 처리자: {.mention}".format(
-                mem, rsn, ctx.author
-            )
+            locale["manage_execban_2"].format(mem.mention, rsn, ctx.author.mention)
         )
     return
 
 
 @execban.error
 async def execban_error(ctx: Context, error):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     try:
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("모든 항목을 입력해주세요.")
+            await ctx.send(locale["manage_error_0"])
             return
         if isinstance(error, commands.CheckFailure):
-            await ctx.send("관리자가 아니면 못써요 흥")
+            await ctx.send(locale["manage_error_1"])
             return
         if isinstance(error, commands.BadArgument):
-            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            await ctx.send(locale["manage_error_2"])
             return
         tblog(error)
-        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+        await ctx.send(locale["manage_error_3"])
     except Exception as e:
         return
 
@@ -608,12 +693,16 @@ async def execban_error(ctx: Context, error):
 @commands.command(name="경고")  # prefix 경고 @유저 (rsn: str)
 @admincheck()
 async def addwarning(ctx: Context, mention: str, *, arg):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     time = 0
     if len(ctx.message.mentions) == 0:
-        await ctx.send("대상자를 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_0"])
         return
     if len(ctx.message.mentions) > 1:
-        await ctx.send("1명의 대상자만을 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_1"])
         return
     mem = ctx.message.mentions[0]
     rsn = arg
@@ -632,67 +721,63 @@ async def addwarning(ctx: Context, mention: str, *, arg):
         try:
             await ctx.guild.kick(mem, reason="KICK Command REASON: " + rsn)
         except Forbidden:
-            await ctx.send("권한이 부족합니다.")
+            await ctx.send(locale["manage_error_6"])
             return
         if setting is not None:
             try:
                 await bot.get_channel(setting).send(
-                    "처리 완료되었습니다 - 킥 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                        mem, rsn, ctx.author
+                    locale["manage_execkick_2"].format(
+                        mem.mention, rsn, ctx.author.mention
                     )
                 )
             except HTTPException:
                 await ctx.send(
-                    "처리 완료되었습니다 - 킥 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                        mem, rsn, ctx.author
+                    locale["manage_execkick_2"].format(
+                        mem.mention, rsn, ctx.author.mention
                     )
                 )
-                await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                await ctx.send(locale["manage_error_5"])
             except Forbidden:
                 await ctx.send(
-                    "처리 완료되었습니다 - 킥 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                        mem, rsn, ctx.author
+                    locale["manage_execkick_2"].format(
+                        mem.mention, rsn, ctx.author.mention
                     )
                 )
-                await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                await ctx.send(locale["manage_error_5"])
         else:
             await ctx.send(
-                "처리 완료되었습니다 - 킥 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                    mem, rsn, ctx.author
-                )
+                locale["manage_execkick_2"].format(mem.mention, rsn, ctx.author.mention)
             )
     elif ptype == "밴":
         try:
             await ctx.guild.ban(mem, reason="BAN Command REASON: " + rsn)
         except Forbidden:
-            await ctx.send("권한이 부족합니다.")
+            await ctx.send(locale["manage_error_6"])
             return
         if setting is not None:
             try:
                 await bot.get_channel(setting).send(
-                    "처리 완료되었습니다 - 밴 {.mention}, 최근 1일 메시지 삭제 / 이유: {} / 처리자: {.mention}".format(
-                        mem, rsn, ctx.author
+                    locale["manage_execban_2"].format(
+                        mem.mention, rsn, ctx.author.mention
                     )
                 )
             except HTTPException:
                 await ctx.send(
-                    "처리 완료되었습니다 - 밴 {.mention}, 최근 1일 메시지 삭제 / 이유: {} / 처리자: {.mention}".format(
-                        mem, rsn, ctx.author
+                    locale["manage_execban_2"].format(
+                        mem.mention, rsn, ctx.author.mention
                     )
                 )
-                await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                await ctx.send(locale["manage_error_5"])
             except Forbidden:
                 await ctx.send(
-                    "처리 완료되었습니다 - 밴 {.mention}, 최근 1일 메시지 삭제 / 이유: {} / 처리자: {.mention}".format(
-                        mem, rsn, ctx.author
+                    locale["manage_execban_2"].format(
+                        mem.mention, rsn, ctx.author.mention
                     )
                 )
-                await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                await ctx.send(locale["manage_error_5"])
         else:
             await ctx.send(
-                "처리 완료되었습니다 - 밴 {.mention}, 최근 1일 메시지 삭제 / 이유: {} / 처리자: {.mention}".format(
-                    mem, rsn, ctx.author
-                )
+                locale["manage_execban_2"].format(mem.mention, rsn, ctx.author.mention)
             )
     elif ptype == "뮤트":
         time = loadsetting("mpunish" + str(warns), ctx.guild)
@@ -706,16 +791,16 @@ async def addwarning(ctx: Context, mention: str, *, arg):
                     break
             if not find:
                 errlog("role not found", guild=ctx.guild)
-                await ctx.send("죄송합니다 역할이 잘못 지정되어 있습니다.")
+                await ctx.send(locale["manage_execmute_1"])
                 return
             await mem.edit(roles=[xrole], reason="MUTE Command REASON: " + rsn)
         except Forbidden:
-            await ctx.send("죄송합니다 권한이 부족합니다.")
+            await ctx.send(locale["manage_execmute_2"])
             return
         else:
             for mute in muted:
                 if mem.id == mute[0] and ctx.guild.id == mute[1]:
-                    await ctx.send("이미 뮤트처리된 사용자입니다.".format(mem))
+                    await ctx.send(locale["manage_execmute_3"].format(mem))
                     return
             muted.append([mem.id, mem.guild.id, time, currole, ctx.channel.id])
             log("Muted " + mem.name, guild=ctx.guild)
@@ -723,56 +808,56 @@ async def addwarning(ctx: Context, mention: str, *, arg):
             if setting_loaded is not None:
                 try:
                     await bot.get_channel(setting_loaded).send(
-                        "처리 완료되었습니다 - 뮤트 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                            mem, rsn, ctx.author
+                        locale["manage_execmute_4"].format(
+                            mem.mention, rsn, ctx.author.mention
                         )
                     )
                 except HTTPException:
                     await ctx.send(
-                        "처리 완료되었습니다 - 뮤트 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                            mem, rsn, ctx.author
+                        locale["manage_execmute_4"].format(
+                            mem.mention, rsn, ctx.author.mention
                         )
                     )
-                    await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                    await ctx.send(locale["manage_error_5"])
                 except Forbidden:
                     await ctx.send(
-                        "처리 완료되었습니다 - 뮤트 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                            mem, rsn, ctx.author
+                        locale["manage_execmute_4"].format(
+                            mem.mention, rsn, ctx.author.mention
                         )
                     )
-                    await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+                    await ctx.send(locale["manage_error_5"])
             else:
                 await ctx.send(
-                    "처리 완료되었습니다 - 뮤트 {.mention} / 이유: {} / 처리자: {.mention}".format(
-                        mem, rsn, ctx.author
+                    locale["manage_execmute_4"].format(
+                        mem.mention, rsn, ctx.author.mention
                     )
                 )
     setting_loaded = loadsetting("chnl", ctx.guild)
     if setting_loaded is not None:
         try:
             await bot.get_channel(setting_loaded).send(
-                "처리 완료되었습니다 - 경고 {.mention} 누적경고수 {} / 이유: {} / 처리자: {.mention}".format(
-                    mem, warns, rsn, ctx.author
+                locale["manage_warning_0"].format(
+                    mem.mention, warns, rsn, ctx.author.mention
                 )
             )
         except HTTPException:
             await ctx.send(
-                "처리 완료되었습니다 - 경고 {.mention} 누적경고수 {} / 이유: {} / 처리자: {.mention}".format(
-                    mem, warns, rsn, ctx.author
+                locale["manage_warning_0"].format(
+                    mem.mention, warns, rsn, ctx.author.mention
                 )
             )
-            await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+            await ctx.send(locale["manage_error_5"])
         except Forbidden:
             await ctx.send(
-                "처리 완료되었습니다 - 경고 {.mention} 누적경고수 {} / 이유: {} / 처리자: {.mention}".format(
-                    mem, warns, rsn, ctx.author
+                locale["manage_warning_0"].format(
+                    mem.mention, warns, rsn, ctx.author.mention
                 )
             )
-            await ctx.send("구독 설정에 오류가 있습니다. 수정해주세요.")
+            await ctx.send(locale["manage_error_5"])
     else:
         await ctx.send(
-            "처리 완료되었습니다 - 경고 {.mention} 누적경고수 {} / 이유: {} / 처리자: {.mention}".format(
-                mem, warns, rsn, ctx.author
+            locale["manage_warning_0"].format(
+                mem.mention, warns, rsn, ctx.author.mention
             )
         )
     return
@@ -780,60 +865,72 @@ async def addwarning(ctx: Context, mention: str, *, arg):
 
 @addwarning.error
 async def addwarning_error(ctx: Context, error):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     try:
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("모든 항목을 입력해주세요.")
+            await ctx.send(locale["manage_error_0"])
             return
         if isinstance(error, commands.CheckFailure):
-            await ctx.send("관리자가 아니면 못써요 흥")
+            await ctx.send(locale["manage_error_1"])
             return
         if isinstance(error, commands.BadArgument):
-            await ctx.send("뭔가 잘못 입력하신것 같아요,,")
+            await ctx.send(locale["manage_error_2"])
             return
         tblog(error)
-        await ctx.send("오류가 있었어요.. :( 자동으로 리포트가 생성되었어요")
+        await ctx.send(locale["manage_error_3"])
     except Exception as e:
         return
 
 
 @commands.command(name="경고취소")  # prefix 경고취소 @유저
 async def delwarning(ctx: Context):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     if not isadmin(ctx.author.id, ctx.guild):
-        await ctx.send("권한도 없으면서 나대긴 ㅋ")
+        await ctx.send(locale["manage_error_6"])
         return
     if len(ctx.message.mentions) == 0:
-        await ctx.send("대상자를 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_0"])
         return
     if len(ctx.message.mentions) > 1:
-        await ctx.send("1명의 대상자만을 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_1"])
         return
     mem = ctx.message.mentions[0]
     setting_loaded = loadsetting("warn" + str(mem.id), guild=ctx.guild)
     if setting_loaded is None or setting_loaded == 0:
-        await ctx.send("경고가 없습니다.")
+        await ctx.send(locale["manage_delwarning_0"])
     else:
         savesetting("warn" + str(mem.id), ctx.guild, setting_loaded - 1)
-        await ctx.send("넵^^7 (누적 경고수: " + str(setting_loaded - 1) + ")")
+        await ctx.send(locale["manage_delwarning_1"].format(str(setting_loaded - 1)))
     return
 
 
 @commands.command(name="처벌정책")  # prefix 처벌정책
 async def getpunishlist(ctx: Context):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     strs = []
     for i in range(1, 11):
         ptype = loadsetting("punish" + str(i), ctx.guild)
         if ptype is not None:
-            if ptype == "뮤트":
+            if ptype == locale["manage_setpunish_2"]:
                 pcnt = loadsetting("mpunish" + str(i), ctx.guild)
-                strs.append("경고 " + str(i) + "회시 뮤트 " + str(pcnt) + "초")
-            elif ptype == "킥":
-                strs.append("경고 " + str(i) + "회시 킥")
-            elif ptype == "밴":
-                strs.append("경고 " + str(i) + "회시 밴")
-    embed = discord.Embed(title="처벌 정책", color=botcolor)
+                strs.append(locale["manage_getpunishlist_0"].format(str(i), str(pcnt)))
+            elif ptype == locale["manage_setpunish_3"]:
+                strs.append(locale["manage_getpunishlist_1"].format(str(i)))
+            elif ptype == locale["manage_setpunish_4"]:
+                strs.append(locale["manage_getpunishlist_2"].format(str(i)))
+    embed = discord.Embed(title=locale["manage_getpunishlist_4"], color=botcolor)
     tmp = ""
     if len(strs) == 0:
-        tmp = "처벌 정책이 없습니다."
+        tmp = locale["manage_getpunishlist_3"]
     elif len(strs) == 1:
         tmp = strs[0]
     else:
@@ -841,17 +938,21 @@ async def getpunishlist(ctx: Context):
             tmp += strs[i] + "\n"
         tmp += strs[len(strs) - 1]
     embed.description = tmp
-    await ctx.send("서버의 처벌 정책입니다.", embed=embed)
+    await ctx.send(locale["manage_getpunishlist_4"], embed=embed)
     return
 
 
 @commands.command(name="경고횟수")  # prefix 경고횟수 @유저
 async def seewarning(ctx: Context):
+    locale = getlocale(ctx)
+    if locale is None:
+        await localeerr(ctx)
+        locale = getlocale(ctx)
     if len(ctx.message.mentions) == 0:
-        await ctx.send("대상자를 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_0"])
         return
     if len(ctx.message.mentions) > 1:
-        await ctx.send("1명의 대상자만을 멘션해주세요.")
+        await ctx.send(locale["manage_guildadmin_1"])
         return
     mem = ctx.message.mentions[0]
     setting_loaded = loadsetting("warn" + str(mem.id), guild=ctx.guild)
@@ -860,5 +961,5 @@ async def seewarning(ctx: Context):
         warns = setting_loaded
     else:
         warns = 0
-    await ctx.send("{0} 님의 현재 누적 경고 수는 ".format(str(mem)) + str(warns) + "회 입니다.")
+    await ctx.send(locale["manage_seewarning_0"].format(str(mem), str(warns)))
     return

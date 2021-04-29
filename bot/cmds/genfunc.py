@@ -311,6 +311,15 @@ def getlocale(ctx: Context):
     return getlc.getlocale(lang)
 
 
+def getlocalebyuid(uid):
+    db.execute("SELECT * FROM gsetting WHERE name=?", ("lang" + str(uid),))
+    res = db.fetchone()
+    if res is None:
+        return None
+    lang = res[1]
+    return getlc.getlocale(lang)
+
+
 def setlocale(ctx, lang):
     uid = ctx.author.id
     try:

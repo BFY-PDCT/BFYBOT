@@ -36,6 +36,8 @@ from cmds import (
     loadsetting,
     log,
     dbglog,
+    getlocalebyuid,
+    localeerr,
 )
 from discord.errors import Forbidden, HTTPException
 
@@ -51,6 +53,10 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member):
+    locale = getlocalebyuid(member.id)
+    if locale is None:
+        await localeerr(member.id)
+        locale = getlocalebyuid(member.id)
     log(
         "member joined NAME: " + str(member) + ", ID:" + str(member.id),
         guild=member.guild,
@@ -63,7 +69,7 @@ async def on_member_join(member):
         try:
             msgje = discord.Embed(title=msgj, color=botcolor)
             await bot.get_channel(setting_loaded).send(
-                "{.mention}님이 참가했어요".format(member), embed=msgje
+                locale["events_0"].format(member.mention), embed=msgje
             )
             chnl = True
         except HTTPException:
@@ -83,7 +89,7 @@ async def on_member_join(member):
                 log("role not found", guild=member.guild)
                 if chnl:
                     await bot.get_channel(setting_loaded).send(
-                        "새 멤버 역할이 잘못 지정되어 있습니다.",
+                        locale["events_1"],
                         allowed_mentions=discord.AllowedMentions.all(),
                     )
                 return
@@ -92,7 +98,7 @@ async def on_member_join(member):
             log("NO PERMISSION", guild=member.guild)
             if chnl:
                 await bot.get_channel(setting_loaded).send(
-                    "새 멤버 역할 변경 권한이 부족합니다.",
+                    locale["events_2"],
                     allowed_mentions=discord.AllowedMentions.all(),
                 )
             return
@@ -100,6 +106,10 @@ async def on_member_join(member):
 
 @bot.event
 async def on_member_remove(member):
+    locale = getlocalebyuid(member.id)
+    if locale is None:
+        await localeerr(member.id)
+        locale = getlocalebyuid(member.id)
     log(
         "member removed NAME: " + str(member) + ", ID:" + str(member.id),
         guild=member.guild,
@@ -110,7 +120,7 @@ async def on_member_remove(member):
         try:
             msgle = discord.Embed(title=msgl, color=botcolor)
             await bot.get_channel(setting_loaded).send(
-                "{.mention}님이 떠났어요".format(member), embed=msgle
+                locale["events_3"].format(member.mention), embed=msgle
             )
         except HTTPException:
             log("Error Sending Notice to " + str(setting_loaded))
