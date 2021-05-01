@@ -78,11 +78,13 @@ async def ping(ctx: Context):
     name="버전", aliases=["version", "정보", "info"]
 )  # prefix 버전 / prefix version / prefix 정보 / prefix info
 async def version(ctx: Context):
-    ver = discord.Embed(title=botname + " 버전", color=botcolor)
-    ver.add_field(name="현재 버전", value=vernum, inline=False)
+    ver = discord.Embed(title=botname + " version info", color=botcolor)
+    ver.add_field(name="version", value=vernum, inline=False)
     ver.add_field(name="discord.py version", value=discord.__version__, inline=False)
-    ver.add_field(name="제작자", value="BFY Ent (jhlee@bfy.kr)", inline=False)
-    ver.add_field(name="서버 상태 확인", value="https://bfy1.statuspage.io/", inline=False)
+    ver.add_field(name="made by", value="BFY Ent (jhlee@bfy.kr)", inline=False)
+    ver.add_field(
+        name="server status", value="https://bfy1.statuspage.io/", inline=False
+    )
     ver.set_footer(
         text="Developed by BFY using discord.py",
         icon_url="https://www.bfy.kr/files/2020/08/BFY_LOGO_BIG.png",
@@ -103,12 +105,12 @@ async def version(ctx: Context):
 async def help(ctx: Context):
     ver = discord.Embed(title=botname + " 사용 방법", color=botcolor)
     ver.add_field(
-        name="도움말 (온라인)",
+        name="도움말 (온라인) / online guide",
         value="https://github.com/BFY-PDCT/BFYBOT/wiki/BFYBOT-command-guide",
         inline=False,
     )
     if hasmusic:
-        ver.add_field(name="음악 도움말", value=helpmusicstr, inline=False)
+        ver.add_field(name="음악 도움말 / music guide", value=helpmusicstr, inline=False)
     ver.add_field(
         name="문의",
         value="봇에게 DM을 보내주시면 메시지가 운영자에게 전달됩니다.\n홈페이지: https://www.bfy.kr/ 개발자이메일: jhlee@bfy.kr\n개발자 디스코드: KRMSS#9279",

@@ -68,7 +68,7 @@ def initcmd():
     bot.add_command(seewarning)
 
 
-@commands.command(name="환영인사삭제")  # prefix 환영인사삭제
+@commands.command(name="환영인사삭제", aliases=["delwelcome"])  # prefix 환영인사삭제
 @admincheck()
 async def delwelcome(ctx: Context):
     locale = getlocale(ctx)
@@ -84,7 +84,7 @@ async def delwelcome(ctx: Context):
     return
 
 
-@commands.command(name="작별인사삭제")  # prefix 작별인사삭제
+@commands.command(name="작별인사삭제", aliases=["delbye"])  # prefix 작별인사삭제
 @admincheck()
 async def delbye(ctx: Context):
     locale = getlocale(ctx)
@@ -100,7 +100,9 @@ async def delbye(ctx: Context):
     return
 
 
-@commands.command(name="구독해제", aliases=["구독취소"])  # prefix 구독해제 / prefix 구독취소
+@commands.command(
+    name="구독해제", aliases=["구독취소", "unsubscribe"]
+)  # prefix 구독해제 / prefix 구독취소
 @admincheck()
 async def unsubscribe(ctx: Context):
     locale = getlocale(ctx)
@@ -116,7 +118,7 @@ async def unsubscribe(ctx: Context):
     return
 
 
-@commands.command(name="기본역할삭제")  # prefix 기본역할삭제
+@commands.command(name="기본역할삭제", aliases=["deldefrole"])  # prefix 기본역할삭제
 @admincheck()
 async def deldefaultrole(ctx: Context):
     locale = getlocale(ctx)
@@ -133,7 +135,7 @@ async def deldefaultrole(ctx: Context):
 
 
 @commands.command(
-    name="치워", aliases=["청소"]
+    name="치워", aliases=["청소", "clean"]
 )  # prefix 치워 (cnt: int) / prefix 청소 (cnt: int)
 async def cleanchat(ctx: Context, *args):
     locale = getlocale(ctx)
@@ -169,7 +171,9 @@ async def cleanchat(ctx: Context, *args):
     return
 
 
-@commands.command(name="이거로조져", aliases=["뮤트설정"])  # prefix 이거로조져 @역할 / prefix 뮤트설정 @역할
+@commands.command(
+    name="이거로조져", aliases=["뮤트설정", "setmuterole"]
+)  # prefix 이거로조져 @역할 / prefix 뮤트설정 @역할
 @admincheck()
 async def setmuterole(ctx: Context):
     locale = getlocale(ctx)
@@ -188,7 +192,7 @@ async def setmuterole(ctx: Context):
 
 
 @commands.command(
-    name="처벌설정"
+    name="처벌설정", aliases=["setpunish"]
 )  # prefix 처벌설정 (cnt: int) (punish: str) (pcnt: int = None)
 @admincheck()
 async def setpunish(ctx: Context, cnt: int, punish: str, pcnt: int = None, *args):
@@ -250,7 +254,7 @@ async def setpunish_error(ctx: Context, error):
         return
 
 
-@commands.command(name="기본역할")  # prefix 기본역할 @역할
+@commands.command(name="기본역할", aliases=["setdefrole"])  # prefix 기본역할 @역할
 @admincheck()
 async def setdefaultrole(ctx: Context):
     locale = getlocale(ctx)
@@ -268,7 +272,7 @@ async def setdefaultrole(ctx: Context):
     return
 
 
-@commands.command(name="구독")  # prefix 구독 #채널
+@commands.command(name="구독", aliases=["subscribe"])  # prefix 구독 #채널
 @admincheck()
 async def subscribe(ctx: Context):
     locale = getlocale(ctx)
@@ -286,7 +290,7 @@ async def subscribe(ctx: Context):
     return
 
 
-@commands.command(name="환영인사")  # prefix 환영인사 (msgj: str)
+@commands.command(name="환영인사", aliases=["setwelcome"])  # prefix 환영인사 (msgj: str)
 @admincheck()
 async def setwelcome(ctx: Context, *, arg):
     locale = getlocale(ctx)
@@ -320,7 +324,7 @@ async def setwelcome_error(ctx: Context, error):
         return
 
 
-@commands.command(name="작별인사")  # prefix 작별인사 (msgl: str)
+@commands.command(name="작별인사", aliases=["setbye"])  # prefix 작별인사 (msgl: str)
 @admincheck()
 async def setbye(ctx: Context, *, arg):
     locale = getlocale(ctx)
@@ -354,7 +358,7 @@ async def setbye_error(ctx: Context, error):
         return
 
 
-@commands.command(name="해방")  # prefix 해방 @유저
+@commands.command(name="해방", aliases=["deladmin"])  # prefix 해방 @유저
 @admincheck()
 async def delguildadmin(ctx: Context):
     locale = getlocale(ctx)
@@ -382,7 +386,7 @@ async def delguildadmin(ctx: Context):
     return
 
 
-@commands.command(name="새주인")  # prefix 새주인 @유저
+@commands.command(name="새주인", aliases=["addadmin"])  # prefix 새주인 @유저
 @admincheck()
 async def addguildadmin(ctx: Context):
     locale = getlocale(ctx)
@@ -407,7 +411,7 @@ async def addguildadmin(ctx: Context):
 
 
 @commands.command(
-    name="조져", aliases=["뮤트"]
+    name="조져", aliases=["뮤트", "mute"]
 )  # prefix 조져 (time: int) @유저 (rsn: str) / prefix 뮤트 (time: int) @유저 (rsn: str)
 async def execmute(ctx: Context, time: int, mention: str, *, arg):
     locale = getlocale(ctx)
@@ -504,7 +508,9 @@ async def execmute_error(ctx: Context, error):
         return
 
 
-@commands.command(name="충분하다", aliases=["뮤트해제"])  # prefix 충분하다 @유저 / prefix 뮤트해제 @유저
+@commands.command(
+    name="충분하다", aliases=["뮤트해제", "unmute"]
+)  # prefix 충분하다 @유저 / prefix 뮤트해제 @유저
 async def donemute(ctx: Context):
     locale = getlocale(ctx)
     if locale is None:
@@ -554,7 +560,7 @@ async def donemute_error(ctx: Context, error):
         return
 
 
-@commands.command(name="킥")  # prefix 킥 @유저 (rsn: str)
+@commands.command(name="킥", aliases=["kick"])  # prefix 킥 @유저 (rsn: str)
 async def execkick(ctx: Context, mention: str, *, arg):
     locale = getlocale(ctx)
     if locale is None:
@@ -622,7 +628,7 @@ async def execkick_error(ctx: Context, error):
         return
 
 
-@commands.command(name="밴")
+@commands.command(name="밴", aliases=["ban"])
 async def execban(ctx, mention: str, *, arg):  # prefix 밴 @유저 (rsn: str)
     locale = getlocale(ctx)
     if locale is None:
@@ -690,7 +696,7 @@ async def execban_error(ctx: Context, error):
         return
 
 
-@commands.command(name="경고")  # prefix 경고 @유저 (rsn: str)
+@commands.command(name="경고", aliases=["warn"])  # prefix 경고 @유저 (rsn: str)
 @admincheck()
 async def addwarning(ctx: Context, mention: str, *, arg):
     locale = getlocale(ctx)
@@ -885,7 +891,7 @@ async def addwarning_error(ctx: Context, error):
         return
 
 
-@commands.command(name="경고취소")  # prefix 경고취소 @유저
+@commands.command(name="경고취소", aliases=["delwarn"])  # prefix 경고취소 @유저
 async def delwarning(ctx: Context):
     locale = getlocale(ctx)
     if locale is None:
@@ -910,7 +916,7 @@ async def delwarning(ctx: Context):
     return
 
 
-@commands.command(name="처벌정책")  # prefix 처벌정책
+@commands.command(name="처벌정책", aliases=["punishes"])  # prefix 처벌정책
 async def getpunishlist(ctx: Context):
     locale = getlocale(ctx)
     if locale is None:
@@ -942,7 +948,7 @@ async def getpunishlist(ctx: Context):
     return
 
 
-@commands.command(name="경고횟수")  # prefix 경고횟수 @유저
+@commands.command(name="경고횟수", aliases=["seewarn"])  # prefix 경고횟수 @유저
 async def seewarning(ctx: Context):
     locale = getlocale(ctx)
     if locale is None:

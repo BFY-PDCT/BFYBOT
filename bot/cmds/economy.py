@@ -40,7 +40,9 @@ def initcmd():
     bot.add_command(sendmoney)
 
 
-@commands.command(name="돈", aliases=["내돈"])  # prefix 돈 / prefix 내돈
+@commands.command(
+    name="돈", aliases=["내돈", "money", "mymoney", "seemoney"]
+)  # prefix 돈 / prefix 내돈
 async def seemoney(ctx: Context):
     locale = getlocale(ctx)
     if locale is None:
@@ -56,7 +58,7 @@ async def seemoney(ctx: Context):
     return
 
 
-@commands.command(name="돈내놔")  # prefix 돈내놔
+@commands.command(name="돈내놔", aliases=["getmoney"])  # prefix 돈내놔
 async def getmoney(ctx: Context):
     locale = getlocale(ctx)
     if locale is None:
@@ -121,7 +123,7 @@ async def getmoney(ctx: Context):
     return
 
 
-@commands.command(name="남의돈")  # prefix 남의돈 @유저
+@commands.command(name="남의돈", aliases=["othermoney"])  # prefix 남의돈 @유저
 async def seeothermoney(ctx: Context):
     locale = getlocale(ctx)
     if locale is None:
@@ -141,7 +143,7 @@ async def seeothermoney(ctx: Context):
     return
 
 
-@commands.command(name="내주식")  # prefix 돈 / prefix 내돈
+@commands.command(name="내주식", aliases=["mystock"])  # prefix 돈 / prefix 내돈
 async def seestk(ctx: Context):
     locale = getlocale(ctx)
     if locale is None:
@@ -161,7 +163,7 @@ async def seestk(ctx: Context):
     return
 
 
-@commands.command(name="남의주식")  # prefix 남의돈 @유저
+@commands.command(name="남의주식", aliases=["otherstock"])  # prefix 남의돈 @유저
 async def seeotherstk(ctx: Context):
     locale = getlocale(ctx)
     if locale is None:
@@ -188,7 +190,7 @@ async def seeotherstk(ctx: Context):
     return
 
 
-@commands.command(name="선물")  # prefix 선물 (money: int) @유저
+@commands.command(name="선물", aliases=["givemoney"])  # prefix 선물 (money: int) @유저
 async def sendmoney(ctx: Context, money: int, *args):
     locale = getlocale(ctx)
     if locale is None:
@@ -225,13 +227,13 @@ async def sendmoney_error(ctx: Context, error):
         await localeerr(ctx)
         locale = getlocale(ctx)
     try:
-      if isinstance(error, commands.MissingRequiredArgument):
-          await ctx.send(locale["economy_sendmoneyerror_0"])
-          return
-      if isinstance(error, commands.BadArgument):
-          await ctx.send(locale["economy_sendmoneyerror_1"])
-          return
-      tblog(error)
-      await ctx.send(locale["economy_sendmoneyerror_2"])
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(locale["economy_sendmoneyerror_0"])
+            return
+        if isinstance(error, commands.BadArgument):
+            await ctx.send(locale["economy_sendmoneyerror_1"])
+            return
+        tblog(error)
+        await ctx.send(locale["economy_sendmoneyerror_2"])
     except:
-      return
+        return

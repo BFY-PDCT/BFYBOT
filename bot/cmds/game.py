@@ -46,7 +46,9 @@ def initcmd():
     bot.add_command(stock)
 
 
-@commands.command(name="도박")  # prefix 도박 / prefix 도박 올인 / prefix 도박 (num: int)
+@commands.command(
+    name="도박", aliases=["gamble"]
+)  # prefix 도박 / prefix 도박 올인 / prefix 도박 (num: int)
 async def gamble(ctx: Context, *args):
     locale = getlocale(ctx)
     if locale is None:
@@ -88,7 +90,7 @@ async def gamble(ctx: Context, *args):
             return
         await msg.edit(content=locale["game_gamble_3"].format(str(num)))
         await asyncio.sleep(1)
-    elif args[0] == "올인":
+    elif args[0] == "올인" or args[0] == "allin":
         pnt = getpoint(ctx.author.id, guild=ctx.guild)
         if pnt == -1:
             setpoint(ctx.author.id, 0, guild=ctx.guild)
@@ -198,7 +200,9 @@ async def gamble_error(ctx: Context, error):
     return
 
 
-@commands.command(name="주식")  # prefix 주식 / prefix 도박 올인 / prefix 도박 (num: int)
+@commands.command(
+    name="주식", aliases=["stock"]
+)  # prefix 주식 / prefix 도박 올인 / prefix 도박 (num: int)
 async def stock(ctx: Context, *args):
     locale = getlocale(ctx)
     if locale is None:
@@ -219,7 +223,7 @@ async def stock(ctx: Context, *args):
     if (len(args)) != 2:
         await ctx.send(locale["game_stock_0"].format(prefix))
         return
-    if not args[0] in ["그래프", "매수", "매도", "통계"]:
+    if not args[0] in ["그래프", "매수", "매도", "통계", "graph", "buy", "sell", "record"]:
         await ctx.send(locale["game_stock_0"].format(prefix))
         return
     if args[1] in [
@@ -256,7 +260,7 @@ async def stock(ctx: Context, *args):
         await ctx.send(locale["game_stock_0"].format(prefix))
         return
     using.append(ctx.author.id)
-    if args[0] == "그래프":
+    if args[0] == "그래프" or args[0] == "graph":
         stk = bot.get_cog("updatestk" + types)
         if stk is not None:
             res = stk.getprice()
@@ -270,7 +274,7 @@ async def stock(ctx: Context, *args):
             description=locale["game_stock_2"].format("의 그래프입니다."),
         )
         await ctx.send(embed=msg, file=discord.File("./bbdata/stock_" + types + ".png"))
-    elif args[0] == "매수":
+    elif args[0] == "매수" or args[0] == "buy":
         stkx = bot.get_cog("updatestk" + types)
         if stkx is not None:
             res = stkx.getprice()
@@ -314,7 +318,7 @@ async def stock(ctx: Context, *args):
         setstk(types, ctx.author.id, stk + num, ctx.guild)
         stkx.buy(num)
         recstk(types, ctx.author.id, ctx.guild, True, num, res)
-    elif args[0] == "매도":
+    elif args[0] == "매도" or args[0] == "sell":
         stkx = bot.get_cog("updatestk" + types)
         if stkx is not None:
             res = stkx.getprice()
@@ -345,7 +349,7 @@ async def stock(ctx: Context, *args):
         setstk(types, ctx.author.id, stk - num, ctx.guild)
         stkx.sell(num)
         recstk(types, ctx.author.id, ctx.guild, False, num, res)
-    elif args[0] == "통계":
+    elif args[0] == "통계" or args[0] == "record":
         stk = getrecstk(types, ctx.author.id, guild=ctx.guild)
         if len(stk) == 0:
             await ctx.channel.send(content=locale["game_stock_13"])

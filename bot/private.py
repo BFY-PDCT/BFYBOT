@@ -34,10 +34,10 @@ from cmds import (
 @bot.event
 async def on_private_channel_create(channel):
     ver = discord.Embed(
-        title="안녕하세요! 저는 " + botname + "입니다.",
+        title="Hi! I am " + botname,
         color=botcolor,
     )
-    await channel.send("안녕하세요!", embed=ver)
+    await channel.send("Hello!", embed=ver)
 
 
 async def on_message_pre(
