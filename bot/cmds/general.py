@@ -66,7 +66,7 @@ async def setlang(ctx: Context, *, arg):
         )
         return
     setlocale(ctx, arg)
-    await ctx.send("설정되었습니다!")
+    await ctx.send("Applied!")
 
 
 @commands.command(name="핑", aliases=["ping"])  # prefix 핑 / prefix ping
