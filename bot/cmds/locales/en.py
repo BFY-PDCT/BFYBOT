@@ -66,7 +66,7 @@ locale_en = {
     "economy_getmoney_10": "ㄲㅈ",
     "economy_seeothermoney_0": "Sorry, please mention the target person.",
     "economy_seeothermoney_1": "Sorry, please mention only 1 target.",
-    "economy_seeothermoney_2": "{} Did you know that this friend has this much money `💰 {1}`",
+    "economy_seeothermoney_2": "{0} Did you know that this friend has this much money `💰 {1}`",
     "economy_seestk_0": "{0} you have this much stock A: {1} shares / B: {2} shares / C: {3} shares",
     "economy_seeotherstk_0": "Sorry, please mention the subject.",
     "economy_seeotherstk_1": "Sorry, please mention only 1 target.",
