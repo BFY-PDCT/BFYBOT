@@ -24,6 +24,7 @@ if __name__ == "__main__":
 
 import discord
 import time
+from cmds.locales import getlocale
 from private import on_admin_message, on_message_pre
 from cmds import (
     prefix,
@@ -37,7 +38,6 @@ from cmds import (
     log,
     dbglog,
     getlocalebyuid,
-    localeerr,
 )
 from discord.errors import Forbidden, HTTPException
 
@@ -55,8 +55,7 @@ async def on_ready():
 async def on_member_join(member):
     locale = getlocalebyuid(member.id)
     if locale is None:
-        await localeerr(member.id)
-        locale = getlocalebyuid(member.id)
+        locale = getlocale("en")
     log(
         "member joined NAME: " + str(member) + ", ID:" + str(member.id),
         guild=member.guild,
@@ -108,8 +107,7 @@ async def on_member_join(member):
 async def on_member_remove(member):
     locale = getlocalebyuid(member.id)
     if locale is None:
-        await localeerr(member.id)
-        locale = getlocalebyuid(member.id)
+        locale = getlocale("en")
     log(
         "member removed NAME: " + str(member) + ", ID:" + str(member.id),
         guild=member.guild,
