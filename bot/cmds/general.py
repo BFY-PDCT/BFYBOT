@@ -122,7 +122,7 @@ async def help(ctx: Context):
             name="점검 안내 수신하기",
             value=botname
             + "의 관리자이시군요! `"
-            + prefix
+            + prefix[0]
             + " 구독 #채널` 명령어를 통해 점검 등의 공지사항을 받으시는 것을 추천드립니다!",
             inline=False,
         )
