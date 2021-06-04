@@ -27,6 +27,7 @@ from cmds import (
     botname,
     botcolor,
     bot,
+    using,
     log,
 )
 
@@ -54,5 +55,6 @@ async def on_admin_message(message):
 
     # Custom Code Here
 
+    using.remove(message.author.id)
     await bot.process_commands(message)
     return
