@@ -271,7 +271,7 @@ class CommandErrorHandler(commands.Cog):
                     pending.append(ctx.message.content)
                     using.append(ctx.message.author.id)
                     await mymsg.edit(
-                        content=locale["dictcmd_ownerquestion"],
+                        content=locale["dictcmd_general_ownerquestion"],
                         allowed_mentions=discord.AllowedMentions.all(),
                     )
                     try:

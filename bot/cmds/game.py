@@ -271,7 +271,7 @@ async def stock(ctx: Context, *args):
         msg = discord.Embed(
             title=locale["game_stock_1"].format(str(res)),
             color=botcolor,
-            description=locale["game_stock_2"].format("의 그래프입니다."),
+            description=locale["game_stock_2"].format(names),
         )
         await ctx.send(embed=msg, file=discord.File("./bbdata/stock_" + types + ".png"))
     elif args[0] == "매수" or args[0] == "buy":
