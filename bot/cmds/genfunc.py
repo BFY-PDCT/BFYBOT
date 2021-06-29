@@ -23,10 +23,8 @@ if __name__ == "__main__":
     sys.exit(0)
 
 import os
-from sqlite3.dbapi2 import Error
 import traceback
 import time
-import discord
 from datetime import datetime
 from operator import truediv, mul, add, sub
 from discord.ext import commands

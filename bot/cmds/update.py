@@ -26,6 +26,7 @@ import random
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+from .locales import getlc
 from .config import bot, muted, conn, db
 from .genfunc import dbglog, log, dumpdb, loadsetting, getlocalebyuid, localeerr
 from discord.errors import Forbidden, HTTPException
@@ -375,8 +376,7 @@ class updatemute(commands.Cog):
             return
         locale = getlocalebyuid(member.id)
         if locale is None:
-            await localeerr(member.id)
-            locale = getlocalebyuid(member.id)
+            locale = getlc.getlocale("en")
         setting_loaded = loadsetting("chnl", guild)
         channel = guild.get_channel(mute[4])
         if param == 0:
