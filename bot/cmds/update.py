@@ -86,9 +86,17 @@ class updatestka(commands.Cog):
             self.delta = -5000
         self.pn = self.pn + self.delta
         self.delta = 0
-        cp, ra, rb, t, mn, mx = 7, 5, 100, 500000, 5000, 50000  # stock const numbers
+        cp, ra, rb, t, mn, mx, exp = (
+            7,
+            5,
+            100,
+            500000,
+            5000,
+            50000,
+            3,
+        )  # stock const numbers
         x = random.uniform(ra, rb)
-        x = t / (x * x * x)
+        x = t / (x ** exp)
         x = x // 1
         if not random.randrange(0, cp):
             self.inc = not self.inc
@@ -175,16 +183,17 @@ class updatestkb(commands.Cog):
             self.delta = -20000
         self.pn = self.pn + self.delta
         self.delta = 0
-        cp, ra, rb, t, mn, mx = (
+        cp, ra, rb, t, mn, mx, exp = (
             4,
             60,
             300,
             8000000000,
             50000,
             500000,
+            3,
         )  # stock const numbers
         x = random.uniform(ra, rb)
-        x = t / (x * x * x)
+        x = t / (x ** exp)
         x = x // 1
         if not random.randrange(0, cp):
             self.inc = not self.inc
@@ -271,9 +280,17 @@ class updatestkc(commands.Cog):
             self.delta = -20
         self.pn = self.pn + self.delta
         self.delta = 0
-        cp, ra, rb, t, mn, mx = 10, 10, 80, 20000, 500, 5000  # stock const numbers
+        cp, ra, rb, t, mn, mx, exp = (
+            10,
+            10,
+            80,
+            20000,
+            500,
+            5000,
+            2,
+        )  # stock const numbers
         x = random.uniform(ra, rb)
-        x = t / (x * x)
+        x = t / (x ** exp)
         x = x // 1
         if not random.randrange(0, cp):
             self.inc = not self.inc
