@@ -202,7 +202,7 @@ async def gamble_error(ctx: Context, error):
 
 @commands.command(
     name="주식", aliases=["stock"]
-)  # prefix 주식 / prefix 도박 올인 / prefix 도박 (num: int)
+)  # prefix 주식
 async def stock(ctx: Context, *args):
     locale = getlocale(ctx)
     if locale is None:
