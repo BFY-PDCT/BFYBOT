@@ -251,7 +251,7 @@ class CommandErrorHandler(commands.Cog):
                 mymsg = await ctx.message.channel.send(locale["dictcmd_general_cfmnew"])
             else:
                 await ctx.message.channel.send(
-                    locale["dictcmd_general_cancel"],
+                    locale["dictcmd_general_cancel2"],
                     allowed_mentions=discord.AllowedMentions.all(),
                 )
                 return
@@ -356,5 +356,5 @@ class CommandErrorHandler(commands.Cog):
                 if isowner(ctx.message.author.id):
                     await mymsg.edit(content=locale["dictcmd_general_ownercancel"])
                 else:
-                    await mymsg.edit(content=locale["dictcmd_general_cancel2"])
+                    await mymsg.edit(content=locale["dictcmd_general_cancel"])
             return
