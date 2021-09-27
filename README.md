@@ -26,5 +26,3 @@ BFYBOT's main functions include simple server management (warning, punishment, c
 If there is a bug, you can create an issue at any time. If there are any improvements, please PR and we will apply them after review.
 
 How to use the bot can be found [here](https://github.com/BFY-PDCT/BFYBOT/wiki/How-to-host-BFYBOT). You can find more information on the [wiki](https://github.com/BFY-PDCT/BFYBOT/wiki).
-
-Translation is currently in progress, and will be released in v1.5.0.
