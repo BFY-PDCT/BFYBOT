@@ -36,7 +36,6 @@ operators = {"+": add, "-": sub, "*": mul, "/": truediv, "^": pow}
 
 
 def calculate(s):
-    log("calculate " + s)
     if s.isdigit():
         return float(s)
     for c in operators.keys():
