@@ -57,7 +57,7 @@ Valid codes: ko, en
 유효하지 않은 언어 코드입니다 :(
 사용 방법: `(prefix) 언어 (언어코드)`
 유효한 언어코드: ko, en
-        """
+"""
 
 @commands.command(name="언어", aliases=["lang"])  # prefix 언어 / prefix lang
 async def setlang(ctx: Context, *, arg):
