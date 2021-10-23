@@ -140,7 +140,7 @@ async def help(ctx: Context):
 async def lolsearch(ctx: Context, *, arg):
     lolid = arg
     url = "https://www.op.gg/summoner/userName=" + quote(lolid)
-    subres = get(url).content.decode()
+    subres = get(url, headers={"accept": "text/html", "accept-language": "ko,en;q=0.9,en-US;q=0.8", "user-agent": "bfybot/1.5.0"}).content.decode()
     tmp = subres[
         subres.find('<meta name="description" content="')
         + len('<meta name="description" content="') :
