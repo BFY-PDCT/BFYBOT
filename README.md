@@ -32,7 +32,7 @@ BFY에서 공식으로 운영하는 봇은 파랭이로, [여기](https://discor
 ![00](https://user-images.githubusercontent.com/83504363/143582696-f57343f9-66f2-4022-bdd2-36787fb3c457.gif)
 
 ![01](https://user-images.githubusercontent.com/83504363/143582682-e6bda2b6-8684-488c-a27c-d020292da9ae.gif)
-)
+
 
 ## 기여 활동
 버그가 있을때는 언제든지 이슈를 생성하실 수 있고, 개선사항이 있다면 PR을 해주시면 검토 후 적용해드리니 많은 기여 부탁드립니다.
