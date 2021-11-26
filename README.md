@@ -1,4 +1,4 @@
-<img align="right" src="https://discord.com/assets/3437c10597c1526c3dbd98c737c2bcae.svg" height="150" width="150">
+<img align="right" src="https://koreanbots.dev/api/image/discord/avatars/738684108674433065.webp?size=256" height="150" width="150">
 
 # BFYBOT
 [![CodeFactor](https://www.codefactor.io/repository/github/bfy-pdct/bfybot/badge/main)](https://www.codefactor.io/repository/github/bfy-pdct/bfybot/overview/main) ![Python Version](https://img.shields.io/badge/Python-3.8-yellowgreen.svg) [![Main Version](https://img.shields.io/badge/Version-v1.5.0-brightgreen.svg)](https://github.com/BFY-PDCT/BFYBOT/wiki/Patchnote) ![Code Style Check](https://github.com/BFY-PDCT/BFYBOT/workflows/Code%20Style%20Check/badge.svg)
@@ -37,6 +37,7 @@ BFY에서 공식으로 운영하는 봇은 파랭이로, [여기](https://discor
 ## 기여 활동
 버그가 있을때는 언제든지 이슈를 생성하실 수 있고, 개선사항이 있다면 PR을 해주시면 검토 후 적용해드리니 많은 기여 부탁드립니다.
 
+###  Description
 This bot is a comprehensive server management bot that can be easily hosted yourself. For an introduction to bots, please refer to [here](https://www.bfy.kr/bluebot).
 
 The bot officially operated by BFY is Bluebot, and you can invite it from [here](https://discord.com/api/oauth2/authorize?client_id=738684108674433065&permissions=8&scope=bot).
