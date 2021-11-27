@@ -29,9 +29,8 @@ BFY에서 공식으로 운영하는 봇은 파랭이로, [여기](https://discor
 또한, **봇을 사용하시거나, 코드를 변경하여 사용 혹은 참고하실 때에는 꼭 라이선스를 준수하여 사용해주시기 바랍니다.** BFYBOT의 오픈소스 라이선스는 GNU General Public License v3.0입니다.
 
 ## 사용 예시
-![00](https://user-images.githubusercontent.com/83504363/143582696-f57343f9-66f2-4022-bdd2-36787fb3c457.gif)
-
-![01](https://user-images.githubusercontent.com/83504363/143582682-e6bda2b6-8684-488c-a27c-d020292da9ae.gif)
+https://www.bfy.kr/files/bfybotgif1.gif
+https://www.bfy.kr/files/bfybotgif2.gif
 
 
 ## 기여 활동
