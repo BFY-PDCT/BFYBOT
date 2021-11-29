@@ -123,7 +123,7 @@ try:
         os.makedirs("./bbdata")
 except OSError:
     print("Fail")
-    print("EMERG - Error: Creating directory ./bbdata")
+    print("EMERG - Error: Failed to create directory ./bbdata")
     sys.exit(0)
 print("OK ({}s)".format(str(time.time() - ts)))
 
