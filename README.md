@@ -1,7 +1,7 @@
 <img align="right" src="https://koreanbots.dev/api/image/discord/avatars/738684108674433065.webp?size=256" height="150" width="150">
 
 # BFYBOT
-[![CodeFactor](https://www.codefactor.io/repository/github/bfy-pdct/bfybot/badge/main)](https://www.codefactor.io/repository/github/bfy-pdct/bfybot/overview/main) ![Python Version](https://img.shields.io/badge/Python-3.8-yellowgreen.svg) [![Main Version](https://img.shields.io/badge/Version-v1.5.0-brightgreen.svg)](https://github.com/BFY-PDCT/BFYBOT/wiki/Patchnote) ![Code Style Check](https://github.com/BFY-PDCT/BFYBOT/workflows/Code%20Style%20Check/badge.svg)
+[![CodeFactor](https://www.codefactor.io/repository/github/bfy-pdct/bfybot/badge/main)](https://www.codefactor.io/repository/github/bfy-pdct/bfybot/overview/main) ![Python Version](https://img.shields.io/badge/Python-3.8-yellowgreen.svg) [![Main Version](https://img.shields.io/badge/Version-v1.7.0-brightgreen.svg)](https://github.com/BFY-PDCT/BFYBOT/wiki/Patchnote) ![Code Style Check](https://github.com/BFY-PDCT/BFYBOT/workflows/Code%20Style%20Check/badge.svg)
 
 BFYBOT은 간단하게 스스로 운영할 수 있는 디스코드 봇입니다. <br>
 봇에 대한 소개는 [여기](https://www.bfy.kr/bluebot)를 참고해주세요.
