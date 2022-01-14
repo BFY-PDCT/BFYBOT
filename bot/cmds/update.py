@@ -51,7 +51,7 @@ class autodumpdb(commands.Cog):
     def cog_unload(self):
         self.process.cancel()
 
-    @tasks.loop(seconds=3600)
+    @tasks.loop(seconds=60*60*24)
     async def process(self):
         dumpdb()
 
