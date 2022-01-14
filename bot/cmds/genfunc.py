@@ -31,6 +31,8 @@ from discord.ext import commands
 from discord.ext.commands.context import Context
 from .config import owner, eventlogger, conn, db
 from .locales import getlc
+import random
+import string
 
 operators = {"+": add, "-": sub, "*": mul, "/": truediv, "^": pow}
 
@@ -97,10 +99,13 @@ def dumpdb():
         log("DB Backup generated in {}sec".format(str(time.time() - ts)))
 
 
-def tblog(e, *, guild=None):
+def tblog(e, *, guild=None) -> str:
+    tbid="".join([random.choice(string.digits) for _ in range(10)])
     errlog(
+        f"Error Report ID: [{tbid}]"+ \
         "".join(traceback.format_exception(type(e), e, e.__traceback__)), guild=guild
     )
+    return tbid
 
 
 def loadallsetting(kwd):
