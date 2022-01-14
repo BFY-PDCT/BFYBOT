@@ -233,7 +233,6 @@ async def sendmoney_error(ctx: Context, error):
         if isinstance(error, commands.BadArgument):
             await ctx.send(locale["economy_sendmoneyerror_1"])
             return
-        tblog(error)
-        await ctx.send(locale["economy_sendmoneyerror_2"])
+        await ctx.send(locale["economy_sendmoneyerror_2"].format(tblog(error)))
     except:
         return

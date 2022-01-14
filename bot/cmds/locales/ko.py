@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
 locale_ko = {
     "dictcmd_error_notadmin": "관리자 아니면 안해줄건뎅",
-    "dictcmd_error_err": "오류가 있었어요.. :( 자동으로 리포트가 생성되었어요",
+    "dictcmd_error_err": "오류가 있었어요.. :( 자동으로 리포트가 생성되었어요 (Report ID: {0})",
     "dictcmd_checka_delete": "지워",
     "dictcmd_checkb_yes": "어",
     "dictcmd_checkb_no": "아니",
@@ -81,7 +81,7 @@ locale_ko = {
     "economy_sendmoney_3": "{0}님에게 `💰 {1}`을(를) 선물했습니다.",
     "economy_sendmoneyerror_0": "금액을 올바르게 입력해주세요.",
     "economy_sendmoneyerror_1": "뭔가 잘못 입력하신것 같아요,,",
-    "economy_sendmoneyerror_2": "오류가 있었어요.. :( 자동으로 리포트가 생성되었어요",
+    "economy_sendmoneyerror_2": "오류가 있었어요.. :( 자동으로 리포트가 생성되었어요 (Report ID: {0})",
     "game_gamble_0": "돈도없으면서 도박같은 소리하네",
     "game_gamble_1": "얼마걸건데? 잔액: `💰 {0}`",
     "game_gamble_2": "안할거면 ㄲㅈ",
@@ -136,7 +136,7 @@ locale_ko = {
     "manage_error_0": "모든 항목을 입력해주세요.",
     "manage_error_1": "관리자가 아니면 못써요 흥",
     "manage_error_2": "뭔가 잘못 입력하신것 같아요,,",
-    "manage_error_3": "오류가 있었어요.. :( 자동으로 리포트가 생성되었어요",
+    "manage_error_3": "오류가 있었어요.. :( 자동으로 리포트가 생성되었어요 (Report ID: {0})",
     "manage_error_4": "죄송합니다 {0}을(를) 멘션해주세요",
     "manage_error_5": "구독 설정에 오류가 있습니다. 수정해주세요.",
     "manage_error_6": "권한도 없으면서 나대긴 ㅋ",

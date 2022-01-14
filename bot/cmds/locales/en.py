@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
 locale_en = {
     "dictcmd_error_notadmin": "If it's not an administrator, I won't do it",
-    "dictcmd_error_err": "There was an error.. :( The report was automatically generated",
+    "dictcmd_error_err": "There was an error.. :( The report was automatically generated (Report ID: {0})",
     "dictcmd_checka_delete": "delete",
     "dictcmd_checkb_yes": "yes",
     "dictcmd_checkb_no": "no",
@@ -77,7 +77,7 @@ locale_en = {
     "economy_sendmoney_3": "You gave {0} a gift of `💰 {1}`.",
     "economy_sendmoneyerror_0": "Please enter the amount correctly.",
     "economy_sendmoneyerror_1": "I think you entered something wrong,,",
-    "economy_sendmoneyerror_2": "There was an error.. :( The report was automatically generated",
+    "economy_sendmoneyerror_2": "There was an error.. :( The report was automatically generated (Report ID: {0})",
     "game_gamble_0": "You sound like gambling with no money",
     "game_gamble_1": "How much will it be? Balance: `💰 {0}`",
     "game_gamble_2": "If you don't do it, ㄲㅈ",
@@ -132,7 +132,7 @@ locale_en = {
     "manage_error_0": "Please enter all items.",
     "manage_error_1": "If you're not an administrator, you can't use it.",
     "manage_error_2": "I think you entered something wrong,,",
-    "manage_error_3": "There was an error.. :( The report was automatically generated",
+    "manage_error_3": "There was an error.. :( The report was automatically generated (Report ID: {0})",
     "manage_error_4": "Sorry, please mention {0}",
     "manage_error_5": "There is an error in your subscription settings. Please fix it.",
     "manage_error_6": "I don't have permission and I'm talking about it",

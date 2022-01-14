@@ -248,8 +248,7 @@ async def setpunish_error(ctx: Context, error):
         if isinstance(error, commands.BadArgument):
             await ctx.send(locale["manage_error_2"])
             return
-        tblog(error)
-        await ctx.send(locale["manage_error_3"])
+        await ctx.send(locale["manage_error_3"].format(tblog(error)))
     except Exception as e:
         return
 
@@ -318,8 +317,7 @@ async def setwelcome_error(ctx: Context, error):
         if isinstance(error, commands.BadArgument):
             await ctx.send(locale["manage_error_2"])
             return
-        tblog(error)
-        await ctx.send(locale["manage_error_3"])
+        await ctx.send(locale["manage_error_3"].format(tblog(error)))
     except Exception as e:
         return
 
@@ -352,8 +350,7 @@ async def setbye_error(ctx: Context, error):
         if isinstance(error, commands.BadArgument):
             await ctx.send(locale["manage_error_2"])
             return
-        tblog(error)
-        await ctx.send(locale["manage_error_3"])
+        await ctx.send(locale["manage_error_3"].format(tblog(error)))
     except Exception as e:
         return
 
@@ -502,8 +499,7 @@ async def execmute_error(ctx: Context, error):
         if isinstance(error, commands.BadArgument):
             await ctx.send(locale["manage_error_2"])
             return
-        tblog(error)
-        await ctx.send(locale["manage_error_3"])
+        await ctx.send(locale["manage_error_3"].format(tblog(error)))
     except Exception as e:
         return
 
@@ -554,8 +550,7 @@ async def donemute_error(ctx: Context, error):
         if isinstance(error, commands.BadArgument):
             await ctx.send(locale["manage_error_2"])
             return
-        tblog(error)
-        await ctx.send(locale["manage_error_3"])
+        await ctx.send(locale["manage_error_3"].format(tblog(error)))
     except Exception as e:
         return
 
@@ -622,8 +617,7 @@ async def execkick_error(ctx: Context, error):
         if isinstance(error, commands.BadArgument):
             await ctx.send(locale["manage_error_2"])
             return
-        tblog(error)
-        await ctx.send(locale["manage_error_3"])
+        await ctx.send(locale["manage_error_3"].format(tblog(error)))
     except Exception as e:
         return
 
@@ -690,8 +684,7 @@ async def execban_error(ctx: Context, error):
         if isinstance(error, commands.BadArgument):
             await ctx.send(locale["manage_error_2"])
             return
-        tblog(error)
-        await ctx.send(locale["manage_error_3"])
+        await ctx.send(locale["manage_error_3"].format(tblog(error)))
     except Exception as e:
         return
 
@@ -885,8 +878,7 @@ async def addwarning_error(ctx: Context, error):
         if isinstance(error, commands.BadArgument):
             await ctx.send(locale["manage_error_2"])
             return
-        tblog(error)
-        await ctx.send(locale["manage_error_3"])
+        await ctx.send(locale["manage_error_3"].format(tblog(error)))
     except Exception as e:
         return
 
