@@ -69,8 +69,6 @@ async def on_member_join(member):
             chnl = True
         except HTTPException:
             log("Error Sending Notice to " + str(setting_loaded["chnl"]))
-        except Forbidden:
-            log("Error Sending Notice to " + str(setting_loaded["chnl"]))
     if joinrole is not None:
         try:
             xrole: discord.Role = None
@@ -114,8 +112,6 @@ async def on_member_remove(member):
             )
         except HTTPException:
             log("Error Sending Notice to " + str(setting_loaded))
-        except Forbidden:
-            log("Error Sending Notice to " + str(setting_loaded))
 
 
 @bot.event
@@ -144,7 +140,7 @@ async def on_message(message):
 
     if message.content.startswith(tuple(prefix)):  # Block User Already Using
         if message.author.id in using:
-            log("User Already Using: " + str(message.author.id))
+            dbglog("User Already Using: " + str(message.author.id))
             return
 
     if isowner(message.author.id):
