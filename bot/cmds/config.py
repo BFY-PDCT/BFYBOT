@@ -46,7 +46,7 @@ from discord.ext import commands
 owner = [0]
 token = ""
 invlink = ""
-vernum = "v1.5.0"
+vernum = "v1.7.0"
 prefix = [""]
 botname = ""
 hasmusic = False

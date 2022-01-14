@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 from .locales import getlc
 from .config import bot, muted, conn, db
 from .genfunc import dbglog, log, dumpdb, loadsetting, getlocalebyuid, localeerr
-from discord.errors import Forbidden, HTTPException
+from discord.errors import HTTPException
 from discord.ext import tasks, commands
 from discord.ext.commands import Context
 
