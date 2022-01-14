@@ -56,10 +56,6 @@ async def on_member_join(member):
     locale = getlocalebyuid(member.id)
     if locale is None:
         locale = getlocale("en")
-    log(
-        "member joined NAME: " + str(member) + ", ID:" + str(member.id),
-        guild=member.guild,
-    )
     setting_loaded = loadsetting("chnl", guild=member.guild)
     msgj = loadsetting("msgj", guild=member.guild)
     joinrole = loadsetting("joinrole", guild=member.guild)
@@ -108,10 +104,6 @@ async def on_member_remove(member):
     locale = getlocalebyuid(member.id)
     if locale is None:
         locale = getlocale("en")
-    log(
-        "member removed NAME: " + str(member) + ", ID:" + str(member.id),
-        guild=member.guild,
-    )
     setting_loaded = loadsetting("chnl", guild=member.guild)
     msgl = loadsetting("msgl", guild=member.guild)
     if setting_loaded is not None and msgl is not None:
