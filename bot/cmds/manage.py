@@ -469,13 +469,6 @@ async def execmute(ctx: Context, time: int, mention: str, *, arg):
                     )
                 )
                 await ctx.send(locale["manage_error_5"])
-            except Forbidden:
-                await ctx.send(
-                    locale["manage_execmute_4"].format(
-                        mem.mention, rsn, ctx.author.mention
-                    )
-                )
-                await ctx.send(locale["manage_error_5"])
         else:
             await ctx.send(
                 locale["manage_execmute_4"].format(mem.mention, rsn, ctx.author.mention)
@@ -589,11 +582,6 @@ async def execkick(ctx: Context, mention: str, *, arg):
                 locale["manage_execkick_2"].format(mem.mention, rsn, ctx.author.mention)
             )
             await ctx.send(locale["manage_error_5"])
-        except Forbidden:
-            await ctx.send(
-                locale["manage_execkick_2"].format(mem.mention, rsn, ctx.author.mention)
-            )
-            await ctx.send(locale["manage_error_5"])
     else:
         await ctx.send(
             locale["manage_execkick_2"].format(mem.mention, rsn, ctx.author.mention)
@@ -652,11 +640,6 @@ async def execban(ctx, mention: str, *, arg):  # prefix 밴 @유저 (rsn: str)
                 locale["manage_execban_2"].format(mem.mention, rsn, ctx.author.mention)
             )
         except HTTPException:
-            await ctx.send(
-                locale["manage_execban_2"].format(mem.mention, rsn, ctx.author.mention)
-            )
-            await ctx.send(locale["manage_error_5"])
-        except Forbidden:
             await ctx.send(
                 locale["manage_execban_2"].format(mem.mention, rsn, ctx.author.mention)
             )
@@ -736,13 +719,6 @@ async def addwarning(ctx: Context, mention: str, *, arg):
                     )
                 )
                 await ctx.send(locale["manage_error_5"])
-            except Forbidden:
-                await ctx.send(
-                    locale["manage_execkick_2"].format(
-                        mem.mention, rsn, ctx.author.mention
-                    )
-                )
-                await ctx.send(locale["manage_error_5"])
         else:
             await ctx.send(
                 locale["manage_execkick_2"].format(mem.mention, rsn, ctx.author.mention)
@@ -761,13 +737,6 @@ async def addwarning(ctx: Context, mention: str, *, arg):
                     )
                 )
             except HTTPException:
-                await ctx.send(
-                    locale["manage_execban_2"].format(
-                        mem.mention, rsn, ctx.author.mention
-                    )
-                )
-                await ctx.send(locale["manage_error_5"])
-            except Forbidden:
                 await ctx.send(
                     locale["manage_execban_2"].format(
                         mem.mention, rsn, ctx.author.mention
@@ -818,13 +787,6 @@ async def addwarning(ctx: Context, mention: str, *, arg):
                         )
                     )
                     await ctx.send(locale["manage_error_5"])
-                except Forbidden:
-                    await ctx.send(
-                        locale["manage_execmute_4"].format(
-                            mem.mention, rsn, ctx.author.mention
-                        )
-                    )
-                    await ctx.send(locale["manage_error_5"])
             else:
                 await ctx.send(
                     locale["manage_execmute_4"].format(
@@ -840,13 +802,6 @@ async def addwarning(ctx: Context, mention: str, *, arg):
                 )
             )
         except HTTPException:
-            await ctx.send(
-                locale["manage_warning_0"].format(
-                    mem.mention, warns, rsn, ctx.author.mention
-                )
-            )
-            await ctx.send(locale["manage_error_5"])
-        except Forbidden:
             await ctx.send(
                 locale["manage_warning_0"].format(
                     mem.mention, warns, rsn, ctx.author.mention

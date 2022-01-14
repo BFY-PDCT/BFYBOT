@@ -407,9 +407,6 @@ class updatemute(commands.Cog):
                 except HTTPException:
                     await channel.send(locale["update_1"].format(member.mention))
                     await channel.send(locale["update_2"])
-                except Forbidden:
-                    await channel.send(locale["update_1"].format(member.mention))
-                    await channel.send(locale["update_2"])
             else:
                 await channel.send(locale["update_1"].format(member.mention))
         elif param == 1:
@@ -421,11 +418,6 @@ class updatemute(commands.Cog):
                         locale["update_0"].format(member.mention, mute[5].mention)
                     )
                 except HTTPException:
-                    await channel.send(
-                        locale["update_0"].format(member.mention, mute[5].mention)
-                    )
-                    await channel.send(locale["update_2"])
-                except Forbidden:
                     await channel.send(
                         locale["update_0"].format(member.mention, mute[5].mention)
                     )
